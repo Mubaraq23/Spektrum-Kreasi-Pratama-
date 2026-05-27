@@ -484,7 +484,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </AnimatePresence>
 
         {/* Bottom Navigation (Mobile) */}
-        <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 py-2 px-3 flex items-center justify-between z-50 shadow-[0_-10px_35px_rgba(0,0,0,0.12)] max-h-16">
+        <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-white/80 dark:bg-[#0b0f19]/80 backdrop-blur-2xl border border-slate-200/50 dark:border-cyan-500/25 py-2.5 px-3 flex items-center justify-between z-50 shadow-[0_12px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_rgba(6,182,212,0.15)] rounded-3xl max-h-16 transition-all duration-300">
           <NavLink
             to="/dashboard"
             className={({ isActive }) => cn(
