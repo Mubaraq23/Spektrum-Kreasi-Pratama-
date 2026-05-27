@@ -4365,57 +4365,62 @@ export function WorksheetEditor() {
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 mt-3">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-bold text-slate-400 uppercase font-mono">Parameter</span>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-3">
+                        <div className="flex flex-col gap-1 col-span-2 sm:col-span-2">
+                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider">Parameter</span>
                           <input
                             type="text"
                             value={seqName}
                             onChange={(e) => setSeqName(e.target.value)}
                             placeholder="Tegangan"
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1.5 rounded-xl outline-none focus:border-[#b38728] text-center"
+                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
                           />
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-bold text-slate-400 uppercase font-mono">Dari</span>
+                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Dari</span>
                           <input
                             type="number"
                             value={seqStart}
                             onChange={(e) => setSeqStart(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1.5 rounded-xl outline-none focus:border-[#b38728] text-center"
+                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
                           />
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-bold text-slate-400 uppercase font-mono">Sampai</span>
+                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Sampai</span>
                           <input
                             type="number"
                             value={seqEnd}
                             onChange={(e) => setSeqEnd(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1.5 rounded-xl outline-none focus:border-[#b38728] text-center"
+                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
                           />
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-bold text-slate-400 uppercase font-mono">Jumlah Titik</span>
+                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah Titik</span>
                           <input
                             type="number"
                             value={seqSteps}
                             onChange={(e) => setSeqSteps(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1.5 rounded-xl outline-none focus:border-[#b38728] text-center"
+                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
                           />
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-bold text-slate-400 uppercase font-mono">Satuan</span>
+                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Satuan</span>
                           <input
                             type="text"
                             value={seqUnit}
                             onChange={(e) => setSeqUnit(e.target.value)}
                             placeholder="V"
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1.5 rounded-xl outline-none focus:border-[#b38728] text-center"
+                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
                           />
                         </div>
                       </div>
 
-                      <div className="flex justify-end gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/60">
+                      <div className="flex flex-wrap items-center justify-end gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 w-full">
                         {identityData.methodId && measurements.length === 0 && (
                           <button
                             type="button"
@@ -5530,8 +5535,8 @@ export function WorksheetEditor() {
                   <span>Geser Kiri/Kanan ↔️</span>
                 </div>
 
-                <div className="overflow-x-auto pb-3 scroll-smooth snap-x touch-pan-x scrollbar-thin scrollbar-thumb-amber-500/25 scrollbar-track-transparent rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white/50 dark:bg-[#060a1a]/90 shadow-sm">
-                  <table className="table-data-ukur w-full text-left min-w-[1200px] border-collapse">
+                <div className="overflow-x-auto pb-3 p-1 scroll-smooth snap-x touch-pan-x scrollbar-thin scrollbar-thumb-amber-500/25 scrollbar-track-transparent rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white/50 dark:bg-[#060a1a]/90 shadow-sm">
+                  <table className={cn("table-data-ukur w-full text-left border-collapse", editMetrologyMode ? "min-w-[1600px] xl:min-w-[1850px]" : "min-w-[1100px] xl:min-w-[1300px]")}>
                     <thead className="text-[10.5px] uppercase tracking-[0.1em] font-extrabold font-mono bg-slate-50/80 dark:bg-[#040816] text-slate-600 dark:text-[#b38728] border-b border-slate-200/60 dark:border-slate-800/60">
                       {/* Premium Dual-Row Header Groups */}
                       <tr className="bg-slate-100/50 dark:bg-slate-950/70 border-b border-slate-200/40 dark:border-slate-850/40 text-[9px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-slate-500 select-none">
@@ -5565,7 +5570,7 @@ export function WorksheetEditor() {
                         <th className="px-3 py-2.5 min-w-[150px] font-bold text-left border-r border-slate-200/50 dark:border-slate-800/40">
                           Parameter
                         </th>
-                        <th className="px-3 py-2.5 w-44 font-bold text-center border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Titik Ukur & Unit</th>
+                        <th className="px-3 py-2.5 w-32 font-bold text-center border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Titik Ukur & Unit</th>
                         {editMetrologyMode && (
                           <>
                             <th className="px-2 py-2.5 w-24 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Res (u₁)</th>
@@ -5577,13 +5582,13 @@ export function WorksheetEditor() {
                             </th>
                             {identityData.uncMethod === "timbangan" && (
                               <>
-                                <th className="px-6 py-4 w-20 text-center text-blue-600">
+                                <th className="px-2 py-2 w-20 text-center text-blue-600">
                                   Eks. (u<sub>ecc</sub>)
                                 </th>
-                                <th className="px-6 py-4 w-20 text-center text-blue-600">
+                                <th className="px-2 py-2 w-20 text-center text-blue-600">
                                   Lin. (u<sub>lin</sub>)
                                 </th>
-                                <th className="px-6 py-4 w-20 text-center text-blue-600">
+                                <th className="px-2 py-2 w-20 text-center text-blue-600">
                                   SD (u₃)
                                 </th>
                               </>
@@ -5591,53 +5596,53 @@ export function WorksheetEditor() {
                             {(identityData.uncMethod === "suhu" ||
                               identityData.uncMethod === "kelembaban") && (
                               <>
-                                <th className="px-6 py-4 w-20 text-center text-emerald-600 font-bold">
+                                <th className="px-2 py-2 w-20 text-center text-emerald-600 font-bold">
                                   Stab. (u<sub>stab</sub>)
                                 </th>
-                                <th className="px-6 py-4 w-20 text-center text-emerald-600 font-bold">
+                                <th className="px-2 py-2 w-20 text-center text-emerald-600 font-bold">
                                   Unif. (u<sub>unif</sub>)
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "tekanan" && (
                               <>
-                                <th className="px-6 py-4 w-20 text-center text-cyan-600">
+                                <th className="px-2 py-2 w-20 text-center text-cyan-600">
                                   Hist. (u<sub>hyst</sub>)
                                 </th>
-                                <th className="px-6 py-4 w-20 text-center text-cyan-600">
+                                <th className="px-2 py-2 w-20 text-center text-cyan-600">
                                   Zero (u<sub>zero</sub>)
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "volume_flow" && (
                               <>
-                                <th className="px-6 py-4 w-24 text-center text-indigo-600">
+                                <th className="px-2 py-2 w-24 text-center text-indigo-600">
                                   Volume V / uV
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-indigo-600">
+                                <th className="px-2 py-2 w-24 text-center text-indigo-600">
                                   Waktu t / ut
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "gas_flow" && (
                               <>
-                                <th className="px-6 py-4 w-24 text-center text-orange-600">
+                                <th className="px-2 py-2 w-24 text-center text-orange-600">
                                   Raw Flow (Q)
                                 </th>
-                                <th className="px-6 py-4 w-20 text-center text-orange-600">
+                                <th className="px-2 py-2 w-20 text-center text-orange-600">
                                   Tekanan P
                                 </th>
-                                <th className="px-6 py-4 w-20 text-center text-orange-600">
+                                <th className="px-2 py-2 w-20 text-center text-orange-600">
                                   Suhu T
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "laboratorium" && (
                               <>
-                                <th className="px-6 py-4 w-32 text-center text-purple-600">
+                                <th className="px-2 py-2 w-32 text-center text-purple-600">
                                   Metode Lab
                                 </th>
-                                <th className="px-6 py-4 w-40 text-center text-purple-600">
+                                <th className="px-2 py-2 w-40 text-center text-purple-600">
                                   Parameter Khusus
                                 </th>
                               </>
@@ -5645,7 +5650,7 @@ export function WorksheetEditor() {
                             {(identityData.uncMethod === "radiologi" ||
                               identityData.uncMethod === "dosis_radiasi") && (
                               <>
-                                <th className="px-6 py-4 w-44 text-center text-rose-600">
+                                <th className="px-2 py-2 w-44 text-center text-rose-600">
                                   Kalkulator Radiologi
                                 </th>
                               </>
@@ -5653,137 +5658,137 @@ export function WorksheetEditor() {
                             {(identityData.uncMethod === "listrik_medis" ||
                               identityData.uncMethod === "terapi_energi") && (
                               <>
-                                <th className="px-6 py-4 w-44 text-center text-amber-600">
+                                <th className="px-2 py-2 w-44 text-center text-amber-600">
                                   Kalkulator Medis
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "waktu_frekuensi" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-blue-600">
+                                <th className="px-2 py-2 w-28 text-center text-blue-600">
                                   Jitter (u<sub>jitter</sub>)
                                 </th>
-                                <th className="px-6 py-4 w-28 text-center text-blue-600">
+                                <th className="px-2 py-2 w-28 text-center text-blue-600">
                                   SD (u₃)
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "kecepatan_putar" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-emerald-600">
+                                <th className="px-2 py-2 w-28 text-center text-emerald-600">
                                   Waktu t / u_t
                                 </th>
-                                <th className="px-6 py-4 w-28 text-center text-emerald-600">
+                                <th className="px-2 py-2 w-28 text-center text-emerald-600">
                                   SD (u₃)
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "cahaya_fotometri" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-violet-600">
+                                <th className="px-2 py-2 w-28 text-center text-violet-600">
                                   Jarak r (m)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-violet-600 font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-violet-600 font-mono">
                                   uDistance
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "akustik_suara" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-rose-600">
+                                <th className="px-2 py-2 w-28 text-center text-rose-600">
                                   Ambient (dB)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-rose-600 font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-rose-600 font-mono">
                                   uFreq
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "gaya_beban_torsi" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-amber-600">
+                                <th className="px-2 py-2 w-28 text-center text-amber-600">
                                   Lengan Mo (m)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-amber-600 font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-amber-600 font-mono">
                                   u_Arm
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "dimensi_panjang" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-lime-600">
+                                <th className="px-2 py-2 w-28 text-center text-lime-600">
                                   Suhu T (°C)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-lime-600 font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-lime-600 font-mono">
                                   Linearitas
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "optik" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-indigo-600">
+                                <th className="px-2 py-2 w-28 text-center text-indigo-600">
                                   Refr. Index (n)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-indigo-600 font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-indigo-600 font-mono">
                                   SD (u₃)
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "kimia_analitik" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-teal-600 font-bold">
+                                <th className="px-2 py-2 w-28 text-center text-teal-600 font-bold">
                                   Buffer Unc
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-teal-600 font-bold font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-teal-600 font-bold font-mono">
                                   Slope Unc
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "gas_medis_konsentrasi" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-orange-600">
+                                <th className="px-2 py-2 w-28 text-center text-orange-600">
                                   Gas Temp (°C)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-orange-600 font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-orange-600 font-mono">
                                   Gas Press (P)
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "keselamatan_kerja" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-indigo-600">
+                                <th className="px-2 py-2 w-28 text-center text-indigo-600">
                                   Air Speed
                                 </th>
-                                <th className="px-6 py-4 w-28 text-center text-indigo-600 font-mono">
+                                <th className="px-2 py-2 w-28 text-center text-indigo-600 font-mono">
                                   Area (m²)
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "sterilisasi" && (
                               <>
-                                <th className="px-6 py-4 w-28 text-center text-fuchsia-600 font-bold">
+                                <th className="px-2 py-2 w-28 text-center text-fuchsia-600 font-bold">
                                   Stab. (u<sub>stab</sub>)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-fuchsia-600 font-bold font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-fuchsia-600 font-bold font-mono">
                                   Autoclave P
                                 </th>
                               </>
                             )}
                             {identityData.uncMethod === "monitoring_pasien" && (
                               <>
-                                <th className="px-6 py-4 w-32 text-center text-cyan-600 font-bold">
+                                <th className="px-2 py-2 w-32 text-center text-cyan-600 font-bold">
                                   Sim. Unc (u_sim)
                                 </th>
-                                <th className="px-6 py-4 w-24 text-center text-cyan-600 font-bold font-mono">
+                                <th className="px-2 py-2 w-24 text-center text-cyan-600 font-bold font-mono">
                                   SD (u₃)
                                 </th>
                               </>
                             )}
                           </>
                         )}
-                        <th className="px-4 py-3 text-right w-28">Nilai Terukur</th>
-                        <th className="px-4 py-3 w-24 text-center">Penyimpangan</th>
-                        <th className="px-4 py-3 w-24 text-center">MPE / Tol.</th>
-                        <th className="px-4 py-3 w-28 text-center">
+                        <th className="px-2 py-2 text-right w-24">Nilai Terukur</th>
+                        <th className="px-2 py-2 w-20 text-center">Penyimpangan</th>
+                        <th className="px-2 py-2 w-20 text-center">MPE / Tol.</th>
+                        <th className="px-2 py-2 w-24 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <span>U95 (k=2)</span>
                             <button
@@ -5798,10 +5803,10 @@ export function WorksheetEditor() {
                         </th>
                         {editMetrologyMode && (
                           <>
-                            <th className="px-4 py-3 w-24 text-center text-indigo-600 font-bold">
+                            <th className="px-2 py-2 w-20 text-center text-indigo-600 font-bold">
                               CMC Lab
                             </th>
-                            <th className="px-4 py-3 w-24 text-center text-indigo-600 font-bold">
+                            <th className="px-2 py-2 w-20 text-center text-indigo-600 font-bold">
                               TUR/TAR
                             </th>
                           </>
@@ -5973,7 +5978,7 @@ export function WorksheetEditor() {
                             <>
                               {identityData.uncMethod === "timbangan" && (
                             <>
-                              <td className="px-6 py-4 bg-blue-50/10">
+                              <td className="px-2 py-1.5 bg-blue-50/10">
                                 <input
                                   type="number"
                                   step="0.0001"
@@ -5996,7 +6001,7 @@ export function WorksheetEditor() {
                                   className="bg-white border border-slate-200 rounded-lg px-1 text-[10px] w-12 focus:border-blue-500 outline-none text-blue-600 font-mono text-center font-bold"
                                 />
                               </td>
-                              <td className="px-6 py-4 bg-blue-50/10">
+                              <td className="px-2 py-1.5 bg-blue-50/10">
                                 <input
                                   type="number"
                                   step="0.0001"
@@ -6019,7 +6024,7 @@ export function WorksheetEditor() {
                                   className="bg-white border border-slate-200 rounded-lg px-1 text-[10px] w-12 focus:border-blue-500 outline-none text-blue-600 font-mono text-center font-bold"
                                 />
                               </td>
-                              <td className="px-6 py-4 bg-blue-50/10">
+                              <td className="px-2 py-1.5 bg-blue-50/10">
                                 <input
                                   type="number"
                                   step="0.0001"
@@ -6482,7 +6487,7 @@ export function WorksheetEditor() {
 
                           {identityData.uncMethod === "waktu_frekuensi" && (
                             <>
-                              <td className="px-6 py-4 bg-blue-50/10">
+                              <td className="px-2 py-1.5 bg-blue-50/10">
                                 <input
                                   type="number"
                                   step="0.0001"
@@ -6503,7 +6508,7 @@ export function WorksheetEditor() {
                                   className="bg-white border border-slate-200 rounded-lg px-1 text-[10px] w-14 focus:border-blue-500 outline-none text-center font-mono"
                                 />
                               </td>
-                              <td className="px-6 py-4 bg-blue-50/10">
+                              <td className="px-2 py-1.5 bg-blue-50/10">
                                 <input
                                   type="number"
                                   step="0.0001"

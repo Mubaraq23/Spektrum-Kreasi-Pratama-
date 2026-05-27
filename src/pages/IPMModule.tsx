@@ -106,112 +106,7 @@ const CHECKLIST_TEMPLATES: Record<string, { visual: string[]; functional: string
   }
 };
 
-const INITIAL_IPM_TASKS = [
-  {
-    id: "sample-ipm-1",
-    deviceName: "Infusion Pump",
-    brand: "Terumo",
-    model: "TE-331",
-    serialNumber: "IN-2022-8874",
-    location: "Ruang OK Utama (Operating Theater)",
-    department: "IBS (Instalasi Bedah Sentral)",
-    technicianName: "Rian Hidayat",
-    technicianId: "sample-tech",
-    lastMaintenanceDate: "2026-02-15",
-    nextMaintenanceDate: "2026-08-15",
-    status: "Lolos",
-    template: "Infusion / Syringe Pump",
-    visualChecks: {
-      'Kebersihan luar & chassis (bersih dari cairan kontaminasi)': 'Lolos',
-      'Kondisi casing & engsel pintu (tidak ada keretakan atau pecah)': 'Lolos',
-      'Klip drop censor / penutup sensor tetesan (berfungsi utuh)': 'Lolos',
-      'Kabel daya & steker AC (kondisi fleksibel, pin tidak longgar)': 'Lolos',
-      'Pegangan infus / Tiang clamp (mengunci kuat pada tiang infus)': 'Lolos'
-    },
-    functionalChecks: {
-      'Uji tombol panel kontrol (touchscreen / tactile berespons baik)': 'Lolos',
-      'Uji sensor gelembung udara (Air-in-Line alarm melengking)': 'Lolos',
-      'Uji sensor oklusi (Occlusion pressure alarm berbunyi saat sumbatan)': 'Lolos',
-      'Uji alarm baterai lemah (Battery low alarm memicu indikator)': 'Lolos',
-      'Uji akurasi laju aliran (Flow rate verification)': 'Lolos',
-      'Peralihan lancar dari AC ke baterai internal (UPS internal backup)': 'Lolos'
-    },
-    measurements: {
-      template: "Infusion / Syringe Pump",
-      flowRateTarget: 100,
-      flowRateMeasured: 99.4,
-      occlusionTarget: 300,
-      occlusionMeasured: 308,
-      groundResistance: 0.12,
-      leakageCurrent: 35
-    },
-    executionNotes: "Alat dalam kondisi prima. Baterai internal memegang muatan dengan baik. Lacing sirkuit stabil.",
-    createdAt: { seconds: 1779840000 } // April 2026
-  },
-  {
-    id: "sample-ipm-2",
-    deviceName: "Patient Monitor",
-    brand: "Mindray",
-    model: "uMEC 12",
-    serialNumber: "PM-1090-9983",
-    location: "Ruang ICU Kamar 4",
-    department: "ICU (Intensive Care Unit)",
-    technicianName: "Rian Hidayat",
-    technicianId: "sample-tech",
-    lastMaintenanceDate: "2026-03-10",
-    nextMaintenanceDate: "2026-09-10",
-    status: "Bersyarat",
-    template: "Patient Monitor",
-    visualChecks: {
-      'Kebersihan fisik monitor & slot modul (bebas debu & lembab)': 'Lolos',
-      'Kondisi layarnya (tidak bergaris, bebas gores)': 'Lolos',
-      'Kabel Patient ECG Trunk (tidak pecah-pecah/terkelupas)': 'Lolos',
-      'Konektor NIBP & manset / cuff (tidak robek atau bocor)': 'Tidak Lolos',
-      'Kabel SPO2 Probe / Sensor (pemancar infra merah terpasang baik)': 'Lolos'
-    },
-    functionalChecks: {
-      'Uji performa boot & inisialisasi modul ECG': 'Lolos',
-      'Uji fungsi inflasi & deflasi otomatis pompa NIBP': 'Tidak Lolos',
-      'Uji pembacaan kejenuhan oksigen (SPO2) & denyut nadi': 'Lolos',
-      'Uji fungsi alarm ambang batas (HR, SPO2, Temperatur)': 'Lolos',
-      'Uji fungsi speaker alarm eksternal': 'Lolos',
-      'Operasi daya baterai cadangan (berjalan minimal 15 menit)': 'Lolos'
-    },
-    measurements: {
-      template: "Patient Monitor",
-      ecgTarget: 80,
-      ecgMeasured: 79,
-      spo2Target: 97,
-      spo2Measured: 97,
-      nibpTarget: 120,
-      nibpMeasured: 123,
-      groundResistance: 0.14,
-      leakageCurrent: 44
-    },
-    executionNotes: "Manset NIBP bocor halus saat tekanan inflasi di atas 150 mmHg. Direkomendasikan mengganti manset NIBP dengan cadangan baru dalam kurun 7 hari. Untuk modul lainnya bekerja optimal.",
-    createdAt: { seconds: 1782000000 }
-  },
-  {
-    id: "sample-ipm-3",
-    deviceName: "Anesthesia Machine",
-    brand: "Dräger",
-    model: "Atlan A350",
-    serialNumber: "AN-1102-7744",
-    location: "Kamar Operasi 1",
-    department: "IBS (Instalasi Bedah Sentral)",
-    technicianName: "Siti Rahma",
-    technicianId: "sample-tech-2",
-    lastMaintenanceDate: "2026-05-01",
-    nextMaintenanceDate: "2026-11-01",
-    status: "Menunggu Jadwal",
-    template: "Anesthesia Machine",
-    visualChecks: {},
-    functionalChecks: {},
-    measurements: null,
-    executionNotes: "Menunggu giliran pemeliharaan bulanan sesuai jadwal kalender preventif.",
-    createdAt: { seconds: 1785000000 }
-  }
-];;
+const INITIAL_IPM_TASKS: any[] = [];
 
 export function IPMModule() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -241,7 +136,7 @@ export function IPMModule() {
   const [formModel, setFormModel] = useState('');
   const [formSerialNumber, setFormSerialNumber] = useState('');
   const [formLocation, setFormLocation] = useState('');
-  const [formDepartment, setFormDepartment] = useState('IPS-RS (Fisik Medis)');
+  const [formDepartment, setFormDepartment] = useState('');
   const [formTemplate, setFormTemplate] = useState('Infusion / Syringe Pump');
   const [formTechnician, setFormTechnician] = useState('');
   const [formLastMaintenanceDate, setFormLastMaintenanceDate] = useState(new Date().toISOString().split('T')[0]);
@@ -253,30 +148,51 @@ export function IPMModule() {
   const [executionNotes, setExecutionNotes] = useState('');
   
   // Measurement State Fields for standard templates
-  const [measFlowRateTarget, setMeasFlowRateTarget] = useState<number>(100);
-  const [measFlowRateMeasured, setMeasFlowRateMeasured] = useState<number>(99.5);
-  const [measOcclusionTarget, setMeasOcclusionTarget] = useState<number>(300);
-  const [measOcclusionMeasured, setMeasOcclusionMeasured] = useState<number>(302);
+  const [measFlowRateTarget, setMeasFlowRateTarget] = useState<number>(0);
+  const [measFlowRateMeasured, setMeasFlowRateMeasured] = useState<number>(0);
+  const [measOcclusionTarget, setMeasOcclusionTarget] = useState<number>(0);
+  const [measOcclusionMeasured, setMeasOcclusionMeasured] = useState<number>(0);
 
-  const [measEcgTarget, setMeasEcgTarget] = useState<number>(80);
-  const [measEcgMeasured, setMeasEcgMeasured] = useState<number>(80);
-  const [measSpo2Target, setMeasSpo2Target] = useState<number>(97);
-  const [measSpo2Measured, setMeasSpo2Measured] = useState<number>(97);
-  const [measNibpTarget, setMeasNibpTarget] = useState<number>(120);
-  const [measNibpMeasured, setMeasNibpMeasured] = useState<number>(121);
+  const [measEcgTarget, setMeasEcgTarget] = useState<number>(0);
+  const [measEcgMeasured, setMeasEcgMeasured] = useState<number>(0);
+  const [measSpo2Target, setMeasSpo2Target] = useState<number>(0);
+  const [measSpo2Measured, setMeasSpo2Measured] = useState<number>(0);
+  const [measNibpTarget, setMeasNibpTarget] = useState<number>(0);
+  const [measNibpMeasured, setMeasNibpMeasured] = useState<number>(0);
 
-  const [measO2Target, setMeasO2Target] = useState<number>(50);
-  const [measO2Measured, setMeasO2Measured] = useState<number>(49.8);
-  const [measPressureTarget, setMeasPressureTarget] = useState<number>(20);
-  const [measPressureMeasured, setMeasPressureMeasured] = useState<number>(19.7);
+  const [measO2Target, setMeasO2Target] = useState<number>(0);
+  const [measO2Measured, setMeasO2Measured] = useState<number>(0);
+  const [measPressureTarget, setMeasPressureTarget] = useState<number>(0);
+  const [measPressureMeasured, setMeasPressureMeasured] = useState<number>(0);
 
-  const [measGroundResistance, setMeasGroundResistance] = useState<number>(0.12);
-  const [measLeakageCurrent, setMeasLeakageCurrent] = useState<number>(35);
+  const [measGroundResistance, setMeasGroundResistance] = useState<number>(0);
+  const [measLeakageCurrent, setMeasLeakageCurrent] = useState<number>(0);
 
   const [saving, setSaving] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  const [purging, setPurging] = useState(false);
+  const [isPurgeConfirmOpen, setIsPurgeConfirmOpen] = useState(false);
+
+  const handlePurgeAllTasks = async () => {
+    setPurging(true);
+    try {
+      const q = query(collection(db, 'ipm_tasks'));
+      const snapshot = await getDocs(q);
+      const deletePromises = snapshot.docs.map(docSnap => deleteDoc(doc(db, 'ipm_tasks', docSnap.id)));
+      await Promise.all(deletePromises);
+      await logAction(`Membersihkan Seluruh Catatan IPM`, 'ipm_tasks', `Total catatan dihapus: ${snapshot.docs.length}`, 'warning');
+      showToast(`Sukses menghapus ${snapshot.docs.length} catatan IPM!`, "success");
+      setIsPurgeConfirmOpen(false);
+    } catch (e: any) {
+      console.error(e);
+      showToast("Gagal membersihkan catatan IPM: " + e.message, "error");
+    } finally {
+      setPurging(false);
+    }
+  };
 
   const handleOpenEdit = (task: any) => {
     setIsEditMode(true);
@@ -997,10 +913,19 @@ export function IPMModule() {
           </div>
         </div>
 
-        <div>
+        <div className="flex flex-wrap items-center gap-3">
+          {tasks.length > 0 && (
+            <button
+              onClick={() => setIsPurgeConfirmOpen(true)}
+              className="w-full lg:w-auto bg-rose-50/50 hover:bg-rose-500 hover:text-white text-rose-600 border border-rose-200/50 dark:border-rose-900/30 dark:bg-rose-950/20 font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Bersihkan Data Dummy</span>
+            </button>
+          )}
           <button
             onClick={handleOpenNew}
-            className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-lg hover:shadow-blue-500/10 hover:scale-[1.02] flex items-center justify-center gap-2"
+            className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-lg hover:shadow-blue-500/10 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Registrasi Preventif / IPM Baru</span>
@@ -2073,6 +1998,72 @@ export function IPMModule() {
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-red-500/10 transition-all cursor-pointer"
                 >
                   Ya, Hapus Permanen
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Purge Confirmation Modal */}
+      <AnimatePresence>
+        {isPurgeConfirmOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              onClick={() => setIsPurgeConfirmOpen(false)}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-[2rem] max-w-sm w-full p-8 shadow-2xl flex flex-col gap-6"
+            >
+              <div className="flex items-center gap-4 text-rose-600">
+                <span className="p-3 bg-rose-100 dark:bg-rose-950/40 rounded-2xl text-2xl font-black">
+                  ⚠️
+                </span>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider font-mono">
+                    PURGE ALL TASKS
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-bold font-mono">
+                    Hapus Seluruh Laporan IPM
+                  </p>
+                </div>
+              </div>
+              
+              <p className="text-xs text-slate-500 dark:text-slate-450 font-sans tracking-wide leading-relaxed">
+                Apakah Anda yakin ingin menghapus **SEMESTINYA SELURUH CATATAN PEMELIHARAAN PREVENTIF (IPM)** secara permanen dari Firestore database? Tindakan ini sangat kritis dan tidak dapat dikembalikan.
+              </p>
+              
+              <div className="flex items-center gap-3 justify-end mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPurgeConfirmOpen(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer"
+                  disabled={purging}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  disabled={purging}
+                  onClick={handlePurgeAllTasks}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-rose-500/10 transition-all cursor-pointer flex items-center gap-2"
+                >
+                  {purging ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Memproses...</span>
+                    </>
+                  ) : (
+                    <span>Ya, Purge Semua</span>
+                  )}
                 </button>
               </div>
             </motion.div>

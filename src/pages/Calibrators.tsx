@@ -31,6 +31,14 @@ import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { useAuth } from '../lib/AuthContext';
 import { logAction, pushNotification } from '../lib/auditLogger';
 
+interface UploadQueueItem {
+  id: string;
+  fileName: string;
+  status: 'pending' | 'extracting' | 'extracted' | 'failed';
+  error?: string;
+  data?: any;
+}
+
 export function Calibrators() {
   const { isAdmin, user } = useAuth();
   console.log('Calibrators Access:', { isAdmin, userEmail: user?.email });
@@ -44,6 +52,10 @@ export function Calibrators() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Staging and sequential batch uploading
+  const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
+  const [activeQueueItemId, setActiveQueueItemId] = useState<string | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'calibrators'), orderBy('name'));
@@ -63,18 +75,38 @@ export function Calibrators() {
     c.serialNumber?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFileUploads = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
+    // Create queue items
+    const newItems: UploadQueueItem[] = Array.from(files).map((file, idx) => ({
+      id: `queue-${Date.now()}-${idx}`,
+      fileName: file.name,
+      status: 'pending'
+    }));
+
+    setUploadQueue(prev => [...prev, ...newItems]);
     setIsExtracting(true);
-    const reader = new FileReader();
-    reader.onload = async () => {
+
+    // Read and extract sequentially to avoid rate limits
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const queueId = newItems[i].id;
+
+      // Set status to extracting
+      setUploadQueue(prev => prev.map(item => item.id === queueId ? { ...item, status: 'extracting' } : item));
+
       try {
-        const base64Data = (reader.result as string).split(',')[1];
+        const base64Data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve((reader.result as string).split(',')[1]);
+          reader.onerror = () => reject(new Error("Gagal membaca file."));
+          reader.readAsDataURL(file);
+        });
+
         const data = await extractCertificateData(base64Data);
-        
-        // Map and extract nested { value, sourcePage } to simple strings
+
         const mappedData = {
           name: data.equipmentName?.value || '',
           brand: data.brand?.value || '',
@@ -92,21 +124,61 @@ export function Calibrators() {
             uncertainty: p.u95 !== undefined ? p.u95 : (p.uncertainty !== undefined ? p.uncertainty : 0)
           }))
         };
-        
-        setExtractedData(mappedData);
+
+        setUploadQueue(prev => prev.map(item => item.id === queueId ? { ...item, status: 'extracted', data: mappedData } : item));
       } catch (error: any) {
-        console.error('Error extracting data:', error);
-        alert(error.message || 'Gagal mengekstrak data dari sertifikat. Pastikan format PDF valid.');
-      } finally {
-        setIsExtracting(false);
+        console.error(`Error extracting file ${file.name}:`, error);
+        setUploadQueue(prev => prev.map(item => item.id === queueId ? { ...item, status: 'failed', error: error.message || 'Gagal mengekstrak data AI.' } : item));
       }
-    };
-    reader.onerror = () => {
-      console.error('FileReader error');
-      setIsExtracting(false);
-      alert('Gagal membaca file.');
-    };
-    reader.readAsDataURL(file);
+
+      // Add a tiny 300ms pause to ensure API/UI transition smoothness
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    setIsExtracting(false);
+  };
+
+  const handleSaveAllQueue = async () => {
+    const activeItems = uploadQueue.filter(item => item.status === 'extracted' && item.data);
+    if (activeItems.length === 0) return;
+
+    setLoading(true);
+    let successCount = 0;
+    try {
+      for (const item of activeItems) {
+        const finalData = item.data;
+        await addDoc(collection(db, 'calibrators'), {
+          ...finalData,
+          status: 'active',
+          createdAt: serverTimestamp(),
+        });
+        
+        await logAction(
+          `Mendaftarkan Standar Baru (Batch): ${finalData.name}`,
+          'calibrators',
+          `S/N: ${finalData.serialNumber}, Model: ${finalData.model}`,
+          'info'
+        );
+        successCount++;
+      }
+
+      await pushNotification(
+        'Batch Standar Terdaftar',
+        `${successCount} Alat standar baru telah ditambahkan ke armada Spektrum via Batch Upload.`,
+        'success',
+        'all',
+        '/calibrators'
+      );
+
+      alert(`Berhasil menyimpan ${successCount} standar kalibrasi ke infrastruktur.`);
+      setUploadQueue([]);
+      setIsModalOpen(false);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'calibrators');
+      alert(`Gagal menyimpan batch standar: ` + (error as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const startManualEntry = () => {
@@ -124,6 +196,15 @@ export function Calibrators() {
 
   const handleSaveCalibrator = async () => {
     if (!extractedData) return;
+    
+    // Check if we are editing an item in the upload queue staging list
+    if (activeQueueItemId) {
+      setUploadQueue(prev => prev.map(item => item.id === activeQueueItemId ? { ...item, data: extractedData } : item));
+      setActiveQueueItemId(null);
+      setExtractedData(null);
+      return;
+    }
+
     try {
       if (editingId) {
         // Update existing
@@ -579,7 +660,99 @@ export function Calibrators() {
               </div>
  
               <div className="p-10 overflow-y-auto custom-scrollbar flex-1">
-                {!extractedData ? (
+                {uploadQueue.length > 0 && !extractedData ? (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                      <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest font-mono flex items-center gap-2">
+                        <BrainCircuit className="w-5 h-5 text-blue-600 animate-pulse" />
+                        AI Batch Extraction Monitor ({uploadQueue.filter(q => q.status === 'extracted').length}/{uploadQueue.length})
+                      </h3>
+                      <button
+                        onClick={() => setUploadQueue([])}
+                        className="text-[9px] font-black uppercase tracking-wider text-rose-500 hover:text-rose-600 transition-colors"
+                      >
+                        Reset Antrean
+                      </button>
+                    </div>
+
+                    <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
+                      {uploadQueue.map((item) => (
+                        <div key={item.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden">
+                          {item.status === 'extracting' && (
+                            <div className="absolute left-0 top-0 h-full w-1.5 bg-blue-500 animate-pulse" />
+                          )}
+                          {item.status === 'extracted' && (
+                            <div className="absolute left-0 top-0 h-full w-1.5 bg-emerald-500" />
+                          )}
+                          {item.status === 'failed' && (
+                            <div className="absolute left-0 top-0 h-full w-1.5 bg-red-500" />
+                          )}
+                          
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-xs font-black text-slate-900 truncate uppercase font-mono">{item.fileName}</h4>
+                            {item.status === 'extracted' && item.data && (
+                              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">
+                                {item.data.name} • S/N: {item.data.serialNumber} • {item.data.parameters?.length || 0} Param
+                              </p>
+                            )}
+                            {item.status === 'failed' && (
+                              <p className="text-[10px] text-red-500 font-semibold mt-1">
+                                Error: {item.error}
+                              </p>
+                            )}
+                            {item.status === 'pending' && (
+                              <p className="text-[10px] text-slate-400 font-semibold mt-1">
+                                Menunggu giliran...
+                              </p>
+                            )}
+                            {item.status === 'extracting' && (
+                              <p className="text-[10px] text-blue-600 font-bold animate-pulse mt-1 uppercase tracking-wider">
+                                Menganalisis dengan Gemini AI...
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {item.status === 'extracted' && (
+                              <button
+                                onClick={() => {
+                                  setExtractedData(item.data);
+                                  setActiveQueueItemId(item.id);
+                                }}
+                                className="px-3.5 py-1.5 bg-white border border-slate-200 text-[#06B6D4] hover:bg-[#06B6D4]/10 hover:text-slate-950 font-black rounded-lg text-[9px] uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                              >
+                                Edit Parameter
+                              </button>
+                            )}
+                            <button
+                              onClick={() => setUploadQueue(prev => prev.filter(q => q.id !== item.id))}
+                              className="p-1.5 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 border border-slate-100 rounded-lg transition-colors cursor-pointer shadow-sm"
+                              title="Hapus"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-4 pt-4 border-t border-slate-100 bg-slate-50/50 -mx-10 -mb-10 p-8">
+                      <button
+                        onClick={() => setUploadQueue([])}
+                        className="flex-1 px-8 py-4 bg-white border border-slate-200 text-slate-500 font-black rounded-2xl hover:text-slate-900 transition-all uppercase tracking-widest text-[10px] shadow-sm cursor-pointer"
+                      >
+                        Batal
+                      </button>
+                      <button
+                        onClick={handleSaveAllQueue}
+                        disabled={uploadQueue.filter(q => q.status === 'extracted').length === 0}
+                        className="flex-1 px-8 py-4 bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 font-black rounded-2xl disabled:bg-slate-100 disabled:text-slate-450 disabled:shadow-none transition-all shadow-xl shadow-cyan-500/10 uppercase tracking-widest text-[10px] cursor-pointer"
+                      >
+                        Simpan Semua Standar ({uploadQueue.filter(q => q.status === 'extracted').length})
+                      </button>
+                    </div>
+                  </div>
+                ) : !extractedData ? (
                   <div className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-slate-50/30 rounded-[2.5rem] py-20 px-8 text-center hover:border-blue-500/50 transition-all cursor-pointer group"
                        onClick={() => fileInputRef.current?.click()}>
                     <input 
@@ -587,7 +760,8 @@ export function Calibrators() {
                       className="hidden" 
                       ref={fileInputRef} 
                       accept=".pdf"
-                      onChange={handleFileUpload}
+                      multiple
+                      onChange={handleFileUploads}
                     />
                     <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-all shadow-xl group-hover:shadow-blue-500/20">
                        {isExtracting ? (
@@ -600,7 +774,7 @@ export function Calibrators() {
                        {isExtracting ? 'Menganalisis Arsitektur Sertifikat...' : 'Unggah Sertifikat PDF'}
                     </h3>
                     <p className="text-slate-500 text-sm max-w-sm font-medium leading-relaxed">
-                      Sistem akan membedah struktur data sertifikat dan mengekstrak parameter metrologi secara otomatis.
+                       Sistem akan membedah struktur data sertifikat dan mengekstrak parameter metrologi secara otomatis (Mendukung banyak file sekaligus).
                     </p>
                   </div>
                 ) : (

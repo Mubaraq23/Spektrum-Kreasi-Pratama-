@@ -9,11 +9,11 @@ export async function extractCertificateData(base64Data: string) {
   
   if (!response.ok) {
     let errorMessage = 'An unknown error occurred';
+    const text = await response.text();
     try {
-      const error = await response.json();
+      const error = JSON.parse(text);
       errorMessage = error.error || errorMessage;
     } catch (e) {
-      const text = await response.text();
       console.error('Non-JSON error response:', text);
       errorMessage = `Server Error (${response.status}): ${text.slice(0, 100)}`;
     }
@@ -32,11 +32,11 @@ export async function recommendWorkMethod(deviceName: string, category: string) 
   
   if (!response.ok) {
     let errorMessage = 'An unknown error occurred';
+    const text = await response.text();
     try {
-      const error = await response.json();
+      const error = JSON.parse(text);
       errorMessage = error.error || errorMessage;
     } catch (e) {
-      const text = await response.text();
       console.error('Non-JSON error response:', text);
       errorMessage = `Server Error (${response.status}): ${text.slice(0, 100)}`;
     }
@@ -55,11 +55,11 @@ export async function analyzeWorksheet(worksheetData: any) {
   
   if (!response.ok) {
     let errorMessage = 'An unknown error occurred';
+    const text = await response.text();
     try {
-      const error = await response.json();
+      const error = JSON.parse(text);
       errorMessage = error.error || errorMessage;
     } catch (e) {
-      const text = await response.text();
       console.error('Non-JSON error response:', text);
       errorMessage = `Server Error (${response.status}): ${text.slice(0, 100)}`;
     }
@@ -78,11 +78,11 @@ export async function generateCertificateNarrative(lkResults: any) {
   
   if (!response.ok) {
     let errorMessage = 'An unknown error occurred';
+    const text = await response.text();
     try {
-      const error = await response.json();
+      const error = JSON.parse(text);
       errorMessage = error.error || errorMessage;
     } catch (e) {
-      const text = await response.text();
       console.error('Non-JSON error response:', text);
       errorMessage = `Server Error (${response.status}): ${text.slice(0, 100)}`;
     }
@@ -92,3 +92,4 @@ export async function generateCertificateNarrative(lkResults: any) {
   const data = await response.json();
   return data.result;
 }
+

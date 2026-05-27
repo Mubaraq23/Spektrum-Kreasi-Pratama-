@@ -28,7 +28,8 @@ import {
   Award,
   Shield,
   FileCheck,
-  X
+  X,
+  Trash2
 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy, addDoc, serverTimestamp, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -80,86 +81,7 @@ const getMinHvlRequired = (kvp: number, deviceName: string = ''): number => {
 };
 
 // Seeding sample data
-const INITIAL_UKES_RECORDS = [
-  {
-    id: "ukes-sample-1",
-    deviceName: "Pesawat Sinar-X Radiografi Umum",
-    brand: "Shimadzu",
-    model: "RADspeed Pro",
-    serialNumber: "SH-5544-XRAY",
-    location: "Ruang Radiologi 1",
-    operatorName: "Ir. Bambang Wijaya, M.Si",
-    fasyankesName: "RSUD Harapan Bangsa",
-    testDate: "2026-05-10",
-    kesimpulan: "LOLOS UJI KESESUAIAN",
-    parameters: {
-      kvpSeting: 80,
-      kvpValues: [79.2, 80.5, 79.8],
-      timeSeting: 100, // ms
-      timeValues: [102.1, 99.8, 100.5],
-      doseValues: [1.25, 1.27, 1.24, 1.26, 1.24], // mGy (for reproducibility CV)
-      sidValue: 100, // cm
-      misalignX: 0.6, // cm (Left + Right margin misalignment)
-      misalignY: 0.8, // cm (Top + Bottom deflection)
-      hvlValue: 2.9 // mm Al
-    },
-    calculations: {
-      kvpAvg: 79.83,
-      kvpDevPct: 0.21, // -0.21%
-      kvpStatus: "Lolos",
-      timeAvg: 100.8,
-      timeDevPct: 0.8,
-      timeStatus: "Lolos",
-      doseMean: 1.252,
-      doseSD: 0.013,
-      doseCV: 0.010, // 1%
-      doseStatus: "Lolos",
-      collimationSum: 1.4, // cm
-      collimationPct: 1.4, // 1.4% of SID
-      collimationStatus: "Lolos"
-    },
-    createdAt: { seconds: 1785200000 }
-  },
-  {
-    id: "ukes-sample-2",
-    deviceName: "Dental X-Ray (Panoramic & Cephalometric)",
-    brand: "Sirona",
-    model: "Orthophos SL",
-    serialNumber: "SR-Pan-9988",
-    location: "Klinik Gigi & Mulut",
-    operatorName: "Ir. Bambang Wijaya, M.Si",
-    fasyankesName: "RSUD Harapan Bangsa",
-    testDate: "2026-04-18",
-    kesimpulan: "LOLOS BERSYARAT (HVL Lemah)",
-    parameters: {
-      kvpSeting: 70,
-      kvpValues: [68.5, 69.1, 68.2],
-      timeSeting: 200, // ms
-      timeValues: [215.2, 211.8, 209.4], // 212 ms average (+6% error)
-      doseValues: [0.82, 0.81, 0.83, 0.84, 0.82],
-      sidValue: 150,
-      misalignX: 1.2,
-      misalignY: 1.5,
-      hvlValue: 1.8 // Low filtration (should be >= 2.1 mm Al at 70kV)
-    },
-    calculations: {
-      kvpAvg: 68.6,
-      kvpDevPct: -2.0,
-      kvpStatus: "Lolos",
-      timeAvg: 212.13,
-      timeDevPct: 6.06,
-      timeStatus: "Lolos",
-      doseMean: 0.824,
-      doseSD: 0.011,
-      doseCV: 0.013,
-      doseStatus: "Lolos",
-      collimationSum: 2.7,
-      collimationPct: 1.8,
-      collimationStatus: "Lolos"
-    },
-    createdAt: { seconds: 1783000000 }
-  }
-];
+const INITIAL_UKES_RECORDS: any[] = [];
 
 export function UkesModule() {
   const [records, setRecords] = useState<any[]>([]);
@@ -208,45 +130,66 @@ export function UkesModule() {
   }, [toast]);
 
   // Form parameters
-  const [formDeviceName, setFormDeviceName] = useState('Pesawat Sinar-X Radiografi Umum');
+  const [formDeviceName, setFormDeviceName] = useState('');
   const [formBrand, setFormBrand] = useState('');
   const [formModel, setFormModel] = useState('');
   const [formSerialNumber, setFormSerialNumber] = useState('');
-  const [formLocation, setFormLocation] = useState('Ruang Radiologi');
+  const [formLocation, setFormLocation] = useState('');
   const [formFasyankes, setFormFasyankes] = useState('');
-  const [formOperator, setFormOperator] = useState('Ir. Bambang Wijaya, M.Si');
+  const [formOperator, setFormOperator] = useState('');
   const [formTestDate, setFormTestDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Form scientific fields
-  const [kvpSet, setKvpSet] = useState<number>(80);
-  const [kvp1, setKvp1] = useState<number>(79.5);
-  const [kvp2, setKvp2] = useState<number>(80.1);
-  const [kvp3, setKvp3] = useState<number>(79.8);
+  const [kvpSet, setKvpSet] = useState<number>(0);
+  const [kvp1, setKvp1] = useState<number>(0);
+  const [kvp2, setKvp2] = useState<number>(0);
+  const [kvp3, setKvp3] = useState<number>(0);
 
-  const [timeSet, setTimeSet] = useState<number>(100);
-  const [time1, setTime1] = useState<number>(101.5);
-  const [time2, setTime2] = useState<number>(99.2);
-  const [time3, setTime3] = useState<number>(100.8);
+  const [timeSet, setTimeSet] = useState<number>(0);
+  const [time1, setTime1] = useState<number>(0);
+  const [time2, setTime2] = useState<number>(0);
+  const [time3, setTime3] = useState<number>(0);
 
   // Reproducibility doses (5 runs)
-  const [dose1, setDose1] = useState<number>(1.24);
-  const [dose2, setDose2] = useState<number>(1.26);
-  const [dose3, setDose3] = useState<number>(1.25);
-  const [dose4, setDose4] = useState<number>(1.23);
-  const [dose5, setDose5] = useState<number>(1.27);
+  const [dose1, setDose1] = useState<number>(0);
+  const [dose2, setDose2] = useState<number>(0);
+  const [dose3, setDose3] = useState<number>(0);
+  const [dose4, setDose4] = useState<number>(0);
+  const [dose5, setDose5] = useState<number>(0);
 
   // Collimation and HVL
   const [sidVal, setSidVal] = useState<number>(100);
-  const [misX, setMisX] = useState<number>(0.8);
-  const [misY, setMisY] = useState<number>(0.9);
-  const [hvlVal, setHvlVal] = useState<number>(2.7);
+  const [misX, setMisX] = useState<number>(0);
+  const [misY, setMisY] = useState<number>(0);
+  const [hvlVal, setHvlVal] = useState<number>(0);
 
   // Linearity parameters (5 mAs/Dose pairs)
   const [linMas, setLinMas] = useState<number[]>([50, 100, 200, 400, 800]);
-  const [linDose, setLinDose] = useState<number[]>([0.48, 0.97, 1.92, 3.85, 7.62]);
+  const [linDose, setLinDose] = useState<number[]>([0, 0, 0, 0, 0]);
 
   const [saving, setSaving] = useState(false);
   const { user } = useAuth();
+
+  const [purging, setPurging] = useState(false);
+  const [isPurgeConfirmOpen, setIsPurgeConfirmOpen] = useState(false);
+
+  const handlePurgeAllRecords = async () => {
+    setPurging(true);
+    try {
+      const q = query(collection(db, 'ukes_records'));
+      const snapshot = await getDocs(q);
+      const deletePromises = snapshot.docs.map(docSnap => deleteDoc(doc(db, 'ukes_records', docSnap.id)));
+      await Promise.all(deletePromises);
+      await logAction(`Membersihkan Seluruh Rekor Ukes`, 'ukes_records', `Total rekor dihapus: ${snapshot.docs.length}`, 'warning');
+      showToast(`Sukses menghapus ${snapshot.docs.length} rekor!`, "success");
+      setIsPurgeConfirmOpen(false);
+    } catch (e: any) {
+      console.error(e);
+      showToast("Gagal membersihkan rekor: " + e.message, "error");
+    } finally {
+      setPurging(false);
+    }
+  };
 
   // Helper: open modal in edit mode
   const handleOpenEdit = (record: any) => {
@@ -1068,10 +1011,19 @@ export function UkesModule() {
           </div>
         </div>
 
-        <div>
+        <div className="flex flex-wrap items-center gap-3">
+          {records.length > 0 && (
+            <button
+              onClick={() => setIsPurgeConfirmOpen(true)}
+              className="w-full lg:w-auto bg-rose-50/50 hover:bg-rose-500 hover:text-white text-rose-600 border border-rose-200/50 dark:border-rose-900/30 dark:bg-rose-950/20 font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Bersihkan Data Dummy</span>
+            </button>
+          )}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full lg:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-lg hover:shadow-indigo-500/10 hover:scale-[1.02] flex items-center justify-center gap-2"
+            className="w-full lg:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-lg hover:shadow-indigo-500/10 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Mulai Uji Kesesuaian Baru</span>
@@ -2180,6 +2132,72 @@ export function UkesModule() {
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-red-500/10 transition-all cursor-pointer"
                 >
                   Ya, Hapus Permanen
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Purge Confirmation Modal */}
+      <AnimatePresence>
+        {isPurgeConfirmOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              onClick={() => setIsPurgeConfirmOpen(false)}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-[2rem] max-w-sm w-full p-8 shadow-2xl flex flex-col gap-6"
+            >
+              <div className="flex items-center gap-4 text-rose-600">
+                <span className="p-3 bg-rose-100 dark:bg-rose-950/40 rounded-2xl text-2xl font-black">
+                  ⚠️
+                </span>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider font-mono">
+                    PURGE ALL RECORDS
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-bold font-mono">
+                    Hapus Seluruh Data Uji Kesesuaian
+                  </p>
+                </div>
+              </div>
+              
+              <p className="text-xs text-slate-500 dark:text-slate-450 font-sans tracking-wide leading-relaxed">
+                Apakah Anda yakin ingin menghapus **SEMESTINYA SELURUH CATATAN LAPORAN UKES** secara permanen dari Firestore database? Tindakan ini sangat kritis dan tidak dapat dikembalikan.
+              </p>
+              
+              <div className="flex items-center gap-3 justify-end mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPurgeConfirmOpen(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer"
+                  disabled={purging}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  disabled={purging}
+                  onClick={handlePurgeAllRecords}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-rose-500/10 transition-all cursor-pointer flex items-center gap-2"
+                >
+                  {purging ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Memproses...</span>
+                    </>
+                  ) : (
+                    <span>Ya, Purge Semua</span>
+                  )}
                 </button>
               </div>
             </motion.div>
