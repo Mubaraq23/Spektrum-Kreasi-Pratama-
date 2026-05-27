@@ -1,0 +1,239 @@
+{
+  "entities": {
+    "Message": {
+      "title": "Message",
+      "description": "Real-time message between technicians and supervisors",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderRole": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "targetId": { "type": "string", "description": "Optional: Specific user ID or 'all'" }
+      },
+      "required": ["text", "senderId", "senderName", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "System notification for status changes or messages",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "success", "warning", "error"] },
+        "targetUid": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "link": { "type": "string" }
+      },
+      "required": ["title", "message", "targetUid", "read", "createdAt"]
+    },
+    "MedicalEquipment": {
+      "title": "Medical Equipment",
+      "description": "Inventory of medical equipment for calibration",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "model": { "type": "string" },
+        "serialNumber": { "type": "string" },
+        "maintenanceSchedule": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["name", "brand", "model", "serialNumber", "createdAt"]
+    },
+    "Calibrator": {
+      "title": "Calibrator",
+      "description": "Master calibrator instrument data",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "model": { "type": "string" },
+        "serialNumber": { "type": "string" },
+        "certificateNumber": { "type": "string" },
+        "expiryDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "expired"] },
+        "parameters": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "brand", "model", "serialNumber"]
+    },
+    "Certificate": {
+       "title": "Certificate",
+       "description": "Calibration certificate record",
+       "type": "object",
+       "properties": {
+          "equipmentId": { "type": "string" },
+          "certificateNumber": { "type": "string" },
+          "issueDate": { "type": "string" },
+          "status": { "type": "string" },
+          "data": { "type": "object" },
+          "createdAt": { "type": "string", "format": "date-time" }
+       },
+       "required": ["equipmentId", "certificateNumber", "issueDate", "createdAt"]
+    },
+    "WorkMethod": {
+      "title": "Work Method",
+      "description": "Calibration method templates",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "deviceCategory": { "type": "string" },
+        "standardReference": { "type": "string" },
+        "objectives": { "type": "string" },
+        "procedures": { "type": "array", "items": { "type": "string" } },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "unit": { "type": "string" },
+              "points": { "type": "array", "items": { "type": "number" } },
+              "tolerance": { "type": "number" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "deviceCategory"]
+    },
+    "Worksheet": {
+      "title": "Worksheet",
+      "description": "Calibration worksheet record",
+      "type": "object",
+      "properties": {
+        "deviceName": { "type": "string" },
+        "technicianId": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "pending", "revision", "approved", "completed"] },
+        "methodId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["deviceName", "technicianId", "status", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile with role management",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "supervisor", "technician"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    },
+    "AuditLog": {
+      "title": "Audit Log",
+      "description": "Regulatory compliance and system activity audit log",
+      "type": "object",
+      "properties": {
+        "operatorId": { "type": "string" },
+        "operatorName": { "type": "string" },
+        "operatorRole": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
+        "module": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["operatorId", "operatorName", "action", "severity", "createdAt"]
+    },
+    "UkesRecord": {
+      "title": "Ukes Record",
+      "description": "Certification report of standard diagnostic radiology suitability testing",
+      "type": "object",
+      "properties": {
+        "deviceName": { "type": "string" },
+        "brand": { "type": "string" },
+        "model": { "type": "string" },
+        "serialNumber": { "type": "string" },
+        "location": { "type": "string" },
+        "fasyankesName": { "type": "string" },
+        "operatorName": { "type": "string" },
+        "testDate": { "type": "string" },
+        "kesimpulan": { "type": "string" },
+        "parameters": { "type": "object" },
+        "calculations": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["deviceName", "brand", "fasyankesName", "kesimpulan", "testDate", "createdAt"]
+    },
+    "IpmTask": {
+      "title": "IPM Task",
+      "description": "Scheduled preventive maintenance and functional checkup reports",
+      "type": "object",
+      "properties": {
+        "deviceName": { "type": "string" },
+        "brand": { "type": "string" },
+        "model": { "type": "string" },
+        "serialNumber": { "type": "string" },
+        "location": { "type": "string" },
+        "department": { "type": "string" },
+        "technicianName": { "type": "string" },
+        "technicianId": { "type": "string" },
+        "lastMaintenanceDate": { "type": "string" },
+        "nextMaintenanceDate": { "type": "string" },
+        "status": { "type": "string" },
+        "visualChecks": { "type": "object" },
+        "functionalChecks": { "type": "object" },
+        "executionNotes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["deviceName", "brand", "location", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and roles"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "System activity logs for compliance"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Global chat for calibration team"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "User specific notifications"
+    },
+    "/medicalEquipment/{equipmentId}": {
+      "schema": "MedicalEquipment",
+      "description": "Collection of registered medical equipment"
+    },
+    "/calibrators/{calibratorId}": {
+      "schema": "Calibrator",
+      "description": "Master calibrator instruments"
+    },
+    "/certificates/{certificateId}": {
+       "schema": "Certificate",
+       "description": "Calibration certificates"
+    },
+    "/methods/{methodId}": {
+      "schema": "WorkMethod",
+      "description": "Calibration method templates"
+    },
+    "/worksheets/{worksheetId}": {
+      "schema": "Worksheet",
+      "description": "Calibration worksheets"
+    },
+    "/ukes_records/{recordId}": {
+      "schema": "UkesRecord",
+      "description": "Suitsbility certification reports of standard diagnostic radiology"
+    },
+    "/ipm_tasks/{taskId}": {
+      "schema": "IpmTask",
+      "description": "Scheduled preventive maintenance and functional testing checklist reports"
+    }
+  }
+}

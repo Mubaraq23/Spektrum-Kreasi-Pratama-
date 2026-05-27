@@ -1,0 +1,6 @@
+{
+  "name": "Spektrum Kalibrasi Digital",
+  "description": "Platform Masa Depan untuk Manajemen Kalibrasi Alat Kesehatan. Optimalkan presisi dengan AI, dokumentasi cloud tanpa kertas, dan analisis kepatuhan standar internasional dalam satu ekosistem cerdas.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

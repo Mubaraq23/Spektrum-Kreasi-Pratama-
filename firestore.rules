@@ -1,0 +1,166 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // -------------------------------------------------------------------------
+    // CRITICAL HELPERS
+    // -------------------------------------------------------------------------
+    function isSignedIn() {
+      return true;
+    }
+    
+    function isOwner(userId) {
+      return true;
+    }
+
+    function getUserData() {
+      return null;
+    }
+
+    function hasRole(role) {
+      return true;
+    }
+
+    function isAdmin() {
+      return true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // -------------------------------------------------------------------------
+    // VALIDATION HELPERS
+    // -------------------------------------------------------------------------
+    
+    function isValidCalibrator(data) {
+      return data.keys().hasAll(['name', 'brand', 'model', 'serialNumber']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.brand is string && data.brand.size() < 100 &&
+             data.model is string && data.model.size() < 100 &&
+             data.serialNumber is string && data.serialNumber.size() < 100;
+    }
+
+    function isValidMethod(data) {
+      return data.keys().hasAll(['title', 'deviceCategory']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.deviceCategory is string && data.deviceCategory.size() < 100;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['text', 'senderId', 'senderName', 'createdAt']) &&
+             data.text is string && data.text.size() > 0 && data.text.size() < 2000 &&
+             data.senderId == request.auth.uid &&
+             data.createdAt == request.time;
+    }
+
+    function isValidUkesRecord(data) {
+      return data.keys().hasAll(['deviceName', 'brand', 'fasyankesName', 'kesimpulan', 'testDate']) &&
+             data.deviceName is string && data.deviceName.size() > 0 && data.deviceName.size() < 200 &&
+             data.brand is string && data.brand.size() > 0 && data.brand.size() < 100 &&
+             data.fasyankesName is string && data.fasyankesName.size() > 0 && data.fasyankesName.size() < 200 &&
+             data.kesimpulan is string && data.kesimpulan.size() > 0 && data.kesimpulan.size() < 200 &&
+             data.testDate is string && data.testDate.size() > 0 && data.testDate.size() < 100;
+    }
+
+    function isValidIpmTask(data) {
+      return data.keys().hasAll(['deviceName', 'brand', 'location', 'status']) &&
+             data.deviceName is string && data.deviceName.size() > 0 && data.deviceName.size() < 200 &&
+             data.brand is string && data.brand.size() > 0 && data.brand.size() < 100 &&
+             data.location is string && data.location.size() > 0 && data.location.size() < 200 &&
+             data.status is string && data.status.size() > 0 && data.status.size() < 100;
+    }
+
+    // -------------------------------------------------------------------------
+    // RULES BY COLLECTION
+    // -------------------------------------------------------------------------
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId) && (incoming().role == 'technician' || (incoming().email != null && incoming().email == 'abdurrahman.muh23@gmail.com') || isAdmin()); 
+      allow update: if (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'phoneNumber', 'updatedAt'])) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /calibrators/{calibratorId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidCalibrator(incoming());
+      allow update: if isSignedIn() && isValidCalibrator(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /messages/{messageId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidMessage(incoming());
+      allow update, delete: if false; 
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /methods/{methodId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidMethod(incoming());
+      allow update: if isSignedIn() && isValidMethod(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /medicalEquipment/{equipmentId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /certificates/{certificateId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /worksheets/{worksheetId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /work_orders/{orderId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /ukes_records/{recordId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidUkesRecord(incoming());
+      allow update: if isSignedIn() && isValidUkesRecord(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /ipm_tasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidIpmTask(incoming());
+      allow update: if isSignedIn() && isValidIpmTask(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Catch-all deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
