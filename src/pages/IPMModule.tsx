@@ -18,6 +18,7 @@ import {
   ChevronDown, 
   Trash2, 
   Save, 
+  Edit, 
   FileText, 
   Eye, 
   Activity,
@@ -274,6 +275,52 @@ export function IPMModule() {
 
   const [saving, setSaving] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  const handleOpenEdit = (task: any) => {
+    setIsEditMode(true);
+    setEditingTaskId(task.id);
+    setFormDeviceName(task.deviceName || '');
+    setFormBrand(task.brand || '');
+    setFormModel(task.model || '');
+    setFormSerialNumber(task.serialNumber || '');
+    setFormLocation(task.location || '');
+    setFormDepartment(task.department || 'IPS-RS (Fisik Medis)');
+    setFormTemplate(task.template || 'General Equipment');
+    setFormTechnician(task.technicianName || '');
+    setFormLastMaintenanceDate(task.lastMaintenanceDate || new Date().toISOString().split('T')[0]);
+    setFormStatus(task.status || 'Menunggu Jadwal');
+    setVisualChecks(task.visualChecks || {});
+    setFunctionalChecks(task.functionalChecks || {});
+    setExecutionNotes(task.executionNotes || '');
+    
+    // Measurements
+    const m = task.measurements || {};
+    setMeasGroundResistance(m.groundResistance || 0.12);
+    setMeasLeakageCurrent(m.leakageCurrent || 35);
+    
+    if (task.template === 'Infusion / Syringe Pump') {
+      setMeasFlowRateTarget(m.flowRateTarget || 100);
+      setMeasFlowRateMeasured(m.flowRateMeasured || 99.5);
+      setMeasOcclusionTarget(m.occlusionTarget || 300);
+      setMeasOcclusionMeasured(m.occlusionMeasured || 302);
+    } else if (task.template === 'Patient Monitor') {
+      setMeasEcgTarget(m.ecgTarget || 80);
+      setMeasEcgMeasured(m.ecgMeasured || 80);
+      setMeasSpo2Target(m.spo2Target || 97);
+      setMeasSpo2Measured(m.spo2Measured || 97);
+      setMeasNibpTarget(m.nibpTarget || 120);
+      setMeasNibpMeasured(m.nibpMeasured || 121);
+    } else if (task.template === 'Anesthesia Machine') {
+      setMeasO2Target(m.o2Target || 50);
+      setMeasO2Measured(m.o2Measured || 49.8);
+      setMeasPressureTarget(m.pressureTarget || 20);
+      setMeasPressureMeasured(m.pressureMeasured || 19.7);
+    }
+    
+    setIsModalOpen(true);
+  };
 
   const { user, profile } = useAuth();
 
@@ -673,7 +720,46 @@ export function IPMModule() {
     setFunctionalChecks(func);
   }, [formTemplate]);
 
-  // Handle creating new item
+  // Handle opening new form
+  const handleOpenNew = () => {
+    setIsEditMode(false);
+    setEditingTaskId(null);
+    setFormDeviceName('');
+    setFormBrand('');
+    setFormModel('');
+    setFormSerialNumber('');
+    setFormLocation('');
+    setFormDepartment('IPS-RS (Fisik Medis)');
+    setFormTemplate('Infusion / Syringe Pump');
+    setFormTechnician('');
+    setFormLastMaintenanceDate(new Date().toISOString().split('T')[0]);
+    setFormStatus('Menunggu Jadwal');
+    setExecutionNotes('');
+    
+    // Set default checks based on template
+    const template = CHECKLIST_TEMPLATES['Infusion / Syringe Pump'];
+    const vis: Record<string, 'Lolos' | 'Tidak Lolos'> = {};
+    const func: Record<string, 'Lolos' | 'Tidak Lolos'> = {};
+    template.visual.forEach(item => {
+      vis[item] = 'Lolos';
+    });
+    template.functional.forEach(item => {
+      func[item] = 'Lolos';
+    });
+    setVisualChecks(vis);
+    setFunctionalChecks(func);
+    
+    setMeasGroundResistance(0.12);
+    setMeasLeakageCurrent(35);
+    setMeasFlowRateTarget(100);
+    setMeasFlowRateMeasured(99.5);
+    setMeasOcclusionTarget(300);
+    setMeasOcclusionMeasured(302);
+    
+    setIsModalOpen(true);
+  };
+
+  // Handle creating or editing item
   const handleSaveTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formDeviceName || !formBrand) {
@@ -717,7 +803,7 @@ export function IPMModule() {
         }
       }
 
-      const taskData = {
+      const taskData: any = {
         deviceName: formDeviceName,
         brand: formBrand,
         model: formModel,
@@ -733,26 +819,40 @@ export function IPMModule() {
         visualChecks: formStatus === 'Menunggu Jadwal' ? {} : visualChecks,
         functionalChecks: formStatus === 'Menunggu Jadwal' ? {} : functionalChecks,
         measurements: measurements,
-        executionNotes: executionNotes || "Pemeliharaan preventif selesai dilaksanakan.",
-        createdAt: serverTimestamp()
+        executionNotes: executionNotes || "Pemeliharaan preventif selesai dilaksanakan."
       };
 
-      const docRef = await addDoc(collection(db, 'ipm_tasks'), taskData);
+      if (isEditMode && editingTaskId) {
+        taskData.updatedAt = serverTimestamp();
+        await updateDoc(doc(db, 'ipm_tasks', editingTaskId), taskData);
 
-      await logAction(
-        `Membuat Registrasi IPM Baru: ${formDeviceName}`,
-        'ipm_tasks',
-        `Alat: ${formDeviceName}, Status: ${formStatus}, ID: ${docRef.id}`,
-        'info'
-      );
+        await logAction(
+          `Pembaruan Registrasi IPM: ${formDeviceName}`,
+          'ipm_tasks',
+          `Alat: ${formDeviceName}, Status: ${formStatus}, ID: ${editingTaskId}`,
+          'info'
+        );
 
-      await pushNotification(
-        'IPM Terjadwal Berhasil Diregistrasi',
-        `Laporan Inspeksi Preventif untuk ${formDeviceName} (${formBrand}) disimpan dengan sukses.`,
-        'success',
-        'all',
-        '/ipm'
-      );
+        showToast("Laporan pemeliharaan preventif (IPM) berhasil diperbarui!", "success");
+      } else {
+        taskData.createdAt = serverTimestamp();
+        const docRef = await addDoc(collection(db, 'ipm_tasks'), taskData);
+
+        await logAction(
+          `Membuat Registrasi IPM Baru: ${formDeviceName}`,
+          'ipm_tasks',
+          `Alat: ${formDeviceName}, Status: ${formStatus}, ID: ${docRef.id}`,
+          'info'
+        );
+
+        await pushNotification(
+          'IPM Terjadwal Berhasil Diregistrasi',
+          `Laporan Inspeksi Preventif untuk ${formDeviceName} (${formBrand}) disimpan dengan sukses.`,
+          'success',
+          'all',
+          '/ipm'
+        );
+      }
 
       setIsModalOpen(false);
       // Reset major fields
@@ -763,13 +863,15 @@ export function IPMModule() {
       setFormLocation('');
       setExecutionNotes('');
       setFormStatus('Menunggu Jadwal');
+      setIsEditMode(false);
+      setEditingTaskId(null);
     } catch (error) {
       console.error("Save IPM Error:", error);
       // Fallback update to local array in case offline
       const lastDate = new Date(formLastMaintenanceDate);
       lastDate.setMonth(lastDate.getMonth() + 6);
       const nextDateString = lastDate.toISOString().split('T')[0];
-      const nextId = "local-ipm-" + Date.now();
+      const nextId = isEditMode && editingTaskId ? editingTaskId : ("local-ipm-" + Date.now());
       
       let measurements: any = null;
       if (formStatus !== 'Menunggu Jadwal') {
@@ -817,8 +919,16 @@ export function IPMModule() {
         executionNotes: executionNotes,
         createdAt: new Date()
       };
-      setTasks(prev => [localItem, ...prev]);
+      
+      if (isEditMode && editingTaskId) {
+        setTasks(prev => prev.map(t => t.id === editingTaskId ? { ...t, ...localItem } : t));
+        showToast("Laporan pemeliharaan preventif diperbarui secara lokal!", "success");
+      } else {
+        setTasks(prev => [localItem, ...prev]);
+      }
       setIsModalOpen(false);
+      setIsEditMode(false);
+      setEditingTaskId(null);
     } finally {
       setSaving(false);
     }
@@ -889,7 +999,7 @@ export function IPMModule() {
 
         <div>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenNew}
             className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-lg hover:shadow-blue-500/10 hover:scale-[1.02] flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" />
@@ -1010,7 +1120,14 @@ export function IPMModule() {
               return (
                 <div 
                   key={t.id}
-                  onClick={() => setSelectedTask(t)}
+                  onClick={() => {
+                    setSelectedTask(t);
+                    if (window.innerWidth < 1024) {
+                      setTimeout(() => {
+                        document.getElementById('ipm-details-panel')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }
+                  }}
                   className={cn(
                     "luxury-card p-5 cursor-pointer relative overflow-hidden group/card transition-all duration-300",
                     selectedTask?.id === t.id 
@@ -1081,6 +1198,15 @@ export function IPMModule() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
+                            handleOpenEdit(t);
+                          }}
+                          className="p-1 px-2.5 text-[9px] font-extrabold uppercase rounded-lg bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center gap-1 cursor-pointer"
+                        >
+                          <Edit className="w-3 h-3" /> Ubah
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
                             handleDeleteTask(t.id);
                           }}
                           className="p-1 px-2.5 text-[9px] font-extrabold uppercase rounded-lg bg-red-50 dark:bg-red-950/30 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1 cursor-pointer"
@@ -1096,7 +1222,7 @@ export function IPMModule() {
           )}
         </div>
         {/* Selected / Detail Pane Panel */}
-        <div className="luxury-card p-6 space-y-6 h-fit sticky top-6 transition-all duration-300">
+        <div id="ipm-details-panel" className="luxury-card p-6 space-y-6 h-fit sticky top-6 transition-all duration-300 scroll-mt-20">
           {selectedTask ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
@@ -1329,6 +1455,14 @@ export function IPMModule() {
                 <div className="space-y-2 pt-1">
                   <button
                     type="button"
+                    onClick={() => handleOpenEdit(selectedTask)}
+                    className="w-full flex items-center justify-center gap-2 border border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20 text-blue-600 dark:text-blue-400 font-extrabold text-[10px] tracking-wider uppercase py-3 rounded-xl transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    <Edit className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span>Ubah Laporan / Parameter IPM</span>
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => exportIPMToPDF(selectedTask)}
                     className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-[10px] tracking-wider uppercase py-3 rounded-xl shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all active:scale-[0.98] cursor-pointer"
                   >
@@ -1416,7 +1550,7 @@ export function IPMModule() {
                     <Wrench className="w-5 h-5 text-blue-600 animate-spin" />
                     <div>
                       <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono">
-                        Registrasi Catatan Pemeliharaan Preventif (IPM)
+                        {isEditMode ? "Ubah Laporan Pemeliharaan Preventif (IPM)" : "Registrasi Catatan Pemeliharaan Preventif (IPM)"}
                       </h3>
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest font-mono">
                         Isi kriteria fisik dan fungsi alat kesehatan preventif
@@ -1852,7 +1986,7 @@ export function IPMModule() {
                     ) : (
                       <>
                         <Save className="w-4 h-4" />
-                        <span>Simpan Laporan IPM</span>
+                        <span>{isEditMode ? "Perbarui Laporan IPM" : "Simpan Laporan IPM"}</span>
                       </>
                     )}
                   </button>

@@ -772,22 +772,39 @@ export function UkesModule() {
         createdAt: serverTimestamp()
       };
 
-      const docRef = await addDoc(collection(db, 'ukes_records'), ukesData);
+      if (isEditMode && editingRecordId) {
+        const docRef = doc(db, 'ukes_records', editingRecordId);
+        await updateDoc(docRef, {
+          ...ukesData,
+          updatedAt: serverTimestamp()
+        });
 
-      await logAction(
-        `Registrasi Uji Kesesuaian: ${formDeviceName}`,
-        'ukes_records',
-        `Alat: ${formDeviceName}, Hasil: ${finalVerdict}, SN: ${formSerialNumber}`,
-        'info'
-      );
+        await logAction(
+          `Pembaruan Uji Kesesuaian: ${formDeviceName}`,
+          'ukes_records',
+          `Alat: ${formDeviceName}, Hasil: ${finalVerdict}, SN: ${formSerialNumber}, ID: ${editingRecordId}`,
+          'info'
+        );
 
-      await pushNotification(
-        'Laporan Uji Kesesuaian BAPETEN Tersimpan',
-        `Catatan Uji Kesesuaian untuk ${formDeviceName} telah divalidasi dan disimpan.`,
-        'success',
-        'all',
-        '/ukes'
-      );
+        showToast("Laporan Uji Kesesuaian BAPETEN berhasil diperbarui!", "success");
+      } else {
+        const docRef = await addDoc(collection(db, 'ukes_records'), ukesData);
+
+        await logAction(
+          `Registrasi Uji Kesesuaian: ${formDeviceName}`,
+          'ukes_records',
+          `Alat: ${formDeviceName}, Hasil: ${finalVerdict}, SN: ${formSerialNumber}`,
+          'info'
+        );
+
+        await pushNotification(
+          'Laporan Uji Kesesuaian BAPETEN Tersimpan',
+          `Catatan Uji Kesesuaian untuk ${formDeviceName} telah divalidasi dan disimpan.`,
+          'success',
+          'all',
+          '/ukes'
+        );
+      }
 
       setIsModalOpen(false);
       // Reset major fields
@@ -795,6 +812,8 @@ export function UkesModule() {
       setFormModel('');
       setFormSerialNumber('');
       setFormFasyankes('');
+      setIsEditMode(false);
+      setEditingRecordId(null);
     } catch (error) {
       console.error("Save Ukes Error, falling back to local list:", error);
       let firestoreErr: any = null;
@@ -804,7 +823,7 @@ export function UkesModule() {
         firestoreErr = err;
       }
       // Fallback
-      const nextId = "local-ukes-" + Date.now();
+      const nextId = isEditMode && editingRecordId ? editingRecordId : ("local-ukes-" + Date.now());
       const calc = runLiveCalculations();
       let finalVerdict = "LOLOS UJI KESESUAIAN";
       if (calc.kvpStatus === "Tidak Lolos" || calc.timeStatus === "Tidak Lolos" || calc.doseStatus === "Tidak Lolos") {
@@ -838,8 +857,16 @@ export function UkesModule() {
         calculations: calc,
         createdAt: new Date()
       };
-      setRecords(prev => [localItem, ...prev]);
+
+      if (isEditMode && editingRecordId) {
+        setRecords(prev => prev.map(r => r.id === editingRecordId ? { ...r, ...localItem } : r));
+        showToast("Laporan Uji Kesesuaian diperbarui secara lokal!", "success");
+      } else {
+        setRecords(prev => [localItem, ...prev]);
+      }
       setIsModalOpen(false);
+      setIsEditMode(false);
+      setEditingRecordId(null);
     } finally {
       setSaving(false);
     }
@@ -1230,7 +1257,14 @@ export function UkesModule() {
               return (
                 <div
                   key={r.id}
-                  onClick={() => setSelectedRecord(r)}
+                  onClick={() => {
+                    setSelectedRecord(r);
+                    if (window.innerWidth < 1024) {
+                      setTimeout(() => {
+                        document.getElementById('ukes-details-panel')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }
+                  }}
                   className={cn(
                     "bg-white dark:bg-[#0c111d] rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md cursor-pointer relative overflow-hidden group/card",
                     selectedRecord?.id === r.id 
@@ -1311,7 +1345,7 @@ export function UkesModule() {
         </div>
 
         {/* Selected record details panel */}
-        <div className="bg-white dark:bg-[#0c111d] rounded-2xl border border-slate-200 dark:border-slate-810 p-6 shadow-sm space-y-6 h-fit sticky top-6">
+        <div id="ukes-details-panel" className="bg-white dark:bg-[#0c111d] rounded-2xl border border-slate-200 dark:border-slate-810 p-6 shadow-sm space-y-6 h-fit sticky top-6scroll-mt-20">
           {selectedRecord ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
