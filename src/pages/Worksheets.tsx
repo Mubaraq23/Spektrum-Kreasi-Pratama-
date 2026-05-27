@@ -280,7 +280,7 @@ export function Worksheets() {
   });
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 relative p-1 pb-12 min-h-screen transition-all duration-300 font-sans">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 relative p-1 pb-12 min-h-screen transition-all duration-300 font-sans">
       
       {/* Top Small Crisp Data Summary Panel */}
       <div className="w-full flex flex-wrap items-center justify-between gap-4 border-b border-sky-500/10 dark:border-cyan-500/10 pb-3 text-[10px] font-mono tracking-[0.2em] text-slate-400 dark:text-slate-500 select-none">
@@ -299,7 +299,7 @@ export function Worksheets() {
 
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-3">
              <div className="w-8 h-1 bg-[#06B6D4] rounded-full" />
              <p className="text-[10px] text-blue-600 dark:text-cyan-400 font-black uppercase tracking-[0.4em] font-mono">Arsip Digital & Komando Kerja</p>
           </div>
@@ -311,30 +311,48 @@ export function Worksheets() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <button 
             onClick={() => setShowScanner(true)}
-            className="px-6 py-5 bg-slate-100 dark:bg-[#141b2c] hover:bg-slate-200 dark:hover:bg-[#1f283d] text-slate-800 dark:text-white border border-slate-200 dark:border-cyan-500/20 font-black rounded-2rem text-[11px] uppercase tracking-widest transition-all flex items-center justify-center gap-3 active:scale-95 cursor-pointer shadow-md"
+            className="px-6 py-4 bg-slate-50 hover:bg-slate-100 dark:bg-[#141b2c] dark:hover:bg-[#1f283d] text-slate-800 dark:text-white border border-slate-200 dark:border-cyan-500/20 font-black rounded-2xl text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer shadow-sm"
           >
-            <Camera className="w-5 h-5 text-cyan-500" />
+            <Camera className="w-4 h-4 text-cyan-500" />
             Pindai QR Aset
           </button>
           <button 
             onClick={() => setIsExcelModalOpen(true)}
-            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 dark:border-emerald-500/30 font-black px-6 py-5 rounded-2xl flex items-center justify-center gap-3 transition-all uppercase tracking-widest text-[11px] cursor-pointer"
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 dark:border-emerald-500/30 font-black px-6 py-4 rounded-2xl flex items-center justify-center gap-2.5 transition-all uppercase tracking-widest text-[10px] cursor-pointer"
           >
-            <FileSpreadsheet className="w-5 h-5 text-emerald-500" />
+            <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
             Import Excel AI
           </button>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 dark:text-[#070d19] font-black px-10 py-5 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-xl shadow-cyan-500/10 uppercase tracking-widest text-[11px] active:scale-95 cursor-pointer shrink-0"
+            className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 dark:text-[#070d19] font-black px-8 py-4 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-cyan-500/10 uppercase tracking-widest text-[10px] active:scale-95 cursor-pointer shrink-0"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
             Mulai LK Baru
           </button>
         </div>
       </div>
 
+      {/* Futuristic Glassmorphic HUD Stats Ribbon */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-2 bg-slate-50/50 dark:bg-[#10192d]/50 backdrop-blur-xl border border-slate-200/50 dark:border-cyan-500/10 rounded-[2rem] shadow-sm">
+        {[
+          { label: "TOTAL LEMBAR KERJA", value: worksheets.length, color: "text-[#06B6D4]", bg: "bg-[#06B6D4]/5", border: "border-[#06B6D4]/10", icon: "📊" },
+          { label: "SISTEM DRAF", value: worksheets.filter(w => w.status === 'draft').length, color: "text-slate-500", bg: "bg-slate-500/5", border: "border-slate-500/10", icon: "📁" },
+          { label: "MENUNGGU PERSETUJUAN", value: worksheets.filter(w => w.status === 'pending').length, color: "text-amber-500", bg: "bg-amber-500/5", border: "border-amber-500/10", icon: "⏳" },
+          { label: "SELESAI / TERVERIFIKASI", value: worksheets.filter(w => w.status === 'approved' || w.status === 'completed').length, color: "text-emerald-500", bg: "bg-emerald-500/5", border: "border-emerald-500/10", icon: "✅" },
+        ].map((stat, i) => (
+          <div key={i} className={cn("p-4 rounded-2xl border flex items-center justify-between transition-all hover:scale-[1.02]", stat.bg, stat.border)}>
+            <div className="space-y-1">
+              <span className="text-[8px] font-black tracking-widest uppercase block font-mono text-slate-400 dark:text-slate-500">{stat.label}</span>
+              <span className={cn("text-xl font-black font-mono block", stat.color)}>{stat.value}</span>
+            </div>
+            <span className="text-base p-2 bg-white dark:bg-[#070d19] rounded-xl shadow-sm border border-slate-200/20">{stat.icon}</span>
+          </div>
+        ))}
+      </div>
+
       {/* Search and Filters */}
-      <div className="bg-white/80 dark:bg-[#10192d] backdrop-blur-xl border border-sky-500/15 dark:border-cyan-500/25 rounded-[2.5rem] p-3 flex flex-wrap items-center gap-3 shadow-xl dark:shadow-none sticky top-4 z-20">
+      <div className="bg-white/80 dark:bg-[#10192d]/80 backdrop-blur-xl border border-sky-500/10 dark:border-cyan-500/20 rounded-3xl p-3 flex flex-wrap items-center gap-3 shadow-xl dark:shadow-none sticky top-4 z-20">
         <div className="flex-1 relative flex items-center min-w-[200px]">
           <Search className="absolute left-6 w-5 h-5 text-slate-400 dark:text-cyan-400/50" />
           <input 
@@ -477,7 +495,7 @@ export function Worksheets() {
                                   "text-[9px] font-black px-3 py-2 border rounded-xl uppercase tracking-wider transition-all",
                                   deviceName === name 
                                     ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/25" 
-                                    : "bg-white dark:bg-[#0c111d] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600"
+                                    : "bg-white dark:bg-[#0c111d] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-55 hover:border-blue-400 hover:text-blue-600"
                                 )}
                               >
                                 {name}
@@ -528,7 +546,7 @@ export function Worksheets() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => !isImporting && setIsExcelModalOpen(false)}
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-955/60 backdrop-blur-md"
             />
             
             <motion.div 
@@ -547,7 +565,7 @@ export function Worksheets() {
                 </div>
                 <button 
                   onClick={() => !isImporting && setIsExcelModalOpen(false)}
-                  className="p-1 px-2.5 text-[10px] uppercase font-black tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 rounded-lg transition-all"
+                  className="p-1 px-2.5 text-[10px] uppercase font-black tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-850 rounded-lg transition-all"
                 >
                   Tutup
                 </button>
@@ -641,14 +659,14 @@ export function Worksheets() {
            </div>
          ) : filteredWorksheets.length === 0 ? (
            <div className="col-span-full py-32 text-center bg-white dark:bg-slate-900 rounded-[3.5rem] border-2 border-dashed border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none">
-              <div className="w-24 h-24 bg-amber-50 dark:bg-slate-950 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+              <div className="w-24 h-24 bg-amber-50 dark:bg-slate-955 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
                  <Search className="w-10 h-10 text-amber-500" />
               </div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-widest mb-2 italic text-slate-600">Pencarian Tidak Ditemukan</h3>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-widest mb-2 italic text-slate-655">Pencarian Tidak Ditemukan</h3>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mb-4">Tidak ada lembar kerja yang cocok dengan kata kunci "{searchQuery}"</p>
               <button 
                 onClick={() => setSearchQuery('')}
-                className="px-6 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white text-[10px] font-black uppercase rounded-xl border border-slate-200 dark:border-slate-700 tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-mono"
+                className="px-6 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-855 dark:text-white text-[10px] font-black uppercase rounded-xl border border-slate-200 dark:border-slate-700 tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-mono"
               >
                 Clear Search
               </button>
@@ -724,11 +742,11 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
   const canDelete = isAdmin || (user?.uid === lk.technicianId && (lk.status === 'draft' || lk.status === 'revision'));
 
   const statusColors: any = {
-    draft: "bg-slate-100/50 text-slate-500 border-slate-200",
-    pending: "bg-amber-50 text-amber-600 border-amber-200/50 shadow-sm",
-    revision: "bg-red-50 text-red-600 border-red-200/50 shadow-sm",
-    approved: "bg-blue-50 text-blue-600 border-blue-200/50 shadow-sm",
-    completed: "bg-emerald-50 text-emerald-600 border-emerald-200/50 shadow-sm",
+    draft: "bg-slate-100/50 text-slate-500 border-slate-200/20",
+    pending: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    revision: "bg-red-500/10 text-red-500 border-red-500/20",
+    approved: "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
+    completed: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   };
 
   const statusLabels: any = {
@@ -751,88 +769,90 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
     <motion.div 
       initial={{ opacity: 0, scale: 0.98 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -6, boxShadow: '0 25px 40px -15px rgba(6,182,212,0.1)' }}
-      className="bg-white dark:bg-[#10192d] p-8 rounded-[3rem] transition-all group relative overflow-hidden border border-slate-200 dark:border-cyan-500/25 shadow-xl dark:shadow-none"
+      whileHover={{ y: -6, boxShadow: '0 25px 40px -15px rgba(6,182,212,0.12)' }}
+      className="bg-white dark:bg-[#10192d] p-8 rounded-[2.5rem] transition-all group relative overflow-hidden border border-slate-200 dark:border-cyan-500/15 shadow-xl dark:shadow-none flex flex-col justify-between min-h-[300px]"
     >
       <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:scale-110 group-hover:opacity-[0.05] transition-all duration-1000">
          <FileText className="w-48 h-48 text-[#06B6D4] dark:text-cyan-400" />
       </div>
 
-      <div className="flex items-start justify-between mb-10 relative z-10">
-        <div className="flex items-center gap-5">
-           <div className="w-16 h-16 rounded-[1.8rem] bg-slate-50 dark:bg-[#070d19] border border-slate-200/60 dark:border-cyan-500/15 flex items-center justify-center text-slate-400 dark:text-cyan-400/60 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 group-hover:bg-cyan-500/10 dark:group-hover:bg-cyan-950/20 group-hover:border-cyan-500/25 group-hover:rotate-6 transition-all shadow-inner">
-              <ClipboardCheck className="w-8 h-8" />
-           </div>
-           <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                 <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-pulse" />
-                 <p className="text-[10px] text-blue-600 dark:text-cyan-400 font-black uppercase tracking-widest font-mono italic leading-none">CORE-SPEC-{lk.id.slice(0,4).toUpperCase()}</p>
-              </div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 transition-colors italic">LK-{lk.id.slice(0,8).toUpperCase()}</h3>
-           </div>
+      <div>
+        <div className="flex items-start justify-between mb-8 relative z-10">
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-[1.2rem] bg-slate-50 dark:bg-[#070d19] border border-slate-200/60 dark:border-cyan-500/15 flex items-center justify-center text-slate-400 dark:text-cyan-400/60 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 group-hover:bg-cyan-500/10 dark:group-hover:bg-cyan-955/20 group-hover:border-cyan-500/25 group-hover:rotate-6 transition-all shadow-inner">
+                <ClipboardCheck className="w-6 h-6" />
+             </div>
+             <div>
+                <div className="flex items-center gap-2 mb-1">
+                   <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-pulse" />
+                   <p className="text-[9px] text-blue-600 dark:text-cyan-400 font-black uppercase tracking-widest font-mono italic leading-none">CORE-SPEC-{lk.id.slice(0,4).toUpperCase()}</p>
+                </div>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 transition-colors italic">LK-{lk.id.slice(0,8).toUpperCase()}</h3>
+             </div>
+          </div>
+          <div className={cn("flex items-center gap-2.5 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.1em] border transition-all shadow-sm italic", statusColors[lk.status])}>
+             {statusIcons[lk.status]}
+             {statusLabels[lk.status] || lk.status}
+          </div>
         </div>
-        <div className={cn("flex items-center gap-3 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] border transition-all shadow-sm italic", lk.status === 'completed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/25" : lk.status === 'approved' ? "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border-cyan-400/20" : lk.status === 'pending' ? "bg-amber-500/10 text-amber-500 border-amber-500/25" : lk.status === 'revision' ? "bg-red-500/10 text-red-500 border-red-500/25 hover:scale-105" : "bg-slate-100/10 text-slate-400 border-slate-200/20")}>
-           {statusIcons[lk.status]}
-           {statusLabels[lk.status] || lk.status}
+
+        <div className="space-y-4 relative z-10">
+           <div className="bg-slate-50/50 dark:bg-[#070d19]/80 p-5 rounded-2xl border border-slate-200/50 dark:border-cyan-500/10 group-hover:bg-[#06B6D4]/5 group-hover:border-cyan-500/20 dark:group-hover:border-cyan-555/15 transition-all shadow-inner">
+                 <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-bounce" />
+                    <p className="text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest leading-none font-mono">Arsitektur Perangkat</p>
+                 </div>
+                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tighter line-clamp-1 truncate uppercase italic">{lk.deviceName || 'Unit Tidak Teridentifikasi'}</p>
+              <div className="flex items-center gap-2.5 mt-3">
+                 <div className="px-2.5 py-1 bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/15 rounded-lg text-[8px] font-black text-[#06B6D4] uppercase tracking-widest shadow-sm font-mono truncate max-w-[120px]">
+                    ID: {lk.deviceId?.slice(-8).toUpperCase() || 'SYS-ERR'}
+                 </div>
+                 <div className="h-3 w-px bg-slate-200 dark:bg-cyan-500/20 mx-1" />
+                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-black italic truncate tracking-tight uppercase">{lk.fasyankesName || 'INSTALASI NASIONAL'}</p>
+              </div>
+           </div>
         </div>
       </div>
 
-      <div className="space-y-6 relative z-10">
-         <div className="bg-slate-50/50 dark:bg-[#070d19]/80 p-6 rounded-[2.5rem] border border-slate-200/50 dark:border-cyan-500/10 group-hover:bg-[#06B6D4]/5 group-hover:border-cyan-500/20 dark:group-hover:border-cyan-550/15 transition-all shadow-inner">
-               <div className="flex items-center gap-3 mb-4">
-                  <div className="w-2 h-2 bg-[#06B6D4] rounded-full animate-bounce" />
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest leading-none font-mono">Arsitektur Perangkat</p>
-               </div>
-               <p className="text-xl font-black text-slate-900 dark:text-white tracking-tighter line-clamp-1 truncate uppercase italic">{lk.deviceName || 'Unit Tidak Teridentifikasi'}</p>
-            <div className="flex items-center gap-3 mt-4">
-               <div className="px-3 py-1.5 bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/15 rounded-xl text-[9px] font-black text-[#06B6D4] uppercase tracking-widest shadow-sm font-mono truncate max-w-[120px]">
-                  ID: {lk.deviceId?.slice(-8).toUpperCase() || 'SYS-ERR'}
-               </div>
-               <div className="h-4 w-px bg-slate-200 dark:bg-cyan-500/20 mx-1" />
-               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-black italic truncate tracking-tight uppercase">{lk.fasyankesName || 'INSTALASI NASIONAL'}</p>
+      <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-cyan-500/5 mt-6 relative z-10">
+         <div className="flex items-center gap-3">
+            <div className="flex -space-x-2">
+               {[1,2].map(i => (
+                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-[#10192d] bg-slate-100 dark:bg-[#070d19] flex items-center justify-center text-[9px] font-black text-slate-450 dark:text-slate-500 uppercase shadow-sm italic group-hover:border-cyan-500/10 transition-colors">
+                    {String.fromCharCode(64 + i)}
+                 </div>
+               ))}
+            </div>
+            <div className="flex flex-col">
+               <p className="text-[9px] font-black text-slate-900 dark:text-white uppercase tracking-widest leading-none">{lk.technicianName || 'Analyst'}</p>
+               <p className="text-[8px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Lead Technician</p>
             </div>
          </div>
-
-         <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-3">
-               <div className="flex -space-x-3">
-                  {[1,2].map(i => (
-                    <div key={i} className="w-10 h-10 rounded-full border-4 border-white dark:border-[#10192d] bg-slate-100 dark:bg-[#070d19] flex items-center justify-center text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase shadow-sm italic group-hover:border-cyan-500/10 transition-colors">
-                       {String.fromCharCode(64 + i)}
-                    </div>
-                  ))}
-               </div>
-               <div className="flex flex-col">
-                  <p className="text-[9px] font-black text-slate-900 dark:text-white uppercase tracking-widest leading-noneAt:">{lk.technicianName || 'Analyst'}</p>
-                  <p className="text-[8px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Lead Technician</p>
-               </div>
-            </div>
-            <div className="flex items-center gap-3">
-               <button
-                 onClick={() => setShowLabelModal(true)}
-                 className="p-3 bg-emerald-50 dark:bg-[#071d18] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-all rounded-xl border border-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer flex items-center justify-center"
-                 title="Cetak Label & QR Code"
+         <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowLabelModal(true)}
+              className="p-2.5 bg-emerald-50 dark:bg-[#071d18] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-all rounded-xl border border-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer flex items-center justify-center"
+              title="Cetak Label & QR Code"
+            >
+              <QrCode className="w-4.5 h-4.5" />
+            </button>
+            {canDelete && (
+               <motion.button 
+                 whileTap={{ scale: 0.95 }}
+                 whileHover={{ scale: 1.05 }}
+                 onClick={(e) => {
+                   e.preventDefault();
+                   setConfirmDelete(!confirmDelete);
+                 }}
+                 className="p-2.5 bg-white dark:bg-[#070d19] text-slate-350 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all rounded-xl border border-slate-200 dark:border-cyan-500/15 hover:border-red-100 hover:shadow-lg hover:shadow-red-500/10 cursor-pointer"
                >
-                 <QrCode className="w-5 h-5" />
-               </button>
-               {canDelete && (
-                  <motion.button 
-                    whileTap={{ scale: 0.95 }}
-                    whileHover={{ scale: 1.05 }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setConfirmDelete(!confirmDelete);
-                    }}
-                    className="p-3 bg-white dark:bg-[#070d19] text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all rounded-xl border border-slate-200 dark:border-cyan-500/15 hover:border-red-100 hover:shadow-lg hover:shadow-red-500/10 cursor-pointer"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </motion.button>
-               )}
-               <Link to={`/worksheets/${lk.id}/edit`} className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 font-black h-14 px-8 rounded-2xl flex items-center gap-3 transition-all shadow-xl shadow-cyan-500/10 group/btn text-[10px] font-black uppercase tracking-widest">
-                  Buka LK
-                  <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform text-slate-950" />
-               </Link>
-            </div>
+                 <Trash2 className="w-4.5 h-4.5" />
+               </motion.button>
+            )}
+            <Link to={`/worksheets/${lk.id}/edit`} className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 font-black h-11 px-5 rounded-xl flex items-center gap-2 transition-all shadow-xl shadow-cyan-500/10 group/btn text-[9px] font-black uppercase tracking-widest">
+               Buka LK
+               <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1.5 transition-transform text-slate-950" />
+            </Link>
          </div>
       </div>
       
@@ -843,22 +863,22 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             animate={{ opacity: 1, backdropFilter: 'blur(12px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            className="absolute inset-0 bg-red-600/15 dark:bg-red-950/40 z-20 flex flex-col items-center justify-center p-8 text-center"
+            className="absolute inset-0 bg-red-655/15 dark:bg-red-955/40 z-20 flex flex-col items-center justify-center p-6 text-center"
           >
-             <div className="w-16 h-16 bg-red-600 rounded-3xl flex items-center justify-center mb-6 shadow-2xl shadow-red-600/40">
-                <Trash2 className="text-white w-7 h-7" />
+             <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center mb-4 shadow-2xl shadow-red-600/40">
+                <Trash2 className="text-white w-6 h-6" />
               </div>
-             <p className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-8">Hapus Lembar Kerja Permanen?</p>
-             <div className="flex gap-4 w-full px-4">
+             <p className="text-[9px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-6">Hapus Lembar Kerja Permanen?</p>
+             <div className="flex gap-3 w-full px-2">
                 <button 
                    onClick={() => onDelete()}
-                   className="flex-1 h-12 bg-red-600 text-white rounded-xl font-black text-[9px] uppercase tracking-widest shadow-xl shadow-red-600/20 hover:bg-red-700 transition cursor-pointer"
+                   className="flex-1 h-10 bg-red-600 text-white rounded-lg font-black text-[8px] uppercase tracking-widest shadow-xl shadow-red-600/20 hover:bg-red-700 transition cursor-pointer"
                 >
                    Hapus Data
                 </button>
                 <button 
                    onClick={() => setConfirmDelete(false)}
-                   className="flex-1 h-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl font-black text-[9px] uppercase tracking-widest border border-slate-200 dark:border-slate-800 shadow-lg hover:bg-slate-55 transition"
+                   className="flex-1 h-10 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg font-black text-[8px] uppercase tracking-widest border border-slate-200 dark:border-slate-800 shadow-lg hover:bg-slate-50 transition"
                 >
                    Batal
                 </button>

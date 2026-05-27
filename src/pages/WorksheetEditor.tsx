@@ -2954,42 +2954,42 @@ export function WorksheetEditor() {
           <button
             onClick={() => handleSave(false)}
             disabled={saving}
-            className="px-8 py-3.5 bg-white border border-slate-200 text-slate-500 font-black text-[10px] rounded-2xl uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm flex items-center gap-3"
+            className="px-5 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all shadow-sm flex items-center gap-2"
           >
             {saving ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
             ) : (
-              <Save className="w-4 h-4" />
+              <Save className="w-3.5 h-3.5" />
             )}
-            Save Draft
+            Simpan
           </button>
           <button
             onClick={() => setShowPreview(true)}
-            className="px-8 py-3.5 bg-white border border-slate-200 text-slate-500 font-black text-[10px] rounded-2xl uppercase tracking-widest hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm flex items-center gap-3"
+            className="px-5 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:text-blue-700 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500/40 transition-all shadow-sm flex items-center gap-2"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-3.5 h-3.5" />
             Preview
           </button>
           <button
             onClick={exportWorksheetToPDF}
-            className="px-8 py-3.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/20 border border-indigo-200 text-indigo-700 dark:text-indigo-400 font-black text-[10px] rounded-2xl uppercase tracking-widest transition-all shadow-sm flex items-center gap-3 cursor-pointer"
+            className="px-5 py-2.5 bg-indigo-50/80 dark:bg-indigo-950/25 backdrop-blur border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-950/40 hover:shadow-md hover:shadow-indigo-500/10 transition-all shadow-sm flex items-center gap-2 cursor-pointer"
           >
-            <Download className="w-4 h-4" />
-            Cetak LK (PDF)
+            <Download className="w-3.5 h-3.5" />
+            Cetak PDF
           </button>
           <button
             onClick={() => setShowLabelModal(true)}
-            className="px-8 py-3.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/20 border border-emerald-200 text-emerald-700 dark:text-emerald-400 font-black text-[10px] rounded-2xl uppercase tracking-widest transition-all shadow-sm flex items-center gap-3"
+            className="px-5 py-2.5 bg-emerald-50/80 dark:bg-emerald-950/25 backdrop-blur border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:shadow-md hover:shadow-emerald-500/10 transition-all shadow-sm flex items-center gap-2"
           >
-            <QrCode className="w-4 h-4" />
-            Cetak Label & QR
+            <QrCode className="w-3.5 h-3.5" />
+            Label & QR
           </button>
           <button
             onClick={() => handleSave(true)}
-            className="px-10 py-3.5 bg-blue-600 text-white font-black text-[10px] rounded-2xl uppercase tracking-[0.2em] hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 italic active:scale-95 flex items-center gap-2"
+            className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 text-white font-black text-[9px] rounded-xl uppercase tracking-[0.15em] hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/25 dark:shadow-blue-500/20 italic active:scale-[0.98] flex items-center gap-2"
           >
-            <ShieldCheck className="w-4 h-4 text-white/95" />
-            Finalize & Commit (Audit Locked)
+            <ShieldCheck className="w-3.5 h-3.5 text-white/90" />
+            Finalize & Kunci
           </button>
         </div>
       </header>
@@ -3541,10 +3541,23 @@ export function WorksheetEditor() {
                   <section className="bg-slate-50/50 dark:bg-[#15223e]/20 p-6 rounded-3xl border border-slate-200 dark:border-cyan-500/15 shadow-sm">
                     <div className="flex items-center justify-between mb-6 px-1">
                       <div className="flex items-center gap-3">
-                        <Eye className="w-4 h-4 text-blue-600 dark:text-cyan-400" />
-                        <h3 className="text-[11px] font-black text-slate-900 dark:text-cyan-100 uppercase tracking-[0.2em] italic">
-                          I. Pemeriksaan Fisik
-                        </h3>
+                        <div className="w-8 h-8 rounded-lg bg-blue-600/10 dark:bg-cyan-500/10 flex items-center justify-center">
+                          <Eye className="w-4 h-4 text-blue-600 dark:text-cyan-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-[11px] font-black text-slate-900 dark:text-cyan-100 uppercase tracking-[0.2em] italic">
+                            I. Pemeriksaan Fisik
+                          </h3>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                              {Object.values(physicalData).filter(v => v === "Baik").length} Baik
+                            </span>
+                            <span className="text-slate-300 dark:text-slate-600">•</span>
+                            <span className="text-[9px] font-black text-rose-500 dark:text-rose-400 font-mono">
+                              {Object.values(physicalData).filter(v => v === "Rusak").length} Rusak
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       <button
                         onClick={() => {
@@ -3554,7 +3567,7 @@ export function WorksheetEditor() {
                             [newKey]: "Baik",
                           });
                         }}
-                        className="flex items-center gap-2 text-[9px] font-black text-blue-600 dark:text-cyan-400 hover:text-blue-700 dark:hover:text-cyan-350 transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-cyan-500/20 shadow-sm"
+                        className="flex items-center gap-2 text-[9px] font-black text-blue-600 dark:text-cyan-400 hover:text-blue-700 dark:hover:text-cyan-350 transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-cyan-500/20 shadow-sm hover:shadow-md"
                       >
                         <Plus className="w-3 h-3" />
                         Item Baru
@@ -3587,13 +3600,26 @@ export function WorksheetEditor() {
                   </section>
 
                   {/* Functional Section */}
-                  <section className="bg-slate-50/50 dark:bg-[#15223e]/20 p-6 rounded-3xl border border-slate-200 dark:border-cyan-500/15 shadow-sm">
+                  <section className="bg-slate-50/50 dark:bg-[#15223e]/20 p-6 rounded-3xl border border-slate-200 dark:border-amber-500/15 shadow-sm">
                     <div className="flex items-center justify-between mb-6 px-1">
                       <div className="flex items-center gap-3">
-                        <Activity className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                        <h3 className="text-[11px] font-black text-slate-900 dark:text-amber-100 uppercase tracking-[0.2em] italic">
-                          II. Pemeriksaan Fungsi
-                        </h3>
+                        <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                          <Activity className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-[11px] font-black text-slate-900 dark:text-amber-100 uppercase tracking-[0.2em] italic">
+                            II. Pemeriksaan Fungsi
+                          </h3>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                              {Object.values(functionalData).filter(v => v === "Baik").length} Baik
+                            </span>
+                            <span className="text-slate-300 dark:text-slate-600">•</span>
+                            <span className="text-[9px] font-black text-rose-500 dark:text-rose-400 font-mono">
+                              {Object.values(functionalData).filter(v => v === "Rusak").length} Rusak
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       <button
                         onClick={() => {
@@ -3603,7 +3629,7 @@ export function WorksheetEditor() {
                             [newKey]: "Baik",
                           });
                         }}
-                        className="flex items-center gap-2 text-[9px] font-black text-amber-600 dark:text-amber-400 hover:text-amber-750 dark:hover:text-[#e4be47] transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-cyan-500/20 shadow-sm"
+                        className="flex items-center gap-2 text-[9px] font-black text-amber-600 dark:text-amber-400 hover:text-amber-750 dark:hover:text-[#e4be47] transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-amber-500/20 shadow-sm hover:shadow-md"
                       >
                         <Plus className="w-3 h-3" />
                         Item Baru
@@ -7462,7 +7488,7 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full text-left p-2.5 sm:p-4 rounded-xl sm:rounded-[1.25rem] transition-all duration-350 border select-none group/btn cursor-pointer",
+        "relative w-full text-left p-2.5 sm:p-4 rounded-xl sm:rounded-[1.25rem] transition-all duration-350 border select-none group/btn cursor-pointer",
         active
           ? "bg-blue-600/10 dark:bg-cyan-500/10 border-blue-600/80 dark:border-cyan-400/80 shadow-md shadow-blue-500/5"
           : "bg-white/40 dark:bg-[#070b18]/45 border-slate-200/50 dark:border-slate-800/40 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#101b33]/40 hover:border-slate-350 dark:hover:border-slate-700/60"
@@ -7479,12 +7505,12 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
         >
           <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p
             className={cn(
               "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] leading-none truncate font-sans transition-colors duration-250",
-              active 
-                ? "text-blue-600 dark:text-cyan-450 italic font-black" 
+              active
+                ? "text-blue-600 dark:text-cyan-450 italic font-black"
                 : "text-slate-800 dark:text-slate-200 font-bold"
             )}
           >
@@ -7493,18 +7519,22 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
           <p
             className={cn(
               "text-[7.5px] sm:text-[8px] mt-1 font-bold italic truncate transition-colors duration-250 hidden sm:block",
-              active 
-                ? "text-blue-500/80 dark:text-cyan-450/70" 
+              active
+                ? "text-blue-500/80 dark:text-cyan-450/70"
                 : "text-slate-450 dark:text-slate-500"
             )}
           >
             {desc}
           </p>
         </div>
+        {active && (
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-cyan-400 shrink-0 shadow-[0_0_6px_#2563eb] dark:shadow-[0_0_6px_#22d3ee]" />
+        )}
       </div>
     </button>
   );
 }
+
 
 function TabContent({
   children,
@@ -7528,86 +7558,62 @@ function CheckItem({ label, value, onChange, onLabelChange, onDelete, variant = 
   const [tempLabel, setTempLabel] = useState(label);
 
   const isGold = variant === "gold";
+  const isBaik = value === "Baik";
+  const isRusak = value === "Rusak";
 
   return (
-    <div className={cn(
-      "flex items-center justify-between p-3.5 px-4 rounded-xl border bg-slate-50/30 dark:bg-[#0c1220]/75 hover:bg-white dark:hover:bg-[#111a2e]/60 hover:shadow-sm transition-all group border-l-4",
-      isGold 
-        ? "border-slate-200 dark:border-amber-500/15 border-l-amber-500 dark:border-l-amber-400 hover:border-amber-300 dark:hover:border-amber-500/40 hover:shadow-amber-500/5 dark:hover:shadow-[0_0_12px_rgba(245,158,11,0.05)]" 
-        : "border-slate-200 dark:border-cyan-500/15 border-l-blue-600 dark:border-l-cyan-500 hover:border-blue-200 dark:hover:border-cyan-550/30 hover:shadow-blue-500/5 dark:hover:shadow-[0_0_12px_rgba(6,182,212,0.05)]"
-    )}>
+    <motion.div
+      layout
+      className={cn(
+        "relative flex items-center justify-between p-3.5 pl-5 rounded-2xl border transition-all duration-300 overflow-hidden group",
+        isBaik
+          ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300/60 dark:border-emerald-500/30 shadow-sm"
+          : isRusak
+            ? "bg-rose-50/60 dark:bg-rose-950/25 border-rose-300/70 dark:border-rose-500/35 shadow-sm"
+            : isGold
+              ? "bg-slate-50/30 dark:bg-[#0c1220]/75 border-slate-200 dark:border-amber-500/15 border-l-4 border-l-amber-500"
+              : "bg-slate-50/30 dark:bg-[#0c1220]/75 border-slate-200 dark:border-cyan-500/15 border-l-4 border-l-blue-600 dark:border-l-cyan-500"
+      )}
+    >
+      {isBaik && <div className="absolute left-0 top-0 w-1 h-full bg-emerald-500 rounded-l-2xl" />}
+      {isRusak && <div className="absolute left-0 top-0 w-1 h-full bg-rose-500 rounded-l-2xl" />}
+
       <div className="flex items-center gap-2 flex-1 min-w-0 mr-4">
+        <div className={cn("w-1.5 h-1.5 rounded-full shrink-0",
+          isBaik ? "bg-emerald-500" : isRusak ? "bg-rose-500 animate-pulse" : "bg-slate-300 dark:bg-slate-600"
+        )} />
         {isEditing ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onLabelChange(tempLabel);
-              setIsEditing(false);
-            }}
-            className="flex-1"
-          >
-            <input
-              autoFocus
-              value={tempLabel}
-              onChange={(e) => setTempLabel(e.target.value)}
-              onBlur={() => {
-                onLabelChange(tempLabel);
-                setIsEditing(false);
-              }}
-              className={cn(
-                "w-full bg-white dark:bg-[#070d19] border rounded-lg px-3 py-1.5 text-[10px] font-black text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-opacity-10 italic font-mono",
-                isGold 
-                  ? "border-amber-500 focus:ring-amber-500/10 focus:border-amber-600" 
-                  : "border-blue-500 dark:border-cyan-500 focus:ring-blue-500/10 focus:border-blue-600 dark:focus:border-cyan-400"
-              )}
+          <form onSubmit={(e) => { e.preventDefault(); onLabelChange(tempLabel); setIsEditing(false); }} className="flex-1">
+            <input autoFocus value={tempLabel} onChange={(e) => setTempLabel(e.target.value)}
+              onBlur={() => { onLabelChange(tempLabel); setIsEditing(false); }}
+              className="w-full bg-white dark:bg-[#070d19] border border-blue-500 dark:border-cyan-500 rounded-lg px-3 py-1.5 text-[10px] font-black text-slate-900 dark:text-white focus:outline-none italic font-mono"
             />
           </form>
         ) : (
-          <span
-            onClick={() => setIsEditing(true)}
-            className={cn(
-              "text-[10px] font-black uppercase tracking-tight cursor-pointer transition-colors whitespace-normal break-words italic font-mono",
-              isGold 
-                ? "text-slate-800 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400" 
-                : "text-slate-800 dark:text-slate-300 hover:text-blue-600 dark:hover:text-cyan-400"
+          <span onClick={() => setIsEditing(true)} title="Klik untuk mengubah label"
+            className={cn("text-[10px] font-black uppercase tracking-tight cursor-pointer transition-colors whitespace-normal break-words italic font-mono",
+              isBaik ? "text-emerald-800 dark:text-emerald-300" :
+              isRusak ? "text-rose-800 dark:text-rose-300" :
+              isGold ? "text-slate-800 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400" :
+              "text-slate-800 dark:text-slate-300 hover:text-blue-600 dark:hover:text-cyan-400"
             )}
-            title="Ubah"
-          >
-            {label}
-          </span>
+          >{label}</span>
         )}
       </div>
-
       <div className="flex items-center gap-2 shrink-0">
-        <div className={cn(
-          "flex bg-white/50 dark:bg-[#070d19]/80 p-1 rounded-lg border shadow-inner",
-          isGold ? "border-amber-500/20" : "border-slate-200 dark:border-cyan-500/20"
-        )}>
-          {["Baik", "Rusak"].map((opt) => (
-            <button
-              key={opt}
-              onClick={() => onChange(opt)}
-              className={cn(
-                "px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer",
-                value === opt
-                  ? opt === "Baik"
-                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/10"
-                    : "bg-red-600 text-white shadow-md shadow-red-500/10"
-                  : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-450",
-              )}
-            >
-              {opt}
-            </button>
-          ))}
+        <div className="flex bg-white dark:bg-[#070d19]/80 p-1 rounded-xl border border-slate-200/60 dark:border-slate-700/40 shadow-inner gap-0.5">
+          <button onClick={() => onChange("Baik")} className={cn("px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer",
+            isBaik ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 scale-[1.05]" : "text-slate-400 dark:text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+          )}>✓ Baik</button>
+          <button onClick={() => onChange("Rusak")} className={cn("px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer",
+            isRusak ? "bg-rose-500 text-white shadow-lg shadow-rose-500/25 scale-[1.05]" : "text-slate-400 dark:text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+          )}>✕ Rusak</button>
         </div>
-        <button
-          onClick={onDelete}
-          className="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
-        >
+        <button onClick={onDelete} className="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 cursor-pointer rounded-lg">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
