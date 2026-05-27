@@ -677,12 +677,13 @@ export function WorkOrders() {
                     <div className="flex items-center gap-1.5">
                       <span className="font-black uppercase">Tingkat Darurat:</span>
                       <span className={cn(
-                        "font-extrabold",
-                        wo.priority === 'critical' ? 'text-red-500 animate-pulse' :
-                        wo.priority === 'high' ? 'text-orange-500' :
-                        wo.priority === 'medium' ? 'text-amber-500' : 'text-slate-500'
+                        "font-black px-2.5 py-1 rounded-lg text-[8px] uppercase tracking-widest border font-mono select-none inline-flex items-center gap-1",
+                        wo.priority === 'critical' ? 'bg-red-500/15 text-red-500 border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.25)] animate-pulse' :
+                        wo.priority === 'high' ? 'bg-orange-500/10 text-orange-500 border-orange-500/25' :
+                        wo.priority === 'medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/25' :
+                        'bg-slate-500/10 text-slate-400 border-slate-500/20'
                       )}>
-                        {wo.priority?.toUpperCase()}
+                        {wo.priority === 'critical' ? '🚨' : wo.priority === 'high' ? '⚠️' : '🔔'} {wo.priority?.toUpperCase()}
                       </span>
                     </div>
 

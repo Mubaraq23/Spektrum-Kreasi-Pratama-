@@ -1286,43 +1286,44 @@ export function Dashboard() {
                 <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15}/>
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="currentColor" strokeOpacity={0.06} strokeDasharray="6 6" vertical={false} />
+                  <CartesianGrid stroke="currentColor" strokeOpacity={0.04} strokeDasharray="4 4" vertical={false} />
                   <XAxis 
                     dataKey="name" 
-                    stroke="#94a3b8" 
-                    fontSize={10} 
+                    stroke="#64748b" 
+                    fontSize={9} 
                     tickLine={false} 
                     axisLine={false} 
-                    tick={{ fill: 'currentColor', opacity: 0.6, fontWeight: '800' }}
+                    tick={{ fill: 'currentColor', opacity: 0.5, fontWeight: '700' }}
                   />
                   <YAxis 
-                    stroke="#94a3b8" 
-                    fontSize={10} 
+                    stroke="#64748b" 
+                    fontSize={9} 
                     tickLine={false} 
                     axisLine={false}
-                    tick={{ fill: 'currentColor', opacity: 0.6, fontWeight: '800' }}
+                    tick={{ fill: 'currentColor', opacity: 0.5, fontWeight: '700' }}
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                      border: '1px solid rgba(255, 255, 255, 0.1)', 
+                      backgroundColor: 'rgba(7, 12, 27, 0.9)', 
+                      backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(6, 182, 212, 0.25)', 
                       borderRadius: '16px', 
-                      fontSize: '11px',
+                      fontSize: '10px',
                       fontWeight: '800',
                       textTransform: 'uppercase',
                       color: '#ffffff',
-                      boxShadow: '0 10px 25px -5px rgba(0,0,0,0.4)'
+                      boxShadow: '0 12px 30px -10px rgba(6, 182, 212, 0.2)'
                     }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="volume" 
-                    stroke="#2563eb" 
-                    strokeWidth={4} 
+                    stroke="#06b6d4" 
+                    strokeWidth={3} 
                     fillOpacity={1} 
                     fill="url(#colorValue)" 
                   />

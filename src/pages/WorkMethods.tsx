@@ -674,8 +674,10 @@ export function WorkMethods() {
           <motion.div 
             layout
             key={method.id}
-            className="group relative bg-white dark:bg-[#10192d] border border-slate-100 dark:border-cyan-500/15 rounded-[3rem] p-10 hover:border-blue-200 dark:hover:border-blue-500/45 transition-all duration-500 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden"
+            className="group relative bg-white dark:bg-[#10192d] border border-slate-100 dark:border-cyan-500/15 rounded-[3rem] p-10 pl-12 hover:border-blue-200 dark:hover:border-blue-500/45 transition-all duration-500 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden"
           >
+            {/* Left margin luxury accent marker bar */}
+            <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-blue-600 via-indigo-500 to-cyan-400 opacity-80 group-hover:opacity-100 group-hover:w-3.5 transition-all duration-500 rounded-l-[3rem]" />
             <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/5 blur-[80px] rounded-full -mr-10 -mt-10 group-hover:bg-blue-600/10 transition-all duration-700" />
             
             <div className="relative space-y-8">

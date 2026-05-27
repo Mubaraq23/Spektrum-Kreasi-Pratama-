@@ -2882,31 +2882,31 @@ export function WorksheetEditor() {
           })()}
       </AnimatePresence>
 
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-4 border-b border-slate-100">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-5 border-b border-slate-200/50 dark:border-slate-800/55">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/worksheets")}
-            className="p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm"
+            className="p-3 bg-white/60 dark:bg-[#070b18]/60 border border-slate-250 dark:border-slate-800/80 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm hover:border-blue-500 cursor-pointer"
           >
-            <ChevronLeft className="w-5 h-5 text-slate-600" />
+            <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-405" />
           </button>
           <div className="flex flex-col">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1.5">
               <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
-              <span className="text-[10px] font-black tracking-widest text-emerald-600 uppercase">
+              <span className="text-[10px] font-black tracking-[0.2em] text-emerald-600 dark:text-emerald-450 uppercase font-mono">
                 Live Precision Protocol
               </span>
             </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none italic">
+            <h1 className="text-3xl font-black text-slate-950 dark:text-white tracking-tighter uppercase leading-none italic font-sans">
               Lembar{" "}
-              <span className="text-blue-600 uppercase">Kerja Digital</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-white dark:to-cyan-200 font-black">Kerja Digital</span>
             </h1>
-            <div className="flex items-center gap-3 mt-2 text-[10px] font-bold text-slate-400 font-mono">
-              <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600 uppercase tracking-widest">
+            <div className="flex items-center gap-3 mt-2.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 font-mono uppercase">
+              <span className="bg-slate-100/80 dark:bg-[#0b132b]/80 border border-slate-200/50 dark:border-slate-800/50 px-2.5 py-0.5 rounded-lg text-slate-650 dark:text-slate-400 tracking-wider">
                 ID: LK-{id?.slice(0, 8).toUpperCase()}
               </span>
-              <span className="text-blue-600">/</span>
-              <span className="italic uppercase tracking-wider">
+              <span className="text-blue-600 dark:text-cyan-550">/</span>
+              <span className="italic tracking-widest text-[#b38728] dark:text-amber-500">
                 {lk?.deviceName || "Inisialisasi..."}
               </span>
             </div>
@@ -3044,8 +3044,8 @@ export function WorksheetEditor() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Navigation - Scrollable on mobile */}
         <div className="lg:col-span-3">
-          <div className="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-3 lg:pb-0 custom-scrollbar-hidden snap-x lg:snap-none">
-            <div className="min-w-[180px] lg:min-w-0 shrink-0 snap-start">
+          <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2.5 lg:pb-0 custom-scrollbar-hidden snap-x lg:snap-none">
+            <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
               <NavBtn
                 active={activeTab === "identity"}
                 onClick={() => handleTabChange("identity")}
@@ -3054,7 +3054,7 @@ export function WorksheetEditor() {
                 desc="Data teknis & instansi"
               />
             </div>
-            <div className="min-w-[180px] lg:min-w-0 shrink-0 snap-start">
+            <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
               <NavBtn
                 active={activeTab === "calibrators_tab"}
                 onClick={() => handleTabChange("calibrators_tab")}
@@ -3063,7 +3063,7 @@ export function WorksheetEditor() {
                 desc="Kalibrator yang digunakan"
               />
             </div>
-            <div className="min-w-[180px] lg:min-w-0 shrink-0 snap-start">
+            <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
               <NavBtn
                 active={activeTab === "inspections"}
                 onClick={() => handleTabChange("inspections")}
@@ -3072,7 +3072,7 @@ export function WorksheetEditor() {
                 desc="Visual & operasional"
               />
             </div>
-            <div className="min-w-[180px] lg:min-w-0 shrink-0 snap-start">
+            <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
               <NavBtn
                 active={activeTab === "electrical"}
                 onClick={() => handleTabChange("electrical")}
@@ -3081,7 +3081,7 @@ export function WorksheetEditor() {
                 desc="Leakage & grounding"
               />
             </div>
-            <div className="min-w-[180px] lg:min-w-0 shrink-0 snap-start">
+            <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
               <NavBtn
                 active={activeTab === "measurements"}
                 onClick={() => handleTabChange("measurements")}
@@ -3179,7 +3179,7 @@ export function WorksheetEditor() {
         </div>
 
         {/* Content Area */}
-        <div className="lg:col-span-9 bg-white dark:bg-[#10192d] border border-sky-500/15 dark:border-cyan-500/25 rounded-3xl p-8 min-h-[600px] shadow-xl shadow-slate-100 dark:shadow-cyan-950/5 relative overflow-auto bg-[gradient-to-b,rgba(255,255,255,0.8),rgba(255,255,255,0.9)] dark:bg-none bg-[radial-gradient(rgba(14,165,233,0.03)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(6,182,212,0.06)_1px,transparent_1px)] bg-[size:24px_24px] transition-all duration-300">
+        <div className="lg:col-span-9 luxury-glass rounded-3xl p-8 min-h-[600px] shadow-xl shadow-slate-200/20 dark:shadow-none relative overflow-auto grid-bg transition-all duration-300">
           <AnimatePresence mode="wait">
             {activeTab === "identity" && (
               <TabContent key="identity">
@@ -5521,6 +5521,15 @@ export function WorksheetEditor() {
                 </div>
                 )}
 
+                {/* Mobile Scroll Indicator Helper Badge */}
+                <div className="lg:hidden flex items-center justify-between bg-blue-500/10 dark:bg-cyan-500/5 border border-blue-500/20 dark:border-cyan-500/15 rounded-xl px-4 py-2.5 mb-3 text-[9px] font-mono font-bold text-blue-600 dark:text-cyan-450">
+                  <span className="flex items-center gap-1.5 animate-pulse">
+                    <Activity className="w-3 h-3 text-blue-550 dark:text-cyan-400" />
+                    <span>TABEL DATA UKUR ISO/IEC 17025</span>
+                  </span>
+                  <span>Geser Kiri/Kanan ↔️</span>
+                </div>
+
                 <div className="overflow-x-auto pb-3 scroll-smooth snap-x touch-pan-x scrollbar-thin scrollbar-thumb-amber-500/25 scrollbar-track-transparent rounded-2xl border border-slate-200/50 dark:border-slate-800/40 bg-white/50 dark:bg-[#060a1a]/90 shadow-sm">
                   <table className="table-data-ukur w-full text-left min-w-[1200px] border-collapse">
                     <thead className="text-[10.5px] uppercase tracking-[0.1em] font-extrabold font-mono bg-slate-50/80 dark:bg-[#040816] text-slate-600 dark:text-[#b38728] border-b border-slate-200/60 dark:border-slate-800/60">
@@ -7448,36 +7457,40 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full text-left p-3.5 rounded-[1.25rem] transition-all border",
+        "w-full text-left p-2.5 sm:p-4 rounded-xl sm:rounded-[1.25rem] transition-all duration-350 border select-none group/btn cursor-pointer",
         active
-          ? "bg-blue-50 border-blue-600 shadow-lg shadow-blue-500/10"
-          : "border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-50",
+          ? "bg-blue-600/10 dark:bg-cyan-500/10 border-blue-600/80 dark:border-cyan-400/80 shadow-md shadow-blue-500/5"
+          : "bg-white/40 dark:bg-[#070b18]/45 border-slate-200/50 dark:border-slate-800/40 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#101b33]/40 hover:border-slate-350 dark:hover:border-slate-700/60"
       )}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <div
           className={cn(
-            "w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+            "w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm shrink-0",
             active
-              ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-              : "bg-slate-50 text-slate-500 group-hover:bg-slate-100",
+              ? "bg-blue-600 text-white dark:bg-cyan-500 dark:text-slate-950 shadow-md shadow-blue-500/10 dark:shadow-cyan-500/10 rotate-3"
+              : "bg-slate-100 dark:bg-[#0b132b]/80 border border-slate-200/40 dark:border-slate-800/40 text-slate-500 dark:text-slate-500 group-hover/btn:bg-slate-50 dark:group-hover/btn:bg-[#142347] group-hover/btn:text-blue-600 dark:group-hover/btn:text-cyan-400 group-hover/btn:-rotate-3"
           )}
         >
-          <Icon className="w-4 h-4" />
+          <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </div>
         <div className="min-w-0">
           <p
             className={cn(
-              "text-[10px] font-black uppercase tracking-[0.15em] leading-none truncate",
-              active ? "text-blue-600 italic" : "text-slate-800",
+              "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] leading-none truncate font-sans transition-colors duration-250",
+              active 
+                ? "text-blue-600 dark:text-cyan-450 italic font-black" 
+                : "text-slate-800 dark:text-slate-200 font-bold"
             )}
           >
             {label}
           </p>
           <p
             className={cn(
-              "text-[8px] mt-1.5 font-bold italic truncate opacity-70",
-              active ? "text-blue-500" : "text-slate-500",
+              "text-[7.5px] sm:text-[8px] mt-1 font-bold italic truncate transition-colors duration-250 hidden sm:block",
+              active 
+                ? "text-blue-500/80 dark:text-cyan-450/70" 
+                : "text-slate-450 dark:text-slate-500"
             )}
           >
             {desc}
