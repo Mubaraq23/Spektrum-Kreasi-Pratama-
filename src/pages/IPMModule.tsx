@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { jsPDF } from 'jspdf';
 import { 
   Plus, 
@@ -110,6 +110,24 @@ const CHECKLIST_TEMPLATES: Record<string, { visual: string[]; functional: string
 const INITIAL_IPM_TASKS: any[] = [];
 
 export function IPMModule() {
+  // Refs for dynamic gauge bars to avoid inline style warnings
+  const groundResistanceGaugeRef = useRef<HTMLDivElement>(null);
+  const leakageCurrentGaugeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (groundResistanceGaugeRef.current) {
+      const pct = Math.min((measGroundResistance / 1.0) * 100, 100);
+      groundResistanceGaugeRef.current.style.width = `${pct}%`;
+    }
+  }, [measGroundResistance]);
+
+  useEffect(() => {
+    if (leakageCurrentGaugeRef.current) {
+      const pct = Math.min((measLeakageCurrent / 600) * 100, 100);
+      leakageCurrentGaugeRef.current.style.width = `${pct}%`;
+    }
+  }, [measLeakageCurrent]);
+
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -2098,7 +2116,7 @@ export function IPMModule() {
                               </div>
                               <div className="overflow-hidden h-2.5 text-xs flex rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                                 <div
-                                  style={{ width: `${Math.min((measGroundResistance / 1.0) * 100, 100)}%` }}
+                                  ref={groundResistanceGaugeRef}
                                   className={cn(
                                     "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500",
                                     measGroundResistance <= 0.5 ? "bg-emerald-500" : "bg-red-500"
@@ -2142,7 +2160,7 @@ export function IPMModule() {
                               </div>
                               <div className="overflow-hidden h-2.5 text-xs flex rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                                 <div
-                                  style={{ width: `${Math.min((measLeakageCurrent / 600) * 100, 100)}%` }}
+                                  ref={leakageCurrentGaugeRef}
                                   className={cn(
                                     "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500",
                                     measLeakageCurrent <= 300 ? "bg-emerald-500" : "bg-red-500"

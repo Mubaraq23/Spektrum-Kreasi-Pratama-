@@ -1992,6 +1992,13 @@ function StatCard({ label, value, footer, icon: Icon, color, progress, badge, lo
     emerald: "hover:border-emerald-200 dark:hover:border-emerald-500/30",
   };
 
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (progressBarRef.current && progress !== undefined) {
+      progressBarRef.current.style.width = `${progress}%`;
+    }
+  }, [progress]);
+
   return (
     <motion.div 
       whileHover={{ y: -4, scale: 1.01 }}
@@ -2030,7 +2037,7 @@ function StatCard({ label, value, footer, icon: Icon, color, progress, badge, lo
       {progress !== undefined && !loading && (
         <div className="flex gap-1 mt-5">
           <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200/50 dark:border-white/[0.04]">
-            <div className={cn("h-full transition-all duration-1000 ease-out", color === 'emerald' ? 'bg-[#d4af37]' : 'bg-gradient-to-r from-blue-600 to-cyan-400')} style={{ width: `${progress}%` }} />
+            <div ref={progressBarRef} className={cn("h-full transition-all duration-1000 ease-out", color === 'emerald' ? 'bg-[#d4af37]' : 'bg-gradient-to-r from-blue-600 to-cyan-400')} />
           </div>
         </div>
       )}
