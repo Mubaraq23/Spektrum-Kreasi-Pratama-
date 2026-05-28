@@ -12,8 +12,7 @@ export function Logo({ className = '', iconOnly = false }: LogoProps) {
       {/* Dynamic Corporate SVG Logo: PT. Spektrum Kreasi Pratama */}
       <svg
         viewBox={viewBox}
-        className="w-full h-full"
-        style={{ minWidth: iconOnly ? '36px' : '150px' }}
+        className={`w-full h-full ${iconOnly ? 'min-w-[36px]' : 'min-w-[150px]'}`}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>

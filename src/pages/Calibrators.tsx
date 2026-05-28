@@ -1068,7 +1068,7 @@ export function Calibrators() {
                      <p className="text-[10px] text-blue-600 dark:text-cyan-400 font-bold uppercase tracking-[0.3em] font-mono">Master Fleet Intelligence • {selectedCalibrator.brand}</p>
                    </div>
                  </div>
-                 <button onClick={() => setIsPreviewOpen(false)} className="p-4 bg-white dark:bg-[#10192d] hover:bg-slate-100 dark:hover:bg-[#1f283d] rounded-[1.5rem] text-slate-400 dark:text-slate-500 transition-all border border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer">
+                 <button onClick={() => setIsPreviewOpen(false)} title="Tutup" className="p-4 bg-white dark:bg-[#10192d] hover:bg-slate-100 dark:hover:bg-[#1f283d] rounded-[1.5rem] text-slate-400 dark:text-slate-500 transition-all border border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer">
                     <X className="w-6 h-6" />
                  </button>
               </div>

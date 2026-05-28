@@ -2743,7 +2743,7 @@ export function WorksheetEditor() {
                 {toast.message}
               </p>
             </div>
-            <button onClick={() => setToast(null)} className="shrink-0 p-1 hover:bg-white/15 rounded-lg transition-all text-white/80">
+            <button onClick={() => setToast(null)} className="shrink-0 p-1 hover:bg-white/15 rounded-lg transition-all text-white/80" title="Tutup" aria-label="Tutup">
               <X className="w-4 h-4" />
             </button>
           </motion.div>
@@ -2811,6 +2811,8 @@ export function WorksheetEditor() {
                     <button
                       onClick={() => setShowFormulaModal(false)}
                       className="p-1.5 hover:bg-white/10 rounded-xl transition-all"
+                      title="Tutup"
+                      aria-label="Tutup"
                     >
                       <X className="w-5 h-5 text-white" />
                     </button>
@@ -2888,6 +2890,8 @@ export function WorksheetEditor() {
           <button
             onClick={() => navigate("/worksheets")}
             className="p-3 bg-white/60 dark:bg-[#070b18]/60 border border-slate-250 dark:border-slate-800/80 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm hover:border-blue-500 cursor-pointer"
+            title="Kembali ke Lembar Kerja"
+            aria-label="Kembali ke Lembar Kerja"
           >
             <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-405" />
           </button>
@@ -2936,6 +2940,8 @@ export function WorksheetEditor() {
                     <button
                       onClick={() => setConfirmDelete(false)}
                       className="p-2 text-slate-400 hover:text-slate-600"
+                      title="Batal Hapus"
+                      aria-label="Batal Hapus"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -3206,11 +3212,14 @@ export function WorksheetEditor() {
                       </h3>
 
                       <div className="space-y-1.5 flex flex-col gap-1">
-                        <label className="text-[10px] font-black text-slate-800 dark:text-slate-400 uppercase tracking-widest ml-1 font-mono italic">
+                        <label htmlFor="identity-deviceId" className="text-[10px] font-black text-slate-800 dark:text-slate-400 uppercase tracking-widest ml-1 font-mono italic">
                           Pilih dari Inventaris (Opsional)
                         </label>
                         <div className="relative group">
                           <select
+                            id="identity-deviceId"
+                            title="Pilih dari Inventaris (Opsional)"
+                            aria-label="Pilih dari Inventaris (Opsional)"
                             value={identityData.deviceId}
                             onChange={(e) => {
                               const deviceId = e.target.value;
@@ -3253,11 +3262,14 @@ export function WorksheetEditor() {
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-slate-800 dark:text-slate-400 uppercase tracking-widest ml-1 font-mono italic">
+                        <label htmlFor="identity-methodId" className="text-[10px] font-black text-slate-800 dark:text-slate-400 uppercase tracking-widest ml-1 font-mono italic">
                           Pilih Metode Kerja (MK)
                         </label>
                         <div className="relative group">
                           <select
+                            id="identity-methodId"
+                            title="Pilih Metode Kerja (MK)"
+                            aria-label="Pilih Metode Kerja (MK)"
                             value={identityData.methodId}
                             onChange={(e) => loadMethod(e.target.value)}
                             className={cn(
@@ -3826,11 +3838,14 @@ export function WorksheetEditor() {
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                             {/* Standar Acuan */}
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
+                              <label htmlFor="esa-standard" className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
                                 Standar Acuan
                               </label>
                               <div className="relative">
                                 <select
+                                  id="esa-standard"
+                                  title="Standar Acuan"
+                                  aria-label="Standar Acuan"
                                   value={standard}
                                   onChange={(e) => {
                                     setElectricalData({
@@ -3856,11 +3871,14 @@ export function WorksheetEditor() {
 
                             {/* Kelas Peralatan */}
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
+                              <label htmlFor="esa-classType" className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
                                 Kelas Peralatan
                               </label>
                               <div className="relative">
                                 <select
+                                  id="esa-classType"
+                                  title="Kelas Peralatan"
+                                  aria-label="Kelas Peralatan"
                                   value={classType}
                                   onChange={(e) => {
                                     setElectricalData({
@@ -3886,11 +3904,14 @@ export function WorksheetEditor() {
 
                             {/* Tipe Bagian Pasien */}
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
+                              <label htmlFor="esa-appliedPart" className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
                                 Bagian Pasien (Applied Part)
                               </label>
                               <div className="relative">
                                 <select
+                                  id="esa-appliedPart"
+                                  title="Bagian Pasien (Applied Part)"
+                                  aria-label="Bagian Pasien (Applied Part)"
                                   value={appliedPart}
                                   onChange={(e) => {
                                     setElectricalData({
@@ -3922,11 +3943,14 @@ export function WorksheetEditor() {
 
                             {/* Metode Pengukuran Leakage */}
                             <div className="space-y-2">
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
+                              <label htmlFor="esa-leakageMethod" className="text-[10px] font-black text-slate-500 uppercase tracking-widest block font-mono">
                                 Metode Pengukuran (Leakage)
                               </label>
                               <div className="relative">
                                 <select
+                                  id="esa-leakageMethod"
+                                  title="Metode Pengukuran (Leakage)"
+                                  aria-label="Metode Pengukuran (Leakage)"
                                   value={leakageMethod}
                                   onChange={(e) => {
                                     setElectricalData({
@@ -4417,55 +4441,63 @@ export function WorksheetEditor() {
 
                                 <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-3">
                                   <div className="flex flex-col gap-1 col-span-2 sm:col-span-2">
-                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider">Parameter</span>
+                                    <label htmlFor="seq-parameter" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider">Parameter</label>
                                     <input
                                       type="text"
+                                      id="seq-parameter"
                                       value={seqName}
                                       onChange={(e) => setSeqName(e.target.value)}
                                       placeholder="Tegangan"
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                      title="Parameter"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Dari</span>
+                                    <label htmlFor="seq-start" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Dari</label>
                                     <input
                                       type="number"
+                                      id="seq-start"
                                       value={seqStart}
                                       onChange={(e) => setSeqStart(e.target.value)}
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                      title="Titik Mulai"
+                                      placeholder="Titik Mulai"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Sampai</span>
+                                    <label htmlFor="seq-end" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Sampai</label>
                                     <input
                                       type="number"
+                                      id="seq-end"
                                       value={seqEnd}
                                       onChange={(e) => setSeqEnd(e.target.value)}
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                      title="Titik Selesai"
+                                      placeholder="Titik Selesai"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah Titik</span>
+                                    <label htmlFor="seq-steps" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah Titik</label>
                                     <input
                                       type="number"
+                                      id="seq-steps"
                                       value={seqSteps}
                                       onChange={(e) => setSeqSteps(e.target.value)}
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                      title="Jumlah Titik"
+                                      placeholder="Jumlah Titik"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Satuan</span>
+                                    <label htmlFor="seq-unit" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Satuan</label>
                                     <input
                                       type="text"
+                                      id="seq-unit"
                                       value={seqUnit}
                                       onChange={(e) => setSeqUnit(e.target.value)}
                                       placeholder="V"
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                      title="Satuan"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
                                 </div>
@@ -4591,15 +4623,18 @@ export function WorksheetEditor() {
                             <BrainCircuit className="w-4 h-4" />
                           </div>
                           <div>
-                            <h4 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono">
+                            <label htmlFor="identity-uncMethod" className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono cursor-pointer">
                               Metode Ketidakpastian
-                            </h4>
-                            <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono">
+                            </label>
+                            <p className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase font-mono">
                               Acuan Buku KMK Terbaru
                             </p>
                           </div>
                         </div>
                         <select
+                          id="identity-uncMethod"
+                          title="Metode Ketidakpastian"
+                          aria-label="Metode Ketidakpastian"
                           value={identityData.uncMethod || "standard"}
                           onChange={(e) => {
                             const val = e.target.value;
@@ -4699,10 +4734,13 @@ export function WorksheetEditor() {
 
                       <div className="space-y-3 pt-3 border-t border-slate-100">
                         <div>
-                          <label className="text-[9px] font-black text-slate-800 uppercase block mb-1">
+                          <label htmlFor="identity-decisionRule" className="text-[9px] font-black text-slate-800 uppercase block mb-1">
                             Aturan Keputusan (Decision Rule)
                           </label>
                           <select
+                            id="identity-decisionRule"
+                            title="Aturan Keputusan (Decision Rule)"
+                            aria-label="Aturan Keputusan (Decision Rule)"
                             value={decisionRule}
                             onChange={(e) => {
                               const val = e.target.value as any;
@@ -4716,11 +4754,14 @@ export function WorksheetEditor() {
                         </div>
 
                         <div>
-                          <label className="text-[9px] font-black text-slate-800 block mb-1 uppercase">
+                          <label htmlFor="identity-cmcValue" className="text-[9px] font-black text-slate-800 block mb-1 uppercase">
                             Batas CMC Spektrum Lab
                           </label>
                           <input
                             type="number"
+                            id="identity-cmcValue"
+                            title="Batas CMC Spektrum Lab"
+                            placeholder="Batas CMC Spektrum Lab"
                             step="0.0001"
                             value={cmcValue}
                             onChange={(e) => setCmcValue(Number(e.target.value) || 0)}
@@ -4910,8 +4951,8 @@ export function WorksheetEditor() {
                                 </div>
 
                                 <div>
-                                  <label className="text-[8.5px] font-black text-slate-800 uppercase block mb-1">Pilih Formula Pendekatan Drift</label>
-                                  <select className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-1 text-[9px] font-bold text-slate-700 outline-none w-full">
+                                  <label htmlFor="drift-formula" className="text-[8.5px] font-black text-slate-800 uppercase block mb-1">Pilih Formula Pendekatan Drift</label>
+                                  <select id="drift-formula" title="Pilih Formula Pendekatan Drift" aria-label="Pilih Formula Pendekatan Drift" className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-1 text-[9px] font-bold text-slate-700 outline-none w-full">
                                     <option value="pabrikan">1. Estimasi Produsen (e.g. Fluke / Keysight Specs)</option>
                                     <option value="konservatif">2. Pendekatan Konservatif Lab (1/3 Batas Toleransi)</option>
                                     <option value="disabled">3. Dinonaktifkan (Instrumen Standar Baru Kalibrasi)</option>
@@ -5029,12 +5070,15 @@ export function WorksheetEditor() {
                         <div className="space-y-4 mb-5 bg-slate-50/50 dark:bg-slate-950/20 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/60">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             <div className="space-y-1">
-                              <label className="text-[9px] font-black text-slate-500 dark:text-slate-200 uppercase tracking-wider font-mono">
-                                Pilih Parameter Kalibrator
-                              </label>
-                              {uniqueParamNames.length > 0 ? (
-                                <select
-                                  value={selectedInterpParam}
+                                  <label htmlFor="interp-param" className="text-[9px] font-black text-slate-500 dark:text-slate-200 uppercase tracking-wider font-mono">
+                                    Pilih Parameter Kalibrator
+                                  </label>
+                                  {uniqueParamNames.length > 0 ? (
+                                    <select
+                                      id="interp-param"
+                                      title="Pilih Parameter Kalibrator"
+                                      aria-label="Pilih Parameter Kalibrator"
+                                      value={selectedInterpParam}
                                   onChange={(e) => {
                                     setSelectedInterpParam(e.target.value);
                                     if (interpX) {
@@ -5124,6 +5168,8 @@ export function WorksheetEditor() {
                               <div className="flex items-center gap-2">
                                 <select
                                   id="batchTargetSelect"
+                                  title="Batch Auto-Fill Target"
+                                  aria-label="Batch Auto-Fill Target"
                                   className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg px-2.5 py-1 text-[10px] text-slate-650 dark:text-slate-200 font-bold outline-none focus:border-emerald-500"
                                 >
                                   <option value="masterUnc">M.Unc (u₂)</option>
@@ -5316,6 +5362,8 @@ export function WorksheetEditor() {
                               onChange={(e) =>
                                 setInterpTargetRow(Number(e.target.value))
                               }
+                              title="Pilih Baris Target Interpolasi"
+                              aria-label="Pilih Baris Target Interpolasi"
                               className="bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs text-slate-700 font-bold outline-none focus:border-blue-500"
                             >
                               <option value={-1}>-- Pilih Baris --</option>
@@ -5331,6 +5379,8 @@ export function WorksheetEditor() {
                               onChange={(e: any) =>
                                 setInterpTargetField(e.target.value)
                               }
+                              title="Pilih Kolom Target Interpolasi"
+                              aria-label="Pilih Kolom Target Interpolasi"
                               className="bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs text-slate-700 font-bold outline-none focus:border-blue-500"
                             >
                               <option value="masterUnc">M.Unc (u₂)</option>
@@ -5904,6 +5954,7 @@ export function WorksheetEditor() {
                               <input
                                 type="text"
                                 id={`input-parameterName-${idx}`}
+                                aria-label={`Nama Parameter Baris ${idx + 1}`}
                                 onKeyDown={(e) => handleTableKeyDown(e, idx, 'parameterName')}
                                 value={m.parameterName || ""}
                                 placeholder="Nama parameter..."
@@ -5924,9 +5975,12 @@ export function WorksheetEditor() {
                                   <input
                                     type="number"
                                     id={`input-point-${idx}`}
+                                    aria-label={`Titik Ukur Baris ${idx + 1}`}
                                     onKeyDown={(e) => handleTableKeyDown(e, idx, 'point')}
                                     step="any"
                                     value={m.point}
+                                    title={`Titik Ukur Baris ${idx + 1}`}
+                                    placeholder="Titik"
                                     onChange={(e) => {
                                       const newM = [...measurements];
                                       const pt = Number(e.target.value);
@@ -5939,9 +5993,11 @@ export function WorksheetEditor() {
                                   <input
                                     type="text"
                                     id={`input-unit-${idx}`}
+                                    aria-label={`Satuan Baris ${idx + 1}`}
                                     onKeyDown={(e) => handleTableKeyDown(e, idx, 'unit')}
                                     value={m.unit ? (m.unit.toLowerCase() === 'mmhg' ? 'mmHg' : m.unit) : ""}
                                     placeholder="Unit"
+                                    title={`Satuan Baris ${idx + 1}`}
                                     onChange={(e) => {
                                       const newM = [...measurements];
                                       newM[idx].unit = e.target.value;
@@ -5965,9 +6021,12 @@ export function WorksheetEditor() {
                                 <input
                                   type="number"
                                   id={`input-resolution-${idx}`}
+                                  aria-label={`Resolusi Baris ${idx + 1}`}
                                   onKeyDown={(e) => handleTableKeyDown(e, idx, 'resolution')}
                                   step="0.001"
                                   value={m.resolution || 0.01}
+                                  title={`Resolusi Baris ${idx + 1}`}
+                                  placeholder="Resolusi"
                                   onChange={(e) => {
                                     const newM = [...measurements];
                                     const res = Number(e.target.value);
@@ -5990,9 +6049,12 @@ export function WorksheetEditor() {
                                 <input
                                   type="number"
                                   id={`input-masterUnc-${idx}`}
+                                  aria-label={`Uncertainty Master Baris ${idx + 1}`}
                                   onKeyDown={(e) => handleTableKeyDown(e, idx, 'masterUnc')}
                                   step="0.0001"
                                   value={m.masterUnc || 0.001}
+                                  title={`Master Uncertainty Baris ${idx + 1}`}
+                                  placeholder="M.Unc"
                                   onChange={(e) => {
                                     const newM = [...measurements];
                                     const mUnc = Number(e.target.value);
@@ -6015,9 +6077,12 @@ export function WorksheetEditor() {
                                 <input
                                   type="number"
                                   id={`input-drift-${idx}`}
+                                  aria-label={`Drift Baris ${idx + 1}`}
                                   onKeyDown={(e) => handleTableKeyDown(e, idx, 'drift')}
                                   step="0.0001"
                                   value={m.drift || 0}
+                                  title={`Drift Baris ${idx + 1}`}
+                                  placeholder="Drift"
                                   onChange={(e) => {
                                     const newM = [...measurements];
                                     const drift = Number(e.target.value);
@@ -6369,6 +6434,8 @@ export function WorksheetEditor() {
                                       );
                                     setMeasurements(newM);
                                   }}
+                                  title={`Tipe Laboratorium Baris ${idx + 1}`}
+                                  aria-label={`Tipe Laboratorium Baris ${idx + 1}`}
                                   className="bg-white border border-slate-200 rounded-lg px-1 py-0.5 text-[9px] outline-none text-purple-700"
                                 >
                                   <option value="ph_meter">pH Meter</option>
@@ -7328,6 +7395,8 @@ export function WorksheetEditor() {
                                   measurements.filter((_, i) => i !== idx),
                                 )
                               }
+                              title={`Hapus Baris ${idx + 1}`}
+                              aria-label={`Hapus Baris ${idx + 1}`}
                               className="p-1 px-1.5 bg-transparent hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-transparent hover:border-rose-200 dark:hover:border-[#f43f5e]/30 text-slate-400 hover:text-rose-500 rounded-md transition-all"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -7628,6 +7697,8 @@ function CheckItem({ label, value, onChange, onLabelChange, onDelete, variant = 
           <form onSubmit={(e) => { e.preventDefault(); onLabelChange(tempLabel); setIsEditing(false); }} className="flex-1">
             <input autoFocus value={tempLabel} onChange={(e) => setTempLabel(e.target.value)}
               onBlur={() => { onLabelChange(tempLabel); setIsEditing(false); }}
+              title="Edit Nama Parameter"
+              placeholder="Nama Parameter"
               className="w-full bg-white dark:bg-[#070d19] border border-blue-500 dark:border-cyan-500 rounded-lg px-3 py-1.5 text-[10px] font-black text-slate-900 dark:text-white focus:outline-none italic font-mono"
             />
           </form>
@@ -7656,7 +7727,7 @@ function CheckItem({ label, value, onChange, onLabelChange, onDelete, variant = 
             isRusak ? "bg-rose-500 text-white shadow-lg shadow-rose-500/25 scale-[1.05]" : "text-slate-400 dark:text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
           )}>✕ Rusak</button>
         </div>
-        <button onClick={onDelete} className="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 cursor-pointer rounded-lg">
+        <button onClick={onDelete} className="p-1.5 text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 cursor-pointer rounded-lg" title="Hapus Parameter" aria-label="Hapus Parameter">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -7741,15 +7812,19 @@ function InputRow({ label, value, onChange, limit, isValid }: any) {
 }
 
 function IdentityInput({ label, value, onChange }: any) {
+  const inputId = `identity-${label.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
   return (
     <div className="space-y-2">
-      <label className="text-[10px] font-black text-slate-800 dark:text-cyan-400/95 uppercase tracking-widest ml-1 font-mono italic">
+      <label htmlFor={inputId} className="text-[10px] font-black text-slate-800 dark:text-cyan-400/95 uppercase tracking-widest ml-1 font-mono italic">
         {label}
       </label>
       <input
         type="text"
+        id={inputId}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        title={label}
+        placeholder={label}
         className="w-full bg-slate-50/55 dark:bg-[#070d19]/65 border border-slate-350 dark:border-cyan-500/25 rounded-2xl px-5 py-4 text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-550/15 focus:border-blue-600 dark:focus:border-cyan-400 transition-all font-mono italic shadow-inner placeholder:text-slate-400 dark:placeholder:text-slate-600"
       />
     </div>

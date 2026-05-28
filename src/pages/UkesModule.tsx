@@ -2049,6 +2049,7 @@ export function UkesModule() {
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
+                    title="Tutup"
                     className="p-1.5 hover:bg-slate-50 dark:text-slate-300 rounded-lg text-slate-401"
                   >
                     <XCircle className="w-5 h-5" />
@@ -2059,8 +2060,10 @@ export function UkesModule() {
                   {/* Base Metadata Section */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest block font-mono">Jenis Pesawat Radiologi</label>
+                      <label htmlFor="formDeviceName" className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest block font-mono">Jenis Pesawat Radiologi</label>
                       <select
+                        id="formDeviceName"
+                        title="Jenis Pesawat Radiologi"
                         value={formDeviceName}
                         onChange={(e) => setFormDeviceName(e.target.value)}
                         className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-indigo-500 font-mono"
@@ -2129,8 +2132,11 @@ export function UkesModule() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest block font-mono">Fisikawan Medis Penguji</label>
+                      <label htmlFor="formOperator" className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest block font-mono">Fisikawan Medis Penguji</label>
                       <input
+                        id="formOperator"
+                        title="Fisikawan Medis Penguji"
+                        placeholder="Nama Penguji"
                         type="text"
                         value={formOperator}
                         onChange={(e) => setFormOperator(e.target.value)}
@@ -2139,8 +2145,11 @@ export function UkesModule() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest block font-mono">Tanggal Pengujian</label>
+                      <label htmlFor="formTestDate" className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest block font-mono">Tanggal Pengujian</label>
                       <input
+                        id="formTestDate"
+                        title="Tanggal Pengujian"
+                        placeholder="Pilih Tanggal"
                         type="date"
                         value={formTestDate}
                         onChange={(e) => setFormTestDate(e.target.value)}
@@ -2167,20 +2176,20 @@ export function UkesModule() {
                       </div>
                       <div className="grid grid-cols-4 gap-3 text-xs font-mono">
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">kVp Seting</label>
-                          <input type="number" value={kvpSet} onChange={(e) => setKvpSet(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="kvpSet" className="text-[8px] text-slate-400 block mb-0.5">kVp Seting</label>
+                          <input id="kvpSet" title="kVp Seting" placeholder="0" type="number" value={kvpSet} onChange={(e) => setKvpSet(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 1</label>
-                          <input type="number" value={kvp1} onChange={(e) => setKvp1(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="kvp1" className="text-[8px] text-slate-400 block mb-0.5">Run 1</label>
+                          <input id="kvp1" title="kVp Run 1" placeholder="0" type="number" value={kvp1} onChange={(e) => setKvp1(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 2</label>
-                          <input type="number" value={kvp2} onChange={(e) => setKvp2(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="kvp2" className="text-[8px] text-slate-400 block mb-0.5">Run 2</label>
+                          <input id="kvp2" title="kVp Run 2" placeholder="0" type="number" value={kvp2} onChange={(e) => setKvp2(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 3</label>
-                          <input type="number" value={kvp3} onChange={(e) => setKvp3(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="kvp3" className="text-[8px] text-slate-400 block mb-0.5">Run 3</label>
+                          <input id="kvp3" title="kVp Run 3" placeholder="0" type="number" value={kvp3} onChange={(e) => setKvp3(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                       </div>
                     </div>
@@ -2196,20 +2205,20 @@ export function UkesModule() {
                       </div>
                       <div className="grid grid-cols-4 gap-3 text-xs font-mono">
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Time Set (ms)</label>
-                          <input type="number" value={timeSet} onChange={(e) => setTimeSet(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="timeSet" className="text-[8px] text-slate-400 block mb-0.5">Time Set (ms)</label>
+                          <input id="timeSet" title="Time Set (ms)" placeholder="0" type="number" value={timeSet} onChange={(e) => setTimeSet(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 1</label>
-                          <input type="number" value={time1} onChange={(e) => setTime1(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="time1" className="text-[8px] text-slate-400 block mb-0.5">Run 1</label>
+                          <input id="time1" title="Time Run 1 (ms)" placeholder="0" type="number" value={time1} onChange={(e) => setTime1(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 2</label>
-                          <input type="number" value={time2} onChange={(e) => setTime2(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="time2" className="text-[8px] text-slate-400 block mb-0.5">Run 2</label>
+                          <input id="time2" title="Time Run 2 (ms)" placeholder="0" type="number" value={time2} onChange={(e) => setTime2(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 3</label>
-                          <input type="number" value={time3} onChange={(e) => setTime3(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="time3" className="text-[8px] text-slate-400 block mb-0.5">Run 3</label>
+                          <input id="time3" title="Time Run 3 (ms)" placeholder="0" type="number" value={time3} onChange={(e) => setTime3(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                       </div>
                     </div>
@@ -2225,24 +2234,24 @@ export function UkesModule() {
                       </div>
                       <div className="grid grid-cols-5 gap-2 text-[10px] font-mono">
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 1</label>
-                          <input type="number" step="any" value={dose1} onChange={(e) => setDose1(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
+                          <label htmlFor="dose1" className="text-[8px] text-slate-400 block mb-0.5">Run 1</label>
+                          <input id="dose1" title="Dosis Run 1 (mGy)" placeholder="0.0" type="number" step="any" value={dose1} onChange={(e) => setDose1(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 2</label>
-                          <input type="number" step="any" value={dose2} onChange={(e) => setDose2(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
+                          <label htmlFor="dose2" className="text-[8px] text-slate-400 block mb-0.5">Run 2</label>
+                          <input id="dose2" title="Dosis Run 2 (mGy)" placeholder="0.0" type="number" step="any" value={dose2} onChange={(e) => setDose2(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 3</label>
-                          <input type="number" step="any" value={dose3} onChange={(e) => setDose3(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
+                          <label htmlFor="dose3" className="text-[8px] text-slate-400 block mb-0.5">Run 3</label>
+                          <input id="dose3" title="Dosis Run 3 (mGy)" placeholder="0.0" type="number" step="any" value={dose3} onChange={(e) => setDose3(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 4</label>
-                          <input type="number" step="any" value={dose4} onChange={(e) => setDose4(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
+                          <label htmlFor="dose4" className="text-[8px] text-slate-400 block mb-0.5">Run 4</label>
+                          <input id="dose4" title="Dosis Run 4 (mGy)" placeholder="0.0" type="number" step="any" value={dose4} onChange={(e) => setDose4(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Run 5</label>
-                          <input type="number" step="any" value={dose5} onChange={(e) => setDose5(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
+                          <label htmlFor="dose5" className="text-[8px] text-slate-400 block mb-0.5">Run 5</label>
+                          <input id="dose5" title="Dosis Run 5 (mGy)" placeholder="0.0" type="number" step="any" value={dose5} onChange={(e) => setDose5(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 p-1.5 rounded-lg text-xs font-bold" />
                         </div>
                       </div>
                     </div>
@@ -2264,20 +2273,20 @@ export function UkesModule() {
                       </div>
                       <div className="grid grid-cols-4 gap-3 text-xs font-mono">
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">SID Jarak (cm)</label>
-                          <input type="number" value={sidVal} onChange={(e) => setSidVal(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold animate-pulse" />
+                          <label htmlFor="sidVal" className="text-[8px] text-slate-400 block mb-0.5">SID Jarak (cm)</label>
+                          <input id="sidVal" title="SID Jarak (cm)" placeholder="100" type="number" value={sidVal} onChange={(e) => setSidVal(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold animate-pulse" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Penyimpangan X (cm)</label>
-                          <input type="number" step="any" value={misX} onChange={(e) => setMisX(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="misX" className="text-[8px] text-slate-400 block mb-0.5">Penyimpangan X (cm)</label>
+                          <input id="misX" title="Penyimpangan X (cm)" placeholder="0.0" type="number" step="any" value={misX} onChange={(e) => setMisX(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Penyimpangan Y (cm)</label>
-                          <input type="number" step="any" value={misY} onChange={(e) => setMisY(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="misY" className="text-[8px] text-slate-400 block mb-0.5">Penyimpangan Y (cm)</label>
+                          <input id="misY" title="Penyimpangan Y (cm)" placeholder="0.0" type="number" step="any" value={misY} onChange={(e) => setMisY(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Ketebalan HVL (mmAl)</label>
-                          <input type="number" step="any" value={hvlVal} onChange={(e) => setHvlVal(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
+                          <label htmlFor="hvlVal" className="text-[8px] text-slate-400 block mb-0.5">Ketebalan HVL (mmAl)</label>
+                          <input id="hvlVal" title="Ketebalan HVL (mmAl)" placeholder="0.0" type="number" step="any" value={hvlVal} onChange={(e) => setHvlVal(Number(e.target.value))} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold" />
                         </div>
                       </div>
                       {hvlVal > 0 && calculated.hvlStatus === 'Tidak Lolos' && (
@@ -2299,8 +2308,11 @@ export function UkesModule() {
                       </div>
                       <div className="grid grid-cols-2 gap-3 text-xs font-mono">
                         <div>
-                          <label className="text-[8px] text-slate-400 block mb-0.5">Laju Dosis Bocor at 1m (mGy/jam)</label>
+                          <label htmlFor="tubeLeakage" className="text-[8px] text-slate-400 block mb-0.5">Laju Dosis Bocor at 1m (mGy/jam)</label>
                           <input
+                            id="tubeLeakage"
+                            title="Laju Dosis Bocor at 1m (mGy/jam)"
+                            placeholder="0.0"
                             type="number"
                             step="any"
                             value={tubeLeakage}

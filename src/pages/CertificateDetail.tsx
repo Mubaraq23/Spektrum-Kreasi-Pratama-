@@ -518,7 +518,7 @@ export function CertificateDetail() {
     <div className="max-w-6xl mx-auto space-y-10 pb-20 p-4">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 no-print">
         <div className="flex items-center gap-6">
-          <button onClick={() => navigate('/certificates')} className="p-4 bg-white border border-slate-200 hover:bg-slate-50 transition-all rounded-[1.2rem] shadow-sm text-slate-400 hover:text-blue-600 active:scale-95">
+          <button onClick={() => navigate('/certificates')} title="Kembali ke Sertifikat" className="p-4 bg-white border border-slate-200 hover:bg-slate-50 transition-all rounded-[1.2rem] shadow-sm text-slate-400 hover:text-blue-600 active:scale-95">
             <ChevronLeft className="w-7 h-7" />
           </button>
           <div>

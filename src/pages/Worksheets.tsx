@@ -399,6 +399,8 @@ export function Worksheets() {
                 <button 
                   onClick={() => setIsModalOpen(false)}
                   className="p-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-3xl text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all animate-pulse"
+                  title="Tutup"
+                  aria-label="Tutup"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -418,6 +420,8 @@ export function Worksheets() {
                           setDeviceName('');
                         }}
                         className="w-full bg-white dark:bg-[#070d19]/80 border border-slate-400 dark:border-slate-700/80 rounded-2xl px-6 py-5 text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer uppercase tracking-widest"
+                        title="Kategori Alat Kesehatan"
+                        aria-label="Kategori Alat Kesehatan"
                       >
                         <option value="all" className="bg-white dark:bg-[#070d19] text-slate-600 dark:text-slate-400 font-black">-- SEMUA KATEGORI --</option>
                         {categories.map((cat: string) => (
@@ -444,6 +448,8 @@ export function Worksheets() {
                           }
                         }}
                         className="w-full bg-white dark:bg-[#070d19]/80 border border-slate-400 dark:border-slate-700/80 rounded-2xl px-6 py-5 text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer uppercase tracking-widest"
+                        title="Protokol Kalibrasi (Metode)"
+                        aria-label="Protokol Kalibrasi (Metode)"
                       >
                         <option value="" className="bg-white dark:bg-[#070d19] text-slate-600 dark:text-slate-400 font-black">-- PILIH PROTOKOL --</option>
                         {filteredMethodsInModal.map((m: any) => (

@@ -1581,6 +1581,7 @@ export function IPMModule() {
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
+                    title="Tutup"
                     className="p-1.5 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg text-slate-400"
                   >
                     <XCircle className="w-5 h-5" />
@@ -1591,10 +1592,12 @@ export function IPMModule() {
                   {/* Select Template Checklist */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5 col-span-2">
-                      <label className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
+                      <label htmlFor="formTemplate" className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
                         Template Checklist Inspeksi
                       </label>
                       <select
+                        id="formTemplate"
+                        title="Template Checklist Inspeksi"
                         value={formTemplate}
                         onChange={(e) => setFormTemplate(e.target.value)}
                         className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-blue-500 font-mono"
@@ -1674,10 +1677,12 @@ export function IPMModule() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
+                      <label htmlFor="formDepartment" className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
                         Instalasi Pelayanan / Unit
                       </label>
                       <select
+                        id="formDepartment"
+                        title="Instalasi Pelayanan / Unit"
                         value={formDepartment}
                         onChange={(e) => setFormDepartment(e.target.value)}
                         className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-blue-500 font-mono"
@@ -1691,10 +1696,13 @@ export function IPMModule() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
+                      <label htmlFor="formLastMaintenanceDate" className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
                         Tgl Pemeliharaan Preventif
                       </label>
                       <input
+                        id="formLastMaintenanceDate"
+                        title="Tanggal Pemeliharaan Preventif"
+                        placeholder="Tanggal Pemeliharaan"
                         type="date"
                         value={formLastMaintenanceDate}
                         onChange={(e) => setFormLastMaintenanceDate(e.target.value)}
@@ -1703,10 +1711,12 @@ export function IPMModule() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
+                      <label htmlFor="formStatus" className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest font-mono block">
                         Status Awal Pemeliharaan
                       </label>
                       <select
+                        id="formStatus"
+                        title="Status Awal Pemeliharaan"
                         value={formStatus}
                         onChange={(e) => setFormStatus(e.target.value as any)}
                         className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-white outline-none focus:border-blue-500 font-mono"
@@ -1749,6 +1759,8 @@ export function IPMModule() {
                                 <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
                                   <input
                                     type="text"
+                                    title="Nama Parameter Fisik"
+                                    placeholder="Nama Parameter"
                                     value={item.name}
                                     onChange={(e) => updateVisualParameterName(item.id, e.target.value)}
                                     className="text-[10px] font-mono text-slate-800 dark:text-slate-200 bg-transparent border-0 border-b border-transparent focus:border-blue-500 outline-none w-full py-0.5"
@@ -1825,6 +1837,8 @@ export function IPMModule() {
                                 <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
                                   <input
                                     type="text"
+                                    title="Nama Parameter Fungsi"
+                                    placeholder="Nama Parameter"
                                     value={item.name}
                                     onChange={(e) => updateFunctionalParameterName(item.id, e.target.value)}
                                     className="text-[10px] font-mono text-slate-800 dark:text-slate-200 bg-transparent border-0 border-b border-transparent focus:border-blue-500 outline-none w-full py-0.5"
@@ -1884,8 +1898,11 @@ export function IPMModule() {
                         {formTemplate === 'Infusion / Syringe Pump' && (
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                              <label className="text-[9px] font-bold text-slate-500 font-mono block">Volumetric Flow Rate Target (ml/jam)</label>
+                              <label htmlFor="measFlowRateTarget" className="text-[9px] font-bold text-slate-500 font-mono block">Volumetric Flow Rate Target (ml/jam)</label>
                               <input
+                                id="measFlowRateTarget"
+                                title="Volumetric Flow Rate Target in ml/jam"
+                                placeholder="100"
                                 type="number"
                                 value={measFlowRateTarget}
                                 onChange={(e) => setMeasFlowRateTarget(Number(e.target.value))}
@@ -1893,8 +1910,11 @@ export function IPMModule() {
                               />
                             </div>
                             <div className="space-y-1">
-                              <label className="text-[9px] font-bold text-slate-500 font-mono block">Volumetric Flow Rate Terukur (ml/jam)</label>
+                              <label htmlFor="measFlowRateMeasured" className="text-[9px] font-bold text-slate-500 font-mono block">Volumetric Flow Rate Terukur (ml/jam)</label>
                               <input
+                                id="measFlowRateMeasured"
+                                title="Volumetric Flow Rate Terukur in ml/jam"
+                                placeholder="100.0"
                                 type="number"
                                 step="any"
                                 value={measFlowRateMeasured}
@@ -1903,8 +1923,11 @@ export function IPMModule() {
                               />
                             </div>
                             <div className="space-y-1">
-                              <label className="text-[9px] font-bold text-slate-500 font-mono block">Occlusion Pressure Target (mmHg)</label>
+                              <label htmlFor="measOcclusionTarget" className="text-[9px] font-bold text-slate-500 font-mono block">Occlusion Pressure Target (mmHg)</label>
                               <input
+                                id="measOcclusionTarget"
+                                title="Occlusion Pressure Target in mmHg"
+                                placeholder="300"
                                 type="number"
                                 value={measOcclusionTarget}
                                 onChange={(e) => setMeasOcclusionTarget(Number(e.target.value))}
@@ -1912,8 +1935,11 @@ export function IPMModule() {
                               />
                             </div>
                             <div className="space-y-1">
-                              <label className="text-[9px] font-bold text-slate-500 font-mono block">Occlusion Pressure Terukur (mmHg)</label>
+                              <label htmlFor="measOcclusionMeasured" className="text-[9px] font-bold text-slate-500 font-mono block">Occlusion Pressure Terukur (mmHg)</label>
                               <input
+                                id="measOcclusionMeasured"
+                                title="Occlusion Pressure Terukur in mmHg"
+                                placeholder="300.0"
                                 type="number"
                                 step="any"
                                 value={measOcclusionMeasured}
@@ -1996,6 +2022,8 @@ export function IPMModule() {
                               <div className="flex gap-2">
                                 <input
                                   type="number"
+                                  title="O2 Target (%)"
+                                  placeholder="Target"
                                   value={measO2Target}
                                   onChange={(e) => setMeasO2Target(Number(e.target.value))}
                                   className="w-1/2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold font-mono text-slate-900 dark:text-white"
@@ -2003,6 +2031,8 @@ export function IPMModule() {
                                 <input
                                   type="number"
                                   step="any"
+                                  title="O2 Terukur (%)"
+                                  placeholder="Terukur"
                                   value={measO2Measured}
                                   onChange={(e) => setMeasO2Measured(Number(e.target.value))}
                                   className="w-1/2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold font-mono text-slate-900 dark:text-white"
@@ -2014,6 +2044,8 @@ export function IPMModule() {
                               <div className="flex gap-2">
                                 <input
                                   type="number"
+                                  title="PIP Target (cmH2O)"
+                                  placeholder="Target"
                                   value={measPressureTarget}
                                   onChange={(e) => setMeasPressureTarget(Number(e.target.value))}
                                   className="w-1/2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold font-mono text-slate-900 dark:text-white"
@@ -2021,6 +2053,8 @@ export function IPMModule() {
                                 <input
                                   type="number"
                                   step="any"
+                                  title="PIP Terukur (cmH2O)"
+                                  placeholder="Terukur"
                                   value={measPressureMeasured}
                                   onChange={(e) => setMeasPressureMeasured(Number(e.target.value))}
                                   className="w-1/2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold font-mono text-slate-900 dark:text-white"
@@ -2048,7 +2082,7 @@ export function IPMModule() {
                             measGroundResistance > 0.5 && "glow-fail-danger"
                           )}>
                             <div className="flex justify-between items-center text-[9px] font-mono">
-                              <span className="text-slate-400 font-bold uppercase">Hambatan Pembumian</span>
+                              <label htmlFor="measGroundResistance" className="text-slate-400 font-bold uppercase cursor-pointer">Hambatan Pembumian</label>
                               <span className={cn(
                                 "font-black uppercase px-1.5 py-0.25 rounded",
                                 measGroundResistance <= 0.5 ? "bg-emerald-100 text-emerald-800" : "bg-red-200 text-red-800 animate-pulse"
@@ -2074,6 +2108,9 @@ export function IPMModule() {
                             </div>
                             <div className="flex items-center gap-2">
                               <input
+                                id="measGroundResistance"
+                                title="Nilai Hambatan Pembumian"
+                                placeholder="0.1"
                                 type="number"
                                 step="any"
                                 value={measGroundResistance}
@@ -2089,7 +2126,7 @@ export function IPMModule() {
                             measLeakageCurrent > 300 && "glow-fail-danger"
                           )}>
                             <div className="flex justify-between items-center text-[9px] font-mono">
-                              <span className="text-slate-400 font-bold uppercase">Arus Bocor Sasis</span>
+                              <label htmlFor="measLeakageCurrent" className="text-slate-400 font-bold uppercase cursor-pointer">Arus Bocor Sasis</label>
                               <span className={cn(
                                 "font-black uppercase px-1.5 py-0.25 rounded",
                                 measLeakageCurrent <= 300 ? "bg-emerald-100 text-emerald-800" : "bg-red-200 text-red-800 animate-pulse"
@@ -2115,6 +2152,9 @@ export function IPMModule() {
                             </div>
                             <div className="flex items-center gap-2">
                               <input
+                                id="measLeakageCurrent"
+                                title="Nilai Arus Bocor Sasis"
+                                placeholder="50"
                                 type="number"
                                 step="any"
                                 value={measLeakageCurrent}

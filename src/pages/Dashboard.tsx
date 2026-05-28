@@ -682,7 +682,7 @@ export function Dashboard() {
                     <span className="text-xs font-black font-mono text-emerald-500 uppercase">99.8% OK</span>
                   </div>
                   <div className="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden mb-3">
-                    <div className="bg-emerald-500 h-full rounded-full" style={{ width: '99.8%' }}></div>
+                    <div className="bg-emerald-500 h-full rounded-full w-[99.8%]"></div>
                   </div>
                   <p className="text-[9px] text-slate-400 leading-relaxed font-mono font-semibold">Semua alat medis RS Anda yang selesai diuji PT Spektrum Kreasi Pratama lolos ambang toleransi standar Kemenkes LK-147-IDN.</p>
                 </div>
@@ -858,11 +858,14 @@ export function Dashboard() {
             {/* Input Form Fields with transparent slate border dark container */}
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-mono tracking-widest uppercase text-slate-500 dark:text-slate-400 mb-1.5">
+                <label htmlFor="refFreqVal" className="block text-[10px] font-mono tracking-widest uppercase text-slate-500 dark:text-slate-400 mb-1.5">
                   CALIBRATION REFERENCE FREQUENCY (kHz)
                 </label>
                 <div className="relative">
                   <input
+                    id="refFreqVal"
+                    title="Calibration Reference Frequency in kHz"
+                    placeholder="100.000"
                     type="number"
                     step="0.001"
                     value={refFreqVal}
@@ -876,11 +879,14 @@ export function Dashboard() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono tracking-widest uppercase text-slate-500 dark:text-slate-400 mb-1.5">
+                <label htmlFor="measuredFreqVal" className="block text-[10px] font-mono tracking-widest uppercase text-slate-500 dark:text-slate-400 mb-1.5">
                   TEST PROBE MEASURED FREQUENCY (kHz)
                 </label>
                 <div className="relative">
                   <input
+                    id="measuredFreqVal"
+                    title="Test Probe Measured Frequency in kHz"
+                    placeholder="100.003"
                     type="number"
                     step="0.001"
                     value={measuredFreqVal}
@@ -1783,7 +1789,7 @@ export function Dashboard() {
                       </span>
                     </div>
                     <div className="h-1 bg-slate-100 dark:bg-[#030611] rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-600 dark:bg-cyan-500 animate-in slide-in-from-left duration-1000" style={{ width: '51%' }} />
+                      <div className="h-full bg-blue-600 dark:bg-cyan-500 animate-in slide-in-from-left duration-1000 w-[51%]" />
                     </div>
                   </div>
 
@@ -1795,7 +1801,7 @@ export function Dashboard() {
                       </span>
                     </div>
                     <div className="h-1 bg-slate-100 dark:bg-[#030611] rounded-full overflow-hidden">
-                      <div className="h-full bg-violet-600 dark:bg-violet-400 animate-in slide-in-from-left duration-1000" style={{ width: '33%' }} />
+                      <div className="h-full bg-violet-600 dark:bg-violet-400 animate-in slide-in-from-left duration-1000 w-[33%]" />
                     </div>
                   </div>
 
@@ -1807,7 +1813,7 @@ export function Dashboard() {
                       </span>
                     </div>
                     <div className="h-1 bg-slate-100 dark:bg-[#030611] rounded-full overflow-hidden">
-                      <div className="h-full bg-cyan-600 dark:bg-cyan-400 animate-in slide-in-from-left duration-1000" style={{ width: '85%' }} />
+                      <div className="h-full bg-cyan-600 dark:bg-cyan-400 animate-in slide-in-from-left duration-1000 w-[85%]" />
                     </div>
                   </div>
                 </div>
