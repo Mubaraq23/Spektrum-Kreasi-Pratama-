@@ -129,7 +129,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Desktop Sidebar */}
       <aside 
         className={cn(
-          "hidden md:flex flex-col border-r border-slate-200 dark:border-slate-800 transition-all duration-500 ease-in-out bg-white dark:bg-[#0b0f19] relative z-40 shadow-xl shadow-slate-200/50 dark:shadow-none print:hidden",
+          "hidden md:flex flex-col transition-all duration-500 ease-in-out glass-sidebar relative z-40 shadow-xl print:hidden",
           sidebarOpen ? "w-72" : "w-20"
         )}
       >
@@ -239,7 +239,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-6 bg-white/80 dark:bg-[#030612]/85 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 z-30 print:hidden">
+        <header className="h-16 flex items-center justify-between px-6 glass-header z-30 print:hidden">
           <div className="flex items-center gap-5">
             <button 
               onClick={() => {
@@ -463,7 +463,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-                className="fixed top-0 left-0 h-full w-72 bg-white dark:bg-[#0b0f19] border-r border-slate-200 dark:border-slate-800 z-[99] md:hidden flex flex-col p-6 shadow-2xl overflow-hidden"
+                className="fixed top-0 left-0 h-full w-72 glass-sidebar z-[99] md:hidden flex flex-col p-6 shadow-2xl overflow-hidden"
               >
                 <div className="flex items-center justify-between pb-6 border-b border-slate-200 dark:border-slate-800">
                   <Logo className="h-9 text-slate-900 dark:text-white" />
@@ -521,7 +521,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </AnimatePresence>
 
         {/* Bottom Navigation (Mobile) */}
-        <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-[#0b0f19]/90 backdrop-blur-2xl border-t border-slate-200/50 dark:border-cyan-500/15 py-2.5 px-3 pb-safe flex items-center justify-between z-50 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_-8px_32px_rgba(6,182,212,0.06)] max-h-16 transition-all duration-300">
+        <nav className="md:hidden fixed bottom-0 left-0 w-full glass-bottom-nav py-2.5 px-3 pb-safe flex items-center justify-between z-50 shadow-2xl max-h-16 transition-all duration-300">
           <NavLink
             to="/dashboard"
             className={({ isActive }) => cn(

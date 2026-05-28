@@ -84,10 +84,10 @@ export function AIAssistant() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="w-80 sm:w-96 h-[500px] bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] overflow-hidden pointer-events-auto flex flex-col"
+            className="w-80 sm:w-96 h-[500px] glass-dark border border-white/5 rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.45)] overflow-hidden pointer-events-auto flex flex-col dark:bg-slate-950/45 dark:backdrop-blur-3xl"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-blue-600/80 to-indigo-700/80 backdrop-blur-md p-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-white backdrop-blur-md">
                   <BrainCircuit className="w-6 h-6" />
@@ -103,6 +103,7 @@ export function AIAssistant() {
               <button 
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-white/10 rounded-xl text-white/70 hover:text-white transition-all"
+                title="Tutup Panel AI"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -122,7 +123,7 @@ export function AIAssistant() {
                     "p-4 rounded-3xl text-[11px] leading-relaxed",
                     msg.role === 'user' 
                       ? "bg-blue-600 text-white rounded-tr-none shadow-lg shadow-blue-500/10" 
-                      : "bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700"
+                      : "bg-slate-800/40 dark:bg-slate-900/40 backdrop-blur-md text-slate-200 rounded-tl-none border border-white/5"
                   )}>
                     <div className="markdown-body prose prose-invert prose-sm max-w-none">
                       <Markdown>{msg.text}</Markdown>
@@ -132,7 +133,7 @@ export function AIAssistant() {
               ))}
               {isLoading && (
                 <div className="flex items-start gap-2 max-w-[85%]">
-                   <div className="bg-slate-800 border border-slate-700 p-4 rounded-3xl rounded-tl-none flex items-center gap-3">
+                   <div className="bg-slate-800/40 dark:bg-slate-900/40 backdrop-blur-md border border-white/5 p-4 rounded-3xl rounded-tl-none flex items-center gap-3">
                       <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Analisa Data...</span>
                    </div>
@@ -141,19 +142,20 @@ export function AIAssistant() {
             </div>
 
             {/* Input Form */}
-            <div className="p-6 bg-slate-900 border-t border-slate-800">
+            <div className="p-6 bg-slate-950/30 backdrop-blur-md border-t border-white/5">
               <form onSubmit={handleSend} className="relative">
                 <input 
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Tanyakan sesuatu tentang metrologi..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-2xl pl-5 pr-14 py-4 text-[11px] text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-500 font-bold"
+                  className="w-full bg-slate-800/40 border border-white/5 rounded-2xl pl-5 pr-14 py-4 text-[11px] text-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-500 transition-all placeholder:text-slate-500 font-bold backdrop-blur-md"
                 />
                 <button 
                   type="submit"
                   disabled={!input.trim() || isLoading}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 active:scale-95"
+                  title="Kirim Pertanyaan"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -161,13 +163,13 @@ export function AIAssistant() {
               <div className="mt-4 flex flex-wrap gap-2">
                  <button 
                   onClick={() => setInput('Apa itu k=2 dalam ketidakpastian?')}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[8px] font-black text-slate-400 uppercase tracking-widest transition-all"
+                  className="px-3 py-1.5 bg-slate-800/30 hover:bg-slate-700/50 border border-white/5 rounded-lg text-[8px] font-black text-slate-400 uppercase tracking-widest transition-all backdrop-blur-sm"
                  >
                    ± U95 k=2?
                  </button>
                  <button 
                   onClick={() => setInput('Saran metode kerja Tensimeter')}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[8px] font-black text-slate-400 uppercase tracking-widest transition-all"
+                  className="px-3 py-1.5 bg-slate-800/30 hover:bg-slate-700/50 border border-white/5 rounded-lg text-[8px] font-black text-slate-400 uppercase tracking-widest transition-all backdrop-blur-sm"
                  >
                    MK Tensimeter
                  </button>

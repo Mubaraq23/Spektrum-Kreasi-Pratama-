@@ -102,12 +102,12 @@ export function Chat() {
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className={cn(
-              "w-80 sm:w-96 bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden pointer-events-auto transition-all duration-300",
+              "w-80 sm:w-96 glass border border-slate-200/30 dark:border-white/5 rounded-3xl shadow-2xl overflow-hidden pointer-events-auto transition-all duration-300 dark:bg-slate-900/50 dark:backdrop-blur-3xl",
               isMinimized && "h-[60px]"
             )}
           >
             {/* Chat Header */}
-            <div className="bg-blue-600 p-4 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-blue-600/80 to-indigo-700/80 backdrop-blur-md p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white">
                   <MessageCircle className="w-5 h-5" />
@@ -124,12 +124,14 @@ export function Chat() {
                 <button 
                   onClick={() => setIsMinimized(!isMinimized)}
                   className="p-1.5 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-colors"
+                  title={isMinimized ? "Perbesar Chat" : "Perkecil Chat"}
                 >
                   {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
                 </button>
                 <button 
                   onClick={toggleChat}
                   className="p-1.5 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-colors"
+                  title="Tutup Chat"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -141,7 +143,7 @@ export function Chat() {
                 {/* Messages Area */}
                 <div 
                   ref={scrollRef}
-                  className="flex-1 h-[370px] overflow-y-auto p-5 space-y-4 scroll-smooth bg-slate-50/50"
+                  className="flex-1 h-[370px] overflow-y-auto p-5 space-y-4 scroll-smooth bg-slate-50/20 dark:bg-slate-950/25"
                 >
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
@@ -157,7 +159,7 @@ export function Chat() {
                             "max-w-[85%] rounded-[1.5rem] p-4 text-sm flex flex-col gap-1 shadow-sm",
                             isMe 
                               ? "bg-blue-600 text-white rounded-tr-none" 
-                              : "bg-white text-slate-900 border border-slate-100 rounded-tl-none"
+                              : "bg-white/60 dark:bg-slate-800/40 text-slate-900 dark:text-slate-100 border border-slate-200/50 dark:border-white/5 rounded-tl-none backdrop-blur-md"
                           )}>
                             {!isMe && (
                               <div className="flex items-center gap-1.5 mb-1">
@@ -184,7 +186,7 @@ export function Chat() {
                 {/* Input Area */}
                 <form 
                   onSubmit={handleSendMessage}
-                  className="p-4 border-t border-slate-100 bg-white"
+                  className="p-4 border-t border-slate-100/50 dark:border-slate-800/50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md"
                 >
                   <div className="relative group">
                     <input 
@@ -198,6 +200,7 @@ export function Chat() {
                       type="submit"
                       disabled={!newMessage.trim()}
                       className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 disabled:bg-slate-200 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                      title="Kirim Pesan"
                     >
                       <Send className="w-4 h-4" />
                     </button>
