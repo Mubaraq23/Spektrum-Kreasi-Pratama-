@@ -56,7 +56,8 @@ const BAPETEN_LIMITS = {
   timeAccuracy: 10,            // max ±10% deviation
   reproducibilityCV: 0.05,     // CV <= 0.05 (5%)
   linearityC: 0.1,             // Linearity coefficient <= 0.1 (10%)
-  collimationPct: 2            // total misalign <= 2% of SID
+  collimationPct: 2,           // total misalign <= 2% of SID
+  tubeLeakage: 1.0             // Tube Housing Leakage <= 1.0 mGy/hour at 1 meter
 };
 
 // BAPETEN standard minimum HVL thickness lookup
@@ -139,12 +140,45 @@ export function UkesModule() {
   const [formOperator, setFormOperator] = useState('');
   const [formTestDate, setFormTestDate] = useState(new Date().toISOString().split('T')[0]);
 
+  // Dynamic custom parameters state for extra safety parameters (BAPETEN / standard kustom)
+  interface CustomChecklistItem {
+    id: string;
+    name: string;
+    status: 'Lolos' | 'Tidak Lolos';
+  }
+  const [customParameters, setCustomParameters] = useState<CustomChecklistItem[]>([]);
+
+  // Helpers to add, edit, or delete items inside custom parameters
+  const addCustomParameter = () => {
+    setCustomParameters(prev => [
+      ...prev,
+      {
+        id: `cust-${Date.now()}-${Math.random()}`,
+        name: `Parameter Kustom Baru ${prev.length + 1}`,
+        status: 'Lolos'
+      }
+    ]);
+  };
+
+  const deleteCustomParameter = (id: string) => {
+    setCustomParameters(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateCustomParameterName = (id: string, name: string) => {
+    setCustomParameters(prev => prev.map(item => item.id === id ? { ...item, name } : item));
+  };
+
+  const updateCustomParameterStatus = (id: string, status: 'Lolos' | 'Tidak Lolos') => {
+    setCustomParameters(prev => prev.map(item => item.id === id ? { ...item, status } : item));
+  };
+
   // Form scientific fields
   const [kvpSet, setKvpSet] = useState<number>(0);
   const [kvp1, setKvp1] = useState<number>(0);
   const [kvp2, setKvp2] = useState<number>(0);
   const [kvp3, setKvp3] = useState<number>(0);
 
+  // Waktu eksposur
   const [timeSet, setTimeSet] = useState<number>(0);
   const [time1, setTime1] = useState<number>(0);
   const [time2, setTime2] = useState<number>(0);
@@ -157,11 +191,12 @@ export function UkesModule() {
   const [dose4, setDose4] = useState<number>(0);
   const [dose5, setDose5] = useState<number>(0);
 
-  // Collimation and HVL
+  // Collimation, HVL, and Leakage
   const [sidVal, setSidVal] = useState<number>(100);
   const [misX, setMisX] = useState<number>(0);
   const [misY, setMisY] = useState<number>(0);
   const [hvlVal, setHvlVal] = useState<number>(0);
+  const [tubeLeakage, setTubeLeakage] = useState<number>(0);
 
   // Linearity parameters (5 mAs/Dose pairs)
   const [linMas, setLinMas] = useState<number[]>([50, 100, 200, 400, 800]);
@@ -222,11 +257,53 @@ export function UkesModule() {
     setMisX(p.misalignX || p.misX || 0.8);
     setMisY(p.misalignY || p.misY || 0.9);
     setHvlVal(p.hvlValue || p.hvlVal || 2.7);
+    setTubeLeakage(p.tubeLeakage || 0);
     // Linearity
     if (p.linMas && p.linDose) {
       setLinMas(p.linMas);
       setLinDose(p.linDose);
     }
+    
+    const custArr = Object.entries(record.customParameters || {}).map(([name, status], idx) => ({
+      id: `cust-${idx}-${Date.now()}`,
+      name,
+      status: status as 'Lolos' | 'Tidak Lolos'
+    }));
+    setCustomParameters(custArr);
+
+    setIsModalOpen(true);
+  };
+
+  const handleOpenNew = () => {
+    setIsEditMode(false);
+    setEditingRecordId(null);
+    setFormDeviceName('Pesawat Sinar-X Radiografi Umum');
+    setFormBrand('');
+    setFormModel('');
+    setFormSerialNumber('');
+    setFormLocation('');
+    setFormFasyankes('');
+    setFormOperator('');
+    setFormTestDate(new Date().toISOString().split('T')[0]);
+    setKvpSet(80);
+    setKvp1(79.5);
+    setKvp2(80.1);
+    setKvp3(79.8);
+    setTimeSet(100);
+    setTime1(101.5);
+    setTime2(99.2);
+    setTime3(100.8);
+    setDose1(1.24);
+    setDose2(1.26);
+    setDose3(1.25);
+    setDose4(1.23);
+    setDose5(1.27);
+    setSidVal(100);
+    setMisX(0.8);
+    setMisY(0.9);
+    setHvlVal(2.7);
+    setTubeLeakage(0);
+    setCustomParameters([]);
     setIsModalOpen(true);
   };
 
@@ -258,313 +335,352 @@ export function UkesModule() {
 
       const marginX = 20;
       let yPos = 25;
+      const pageHeight = 280;
 
-      // Header logo / Brand info
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(30, 41, 59); // slate-800
-      doc.text("PT. SPEKTRUM KREASI PRATAMA", marginX, yPos);
-      yPos += 5.5;
+      // ─── Helper: professional double border ──────────────────────────────
+      const drawBorder = () => {
+        doc.setDrawColor(30, 64, 175);
+        doc.setLineWidth(1.2);
+        doc.rect(8, 8, 194, 281);
+        doc.setLineWidth(0.4);
+        doc.rect(10, 10, 190, 277);
+        doc.setDrawColor(148, 163, 184);
+        doc.setLineWidth(0.2);
+        doc.rect(11.5, 11.5, 187, 274);
+      };
+      drawBorder();
 
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.setTextColor(100, 116, 139); // slate-500
-      doc.text("DIVISI UJI KESESUAIAN & KEPATUHAN RADIOLOGI ALKES", marginX, yPos);
-      yPos += 4;
+      // ─── Header ──────────────────────────────────────────────────────────
+      doc.setFillColor(2, 132, 199);
+      doc.ellipse(22, 26, 3, 4, 'F');
+      doc.setFillColor(30, 58, 138);
+      doc.ellipse(24, 28, 3, 4, 'F');
 
-      doc.setDrawColor(226, 232, 240); // slate-200
-      doc.setLineWidth(0.5);
-      doc.line(marginX, yPos, 190, yPos);
-      yPos += 8;
-
-      // Report Title
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
-      doc.setTextColor(15, 23, 42); // slate-900
-      doc.text("LAPORAN HASIL UJI KESESUAIAN (CONFORMITY REPORT)", marginX, yPos);
-      yPos += 5;
-      
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8);
+      doc.setTextColor(29, 78, 216);
+      doc.text("PT. SPEKTRUM KREASI PRATAMA", 34, 25);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
       doc.setTextColor(100, 116, 139);
-      doc.text("Evaluasi Kepatuhan berdasarkan Peraturan Kepala BAPETEN No. 2 Tahun 2018", marginX, yPos);
-      yPos += 10;
+      doc.text("Jl. K.H.M. Yusuf Raya No.14, Mekar Jaya, Sukmajaya, Kota Depok – (021) 2961-0080", 34, 30);
+      doc.text("DIVISI UJI KESESUAIAN & KEPATUHAN RADIOLOGI ALKES (BAPETEN)", 34, 34);
 
-      // Two-column metadata block
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(8.5);
-      doc.setTextColor(71, 85, 105);
-      
-      // Column headers
+      doc.setDrawColor(29, 78, 216);
+      doc.setLineWidth(0.8);
+      doc.line(marginX, 38, 190, 38);
+      yPos = 45;
+
+      // ─── Title block ─────────────────────────────────────────────────────
+      doc.setFillColor(239, 246, 255);
+      doc.rect(marginX, yPos, 170, 14, 'F');
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setTextColor(15, 23, 42);
+      doc.text("LAPORAN HASIL UJI KESESUAIAN (CONFORMITY TESTING REPORT)", 105, yPos + 5.5, { align: "center" });
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text("Evaluasi Kepatuhan berdasarkan Peraturan Kepala BAPETEN No. 2 Tahun 2018", 105, yPos + 10.5, { align: "center" });
+      yPos += 18;
+
+      // ─── Metadata two-column ─────────────────────────────────────────────
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(29, 78, 216);
       doc.text("IDENTITAS PESAWAT SINAR-X", marginX, yPos);
-      doc.text("INFORMASI FASYANKES & ANALIS", 110, yPos);
+      doc.text("INFORMASI FASYANKES & ANALIS", 113, yPos);
       yPos += 5;
 
-      doc.setFont("Helvetica", "normal");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
       doc.setTextColor(15, 23, 42);
 
-      const metadataLeft = [
+      const metaLeft = [
         ["Nama Alat:", record.deviceName || "-"],
         ["Merek / Tipe:", `${record.brand || "-"} / ${record.model || "-"}`],
         ["Nomor Seri:", record.serialNumber || "-"],
         ["Lokasi / Ruang:", record.location || "-"]
       ];
-
-      const metadataRight = [
+      const metaRight = [
         ["Fasyankes:", record.fasyankesName || "-"],
         ["Tanggal Uji:", record.testDate || "-"],
         ["Fisikawan Medis:", record.operatorName || "-"],
-        ["Hasil Akhir:", record.kesimpulan || "-"]
+        ["Hasil Akhir:", record.kesimpulan?.split(" ").slice(0, 4).join(" ") || "-"]
       ];
 
       let leftY = yPos;
-      metadataLeft.forEach(([label, val]) => {
-        doc.setFont("Helvetica", "bold");
-        doc.text(label, marginX, leftY);
-        doc.setFont("Helvetica", "normal");
-        doc.text(val, marginX + 25, leftY);
+      metaLeft.forEach(([label, val]) => {
+        doc.setFont("helvetica", "bold"); doc.text(label, marginX, leftY);
+        doc.setFont("helvetica", "normal"); doc.text(String(val).slice(0, 45), marginX + 27, leftY);
         leftY += 4.5;
       });
-
       let rightY = yPos;
-      metadataRight.forEach(([label, val]) => {
-        doc.setFont("Helvetica", "bold");
-        doc.text(label, 110, rightY);
-        doc.setFont("Helvetica", "normal");
-        doc.text(val, 110 + 32, rightY);
+      metaRight.forEach(([label, val]) => {
+        doc.setFont("helvetica", "bold"); doc.text(label, 113, rightY);
+        doc.setFont("helvetica", "normal"); doc.text(String(val).slice(0, 35), 113 + 28, rightY);
         rightY += 4.5;
       });
+      yPos = Math.max(leftY, rightY) + 5;
 
-      yPos = Math.max(leftY, rightY) + 6;
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.4);
+      doc.line(marginX, yPos - 2, 190, yPos - 2);
 
-      // elegant separator line
-      doc.setDrawColor(241, 245, 249);
-      doc.line(marginX, yPos - 3, 190, yPos - 3);
+      const successColor: [number, number, number] = [16, 185, 129];
+      const failColor: [number, number, number] = [239, 68, 68];
 
-      const successColor = [16, 185, 129];
-      const failColor = [239, 68, 68];
+      // ─── Helper: section header ───────────────────────────────────────────
+      const secHead = (title: string, num: string) => {
+        if (yPos > pageHeight - 35) { doc.addPage(); drawBorder(); yPos = 25; }
+        doc.setFillColor(239, 246, 255);
+        doc.rect(marginX, yPos, 170, 6, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(30, 58, 138);
+        doc.text(`${num}. ${title}`, marginX + 3, yPos + 4.2);
+        yPos += 8;
+      };
 
-      // Section 1: Akurasi Tegangan & Waktu
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(9.5);
-      doc.setTextColor(30, 58, 138); // navy
-      doc.text("1. AKURASI TEGANGAN & WAKTU PENYINARAN", marginX, yPos);
-      yPos += 5;
+      const tHead = (cols: {text:string; x:number}[], h=5.5) => {
+        doc.setFillColor(248, 250, 252);
+        doc.rect(marginX, yPos, 170, h, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7.5);
+        doc.setTextColor(71, 85, 105);
+        cols.forEach(c => doc.text(c.text, c.x, yPos + 4));
+        yPos += h;
+      };
 
-      // Table Header
-      doc.setFillColor(241, 245, 249);
-      doc.rect(marginX, yPos, 170, 6, "F");
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(7.5);
-      doc.setTextColor(71, 85, 105);
-      doc.text("Parameter Uji", marginX + 3, yPos + 4);
-      doc.text("Nilai Set", marginX + 50, yPos + 4);
-      doc.text("Rata-rata Ukur", marginX + 80, yPos + 4);
-      doc.text("Penyimpangan", marginX + 110, yPos + 4);
-      doc.text("Batas BAPETEN", marginX + 133, yPos + 4);
-      doc.text("Evaluasi", marginX + 155, yPos + 4);
-      yPos += 6;
+      // ─── Section 1: Akurasi Tegangan & Waktu ─────────────────────────────
+      secHead("AKURASI TEGANGAN (kVp) & WAKTU PENYINARAN (ms)", "1");
 
-      // Table Rows
-      doc.setFont("Helvetica", "normal");
-      doc.setTextColor(15, 23, 42);
-      
-      // Row 1: kVp
-      doc.text("Akurasi Tegangan (kVp)", marginX + 3, yPos + 4.5);
-      doc.text(`${record.parameters?.kvpSeting || record.parameters?.kvpSet || 80} kVp`, marginX + 50, yPos + 4.5);
-      doc.text(`${(record.calculations?.kvpAvg || 0).toFixed(2)} kVp`, marginX + 80, yPos + 4.5);
-      doc.text(`${(record.calculations?.kvpDevPct || 0).toFixed(2)} %`, marginX + 110, yPos + 4.5);
-      doc.text("<= +/- 10%", marginX + 133, yPos + 4.5);
-      
-      doc.setFont("Helvetica", "bold");
-      let kvpC = record.calculations?.kvpStatus === "Lolos" ? successColor : failColor;
-      doc.setTextColor(kvpC[0], kvpC[1], kvpC[2]);
-      doc.text((record.calculations?.kvpStatus || "Lolos").toUpperCase(), marginX + 155, yPos + 4.5);
-      doc.setFont("Helvetica", "normal");
-      doc.setTextColor(15, 23, 42);
-      yPos += 6;
-
-      // Row 2: Waktu
-      doc.text("Akurasi Waktu Eksposur", marginX + 3, yPos + 4.5);
-      doc.text(`${record.parameters?.timeSeting || record.parameters?.timeSet || 100} ms`, marginX + 50, yPos + 4.5);
-      doc.text(`${(record.calculations?.timeAvg || 0).toFixed(2)} ms`, marginX + 80, yPos + 4.5);
-      doc.text(`${(record.calculations?.timeDevPct || 0).toFixed(2)} %`, marginX + 110, yPos + 4.5);
-      doc.text("<= +/- 10%", marginX + 133, yPos + 4.5);
-      
-      doc.setFont("Helvetica", "bold");
-      let timeC = record.calculations?.timeStatus === "Lolos" ? successColor : failColor;
-      doc.setTextColor(timeC[0], timeC[1], timeC[2]);
-      doc.text((record.calculations?.timeStatus || "Lolos").toUpperCase(), marginX + 155, yPos + 4.5);
-      doc.setFont("Helvetica", "normal");
-      doc.setTextColor(15, 23, 42);
-      yPos += 10;
-
-      // Section 2: Reproduksibilitas Paparan Dosis
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(9.5);
-      doc.setTextColor(30, 58, 138);
-      doc.text("2. REPRODUKSIBILITAS DOSIS PAPARAN", marginX, yPos);
-      yPos += 5;
-
-      // Detail runs
-      const doseVals = [
-        record.parameters?.dose1 || record.parameters?.doseValues?.[0] || 0,
-        record.parameters?.dose2 || record.parameters?.doseValues?.[1] || 0,
-        record.parameters?.dose3 || record.parameters?.doseValues?.[2] || 0,
-        record.parameters?.dose4 || record.parameters?.doseValues?.[3] || 0,
-        record.parameters?.dose5 || record.parameters?.doseValues?.[4] || 0
+      // kVp values – read from kvpValues array (new format) or fallback
+      const kvpVals = record.parameters?.kvpValues as number[] || [
+        record.parameters?.kvp1, record.parameters?.kvp2, record.parameters?.kvp3
+      ];
+      const timeVals = record.parameters?.timeValues as number[] || [
+        record.parameters?.time1, record.parameters?.time2, record.parameters?.time3
       ];
 
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8);
-      doc.text(`Dosis Terukur (mGy): [ ${doseVals.map(v => v.toFixed(3)).join(", ")} ]`, marginX + 3, yPos + 4);
-      yPos += 6.5;
+      tHead([
+        { text: "Parameter Uji", x: marginX + 3 },
+        { text: "Nilai Set", x: marginX + 48 },
+        { text: "Run 1", x: marginX + 69 },
+        { text: "Run 2", x: marginX + 87 },
+        { text: "Run 3", x: marginX + 105 },
+        { text: "Rata-rata", x: marginX + 123 },
+        { text: "Dev%", x: marginX + 144 },
+        { text: "Evaluasi", x: marginX + 157 }
+      ]);
 
-      // Table Header Reproduksibilitas
-      doc.setFillColor(241, 245, 249);
-      doc.rect(marginX, yPos, 170, 6, "F");
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(15, 23, 42);
+
+      // kVp row
+      doc.text("Akurasi Tegangan (kVp)", marginX + 3, yPos + 4);
+      doc.text(`${record.parameters?.kvpSeting || 80} kVp`, marginX + 48, yPos + 4);
+      doc.text(kvpVals[0] != null ? String(kvpVals[0]) : "-", marginX + 69, yPos + 4);
+      doc.text(kvpVals[1] != null ? String(kvpVals[1]) : "-", marginX + 87, yPos + 4);
+      doc.text(kvpVals[2] != null ? String(kvpVals[2]) : "-", marginX + 105, yPos + 4);
+      doc.text(`${(record.calculations?.kvpAvg || 0).toFixed(2)}`, marginX + 123, yPos + 4);
+      doc.text(`${(record.calculations?.kvpDevPct || 0).toFixed(1)}%`, marginX + 144, yPos + 4);
+      doc.setFont("helvetica", "bold");
+      let kvpC = record.calculations?.kvpStatus === "Lolos" ? successColor : failColor;
+      doc.setTextColor(kvpC[0], kvpC[1], kvpC[2]);
+      doc.text((record.calculations?.kvpStatus || "Lolos").toUpperCase(), marginX + 157, yPos + 4);
+      doc.setFont("helvetica", "normal"); doc.setTextColor(15, 23, 42);
+      yPos += 5.5;
+
+      // Time row
+      doc.text("Akurasi Waktu Eksposur (ms)", marginX + 3, yPos + 4);
+      doc.text(`${record.parameters?.timeSeting || 100} ms`, marginX + 48, yPos + 4);
+      doc.text(timeVals[0] != null ? String(timeVals[0]) : "-", marginX + 69, yPos + 4);
+      doc.text(timeVals[1] != null ? String(timeVals[1]) : "-", marginX + 87, yPos + 4);
+      doc.text(timeVals[2] != null ? String(timeVals[2]) : "-", marginX + 105, yPos + 4);
+      doc.text(`${(record.calculations?.timeAvg || 0).toFixed(2)}`, marginX + 123, yPos + 4);
+      doc.text(`${(record.calculations?.timeDevPct || 0).toFixed(1)}%`, marginX + 144, yPos + 4);
+      doc.setFont("helvetica", "bold");
+      let timeC = record.calculations?.timeStatus === "Lolos" ? successColor : failColor;
+      doc.setTextColor(timeC[0], timeC[1], timeC[2]);
+      doc.text((record.calculations?.timeStatus || "Lolos").toUpperCase(), marginX + 157, yPos + 4);
+      doc.setFont("helvetica", "normal"); doc.setTextColor(15, 23, 42);
+      yPos += 9;
+
+      // ─── Section 2: Reproduksibilitas ────────────────────────────────────
+      secHead("REPRODUKSIBILITAS PAPARAN DOSIS (5 Runs)", "2");
+
+      const doseVals: number[] = [
+        record.parameters?.doseValues?.[0] ?? record.parameters?.dose1 ?? 0,
+        record.parameters?.doseValues?.[1] ?? record.parameters?.dose2 ?? 0,
+        record.parameters?.doseValues?.[2] ?? record.parameters?.dose3 ?? 0,
+        record.parameters?.doseValues?.[3] ?? record.parameters?.dose4 ?? 0,
+        record.parameters?.doseValues?.[4] ?? record.parameters?.dose5 ?? 0,
+      ];
+
+      // Show 5 runs as mini cards
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(7.5);
       doc.setTextColor(71, 85, 105);
-      doc.text("Dosis Rata-rata", marginX + 3, yPos + 4);
-      doc.text("Standar Deviasi (SD)", marginX + 45, yPos + 4);
-      doc.text("Koefisien Variasi (CV)", marginX + 85, yPos + 4);
-      doc.text("Batas Batas CV", marginX + 125, yPos + 4);
-      doc.text("Evaluasi", marginX + 155, yPos + 4);
-      yPos += 6;
+      [1,2,3,4,5].forEach((i, idx) => {
+        const x = marginX + idx * 34;
+        doc.setFillColor(248, 250, 252);
+        doc.rect(x, yPos, 32, 10, 'F');
+        doc.text(`Run ${i}`, x + 16, yPos + 4, { align: "center" });
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        doc.setTextColor(30, 58, 138);
+        doc.text(`${Number(doseVals[idx]).toFixed(3)}`, x + 16, yPos + 8, { align: "center" });
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7.5);
+        doc.setTextColor(71, 85, 105);
+      });
+      yPos += 13;
 
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8.5);
+      tHead([
+        { text: "Dosis Rata-rata (mGy)", x: marginX + 3 },
+        { text: "Std Dev (SD)", x: marginX + 48 },
+        { text: "Koef. Variasi (CV)", x: marginX + 85 },
+        { text: "Batas CV BAPETEN", x: marginX + 125 },
+        { text: "Evaluasi", x: marginX + 157 }
+      ]);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
       doc.setTextColor(15, 23, 42);
-      
+
       const doseMean = record.calculations?.doseMean || 0;
       const doseSD = record.calculations?.doseSD || 0;
       const doseCV = record.calculations?.doseCV || 0;
 
-      doc.text(`${doseMean.toFixed(4)} mGy`, marginX + 3, yPos + 4.5);
-      doc.text(`${doseSD.toFixed(4)}`, marginX + 45, yPos + 4.5);
-      doc.text(`${doseCV.toFixed(4)} (${(doseCV * 100).toFixed(2)}%)`, marginX + 85, yPos + 4.5);
-      doc.text("<= 0.05 (5%)", marginX + 125, yPos + 4.5);
-      
-      doc.setFont("Helvetica", "bold");
+      doc.text(`${doseMean.toFixed(4)} mGy`, marginX + 3, yPos + 4);
+      doc.text(`${doseSD.toFixed(4)}`, marginX + 48, yPos + 4);
+      doc.text(`${(doseCV * 100).toFixed(2)}%`, marginX + 85, yPos + 4);
+      doc.text("<= 5.0000%", marginX + 125, yPos + 4);
+      doc.setFont("helvetica", "bold");
       let doseC = record.calculations?.doseStatus === "Lolos" ? successColor : failColor;
       doc.setTextColor(doseC[0], doseC[1], doseC[2]);
-      doc.text((record.calculations?.doseStatus || "Lolos").toUpperCase(), marginX + 155, yPos + 4.5);
-      doc.setFont("Helvetica", "normal");
-      doc.setTextColor(15, 23, 42);
+      doc.text((record.calculations?.doseStatus || "Lolos").toUpperCase(), marginX + 157, yPos + 4);
+      doc.setFont("helvetica", "normal"); doc.setTextColor(15, 23, 42);
       yPos += 11;
 
-      // Section 3: Akurasi Kolimator
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(9.5);
-      doc.setTextColor(30, 58, 138);
-      doc.text("3. AKURASI KOLIMATOR FIELD ALIGNMENT", marginX, yPos);
+      // ─── Section 3: Kolimasi, HVL & Kebocoran ────────────────────────────
+      secHead("PROTEKSI RADIASI – KOLIMASI, HVL & KEBOCORAN TABUNG", "3");
+
+      const sidValue = record.parameters?.sidValue || 100;
+      const collimPct = record.calculations?.collimationPct || 0;
+      const hvlValue = record.parameters?.hvlValue || 0;
+      const minHvl = getMinHvlRequired(record.parameters?.kvpSeting || 80, record.deviceName);
+      const hvlOk = hvlValue >= minHvl;
+      const tubeLeakageVal = record.parameters?.tubeLeakage || 0;
+      const tubeStatus = record.calculations?.tubeLeakageStatus || (tubeLeakageVal <= BAPETEN_LIMITS.tubeLeakage ? "Lolos" : "Tidak Lolos");
+
+      tHead([
+        { text: "Parameter Proteksi", x: marginX + 3 },
+        { text: "Nilai Acuan / Seting", x: marginX + 55 },
+        { text: "Hasil Terukur", x: marginX + 100 },
+        { text: "Batas Regulasi BAPETEN", x: marginX + 130 },
+        { text: "Evaluasi", x: marginX + 157 }
+      ]);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(15, 23, 42);
+
+      const protRows: [string, string, string, string, boolean][] = [
+        ["Akurasi Kolimasi Lapangan", `SID: ${sidValue} cm`, `${collimPct.toFixed(2)}% of SID`, "<= 2.0% of SID", record.calculations?.collimationStatus === "Lolos"],
+        ["Penyaringan Berkas (HVL)", `kVp Set: ${record.parameters?.kvpSeting || 80}`, `${hvlValue.toFixed(2)} mm Al`, `>= ${minHvl.toFixed(2)} mm Al`, hvlOk],
+        ["Kebocoran Radiasi Tabung", "Jarak: 1 meter", `${tubeLeakageVal.toFixed(2)} mGy/jam`, "<= 1.0 mGy/jam", tubeStatus === "Lolos"]
+      ];
+
+      protRows.forEach(([name, seting, result, limit, ok]) => {
+        if (yPos > pageHeight - 20) { doc.addPage(); drawBorder(); yPos = 25; }
+        doc.text(name, marginX + 3, yPos + 4);
+        doc.text(seting, marginX + 55, yPos + 4);
+        doc.text(result, marginX + 100, yPos + 4);
+        doc.text(limit, marginX + 130, yPos + 4);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...(ok ? successColor : failColor));
+        doc.text(ok ? "LOLOS" : "GAGAL", marginX + 157, yPos + 4);
+        doc.setFont("helvetica", "normal"); doc.setTextColor(15, 23, 42);
+        yPos += 5.5;
+      });
       yPos += 5;
 
-      // Table Header Kolimasi
-      doc.setFillColor(241, 245, 249);
-      doc.rect(marginX, yPos, 170, 6, "F");
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(7.5);
-      doc.setTextColor(71, 85, 105);
-      doc.text("Jarak SID Focus-Film", marginX + 3, yPos + 4);
-      doc.text("Total Selisih X + Y", marginX + 45, yPos + 4);
-      doc.text("Rasio Selisih", marginX + 85, yPos + 4);
-      doc.text("Ambang Batas SID", marginX + 125, yPos + 4);
-      doc.text("Evaluasi", marginX + 155, yPos + 4);
-      yPos += 6;
+      // ─── Section 4: Custom parameters ────────────────────────────────────
+      const customParams = record.customParameters || {};
+      const customKeys = Object.keys(customParams);
+      if (customKeys.length > 0) {
+        secHead("PARAMETER PENGUJIAN TAMBAHAN / KUSTOM", "4");
+        tHead([
+          { text: "Parameter Kustom", x: marginX + 3 },
+          { text: "Status Evaluasi", x: marginX + 150 }
+        ]);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(15, 23, 42);
+        customKeys.forEach((name) => {
+          if (yPos > pageHeight - 20) { doc.addPage(); drawBorder(); yPos = 25; }
+          const status = customParams[name] || "Lolos";
+          const wrapped = doc.splitTextToSize(name, 120);
+          doc.text(wrapped, marginX + 3, yPos + 4);
+          doc.setFont("helvetica", "bold");
+          const sColor = status === "Lolos" ? successColor : failColor;
+          doc.setTextColor(sColor[0], sColor[1], sColor[2]);
+          doc.text(status.toUpperCase(), marginX + 150, yPos + 4);
+          doc.setFont("helvetica", "normal"); doc.setTextColor(15, 23, 42);
+          yPos += Math.max(5.5, wrapped.length * 4);
+        });
+        yPos += 5;
+      }
 
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.setTextColor(15, 23, 42);
-
-      const sidValue = record.parameters?.sidValue || record.parameters?.sidVal || 100;
-      const collimationSum = record.calculations?.collimationSum || 0;
-      const collimationPct = record.calculations?.collimationPct || 0;
-
-      doc.text(`${sidValue} cm`, marginX + 3, yPos + 4.5);
-      doc.text(`${collimationSum} cm`, marginX + 45, yPos + 4.5);
-      doc.text(`${collimationPct.toFixed(2)} %`, marginX + 85, yPos + 4.5);
-      doc.text("<= 2.0 % of SID", marginX + 125, yPos + 4.5);
-      
-      doc.setFont("Helvetica", "bold");
-      let colC = record.calculations?.collimationStatus === "Lolos" ? successColor : failColor;
-      doc.setTextColor(colC[0], colC[1], colC[2]);
-      doc.text((record.calculations?.collimationStatus || "Lolos").toUpperCase(), marginX + 155, yPos + 4.5);
-      doc.setFont("Helvetica", "normal");
-      doc.setTextColor(15, 23, 42);
-      yPos += 11;
-
-      // Section 4: HVL
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(9.5);
-      doc.setTextColor(30, 58, 138);
-      doc.text("4. KETEBALAN PENYARINGAN EKSTRA (HALF VALUE LAYER / HVL)", marginX, yPos);
-      yPos += 5;
-
-      // Table Header HVL
-      doc.setFillColor(241, 245, 249);
-      doc.rect(marginX, yPos, 170, 6, "F");
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(7.5);
-      doc.setTextColor(71, 85, 105);
-      doc.text("Tegangan Uji (kVp)", marginX + 3, yPos + 4);
-      doc.text("Ketebalan HVL Terukur", marginX + 45, yPos + 4);
-      doc.text("Batas Minimal BAPETEN", marginX + 85, yPos + 4);
-      doc.text("Evaluasi HVL", marginX + 135, yPos + 4);
-      yPos += 6;
-
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.setTextColor(15, 23, 42);
-
-      const hvlValue = record.parameters?.hvlValue || record.parameters?.hvlVal || 0;
-      const minHvl = getMinHvlRequired(record.parameters?.kvpSeting || record.parameters?.kvpSet || 80, record.deviceName);
-      const hvlLolos = hvlValue >= minHvl;
-
-      doc.text(`${record.parameters?.kvpSeting || record.parameters?.kvpSet || 80} kVp`, marginX + 3, yPos + 4.5);
-      doc.text(`${hvlValue.toFixed(2)} mm Al`, marginX + 45, yPos + 4.5);
-      doc.text(`>= ${minHvl.toFixed(2)} mm Al`, marginX + 85, yPos + 4.5);
-      
-      doc.setFont("Helvetica", "bold");
-      doc.setTextColor(hvlLolos ? successColor[0] : failColor[0], hvlLolos ? successColor[1] : failColor[1], hvlLolos ? successColor[2] : failColor[2]);
-      doc.text(hvlLolos ? "LOLOS STANDAR" : "TIDAK LOLOS (LEMAH)", marginX + 135, yPos + 4.5);
-      doc.setFont("Helvetica", "normal");
-      doc.setTextColor(15, 23, 42);
-      yPos += 13;
-
-      // Verdict box
-      const isLolosTotal = !record.kesimpulan.includes("TIDAK");
-      doc.setFillColor(isLolosTotal ? 240 : 254, isLolosTotal ? 253 : 242, isLolosTotal ? 250 : 242);
-      doc.setDrawColor(isLolosTotal ? 16 : 252, isLolosTotal ? 185 : 165, isLolosTotal ? 129 : 165);
+      // ─── Verdict box ──────────────────────────────────────────────────────
+      if (yPos > pageHeight - 30) { doc.addPage(); drawBorder(); yPos = 25; }
+      const isLolosTotal = !record.kesimpulan?.includes("TIDAK");
+      const isBersyarat = record.kesimpulan?.includes("BERSYARAT");
+      const vBg = isLolosTotal && !isBersyarat ? [240, 253, 250] : isBersyarat ? [255, 251, 235] : [254, 242, 242];
+      const vBorder = isLolosTotal && !isBersyarat ? [16, 185, 129] : isBersyarat ? [245, 158, 11] : [239, 68, 68];
+      const vText = isLolosTotal && !isBersyarat ? [6, 95, 70] : isBersyarat ? [146, 64, 14] : [153, 27, 27];
+      doc.setFillColor(vBg[0], vBg[1], vBg[2]);
+      doc.setDrawColor(vBorder[0], vBorder[1], vBorder[2]);
       doc.setLineWidth(0.8);
-      doc.rect(marginX, yPos, 170, 15, "FD");
-
-      doc.setFont("Helvetica", "bold");
+      doc.rect(marginX, yPos, 170, 16, "FD");
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(8.5);
-      doc.setTextColor(isLolosTotal ? 6 : 153, isLolosTotal ? 95 : 27, isLolosTotal ? 70 : 27);
-      doc.text("PERNYATAAN METROLOGI & KELAYAKAN ALAT:", marginX + 5, yPos + 5.5);
-      
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(10);
-      doc.text(record.kesimpulan.toUpperCase(), marginX + 5, yPos + 11.2);
-      yPos += 22;
+      doc.setTextColor(vText[0], vText[1], vText[2]);
+      doc.text("PERNYATAAN METROLOGI & KELAYAKAN ALAT SESUAI BAPETEN:", marginX + 5, yPos + 5.5);
+      doc.setFontSize(9.5);
+      const verdictSplit = doc.splitTextToSize((record.kesimpulan || "LOLOS UJI KESESUAIAN").toUpperCase(), 155);
+      doc.text(verdictSplit, marginX + 5, yPos + 11.5);
+      yPos += 23;
 
-      // Footer / Signature block
-      doc.setFont("Helvetica", "normal");
+      // ─── Signature block ──────────────────────────────────────────────────
+      if (yPos > pageHeight - 35) { doc.addPage(); drawBorder(); yPos = 25; }
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(8.5);
       doc.setTextColor(71, 85, 105);
-      doc.text("Medan, " + new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' }), 135, yPos);
+      doc.text("Depok, " + new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' }), 135, yPos);
       yPos += 4.5;
       doc.text("Analis Fisikawan Medis,", 135, yPos);
-      yPos += 18;
-
-      doc.setFont("Helvetica", "bold");
+      yPos += 20;
+      doc.setFont("helvetica", "bold");
       doc.setTextColor(15, 23, 42);
-      doc.text(record.operatorName || "Ir. Bambang Wijaya, M.Si", 135, yPos);
-      doc.setFont("Helvetica", "normal");
+      doc.text(record.operatorName || "Analis Fisikawan Medis", 135, yPos);
+      doc.setLineWidth(0.3);
+      doc.setDrawColor(15, 23, 42);
+      doc.line(135, yPos + 1, 190, yPos + 1);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
       doc.setTextColor(100, 116, 139);
-      doc.text("PT. Spektrum Kreasi Pratama", 135, yPos + 4);
+      doc.text("PT. Spektrum Kreasi Pratama", 135, yPos + 4.5);
+
+      // ─── Footer ───────────────────────────────────────────────────────────
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(6.5);
+      doc.setTextColor(148, 163, 184);
+      doc.text("Laporan ini diterbitkan berdasarkan Perka BAPETEN No. 2/2018. Hanya berlaku untuk pesawat yang diuji.", 105, 279, { align: "center" });
 
       doc.save(`Uji_Kesesuaian_${(record.deviceName || "Alat").replace(/\s+/g, "_")}_${record.serialNumber || "SN"}.pdf`);
       showToast("Laporan Uji Kesesuaian BAPETEN berhasil diekspor ke PDF!", "success");
@@ -649,6 +765,9 @@ export function UkesModule() {
     const hvlMinRequired = getMinHvlRequired(Number(kvpSet), formDeviceName);
     const hvlStatus = Number(hvlVal) >= hvlMinRequired ? "Lolos" : "Tidak Lolos";
 
+    // 6. Tube Housing Leakage (BAPETEN max 1.0 mGy/jam at 1 meter)
+    const tubeLeakageStatus = Number(tubeLeakage) <= BAPETEN_LIMITS.tubeLeakage ? "Lolos" : "Tidak Lolos";
+
     return {
       kvpAvg,
       kvpDevPct,
@@ -664,7 +783,9 @@ export function UkesModule() {
       collimationPct,
       collimationStatus,
       hvlMinRequired,
-      hvlStatus
+      hvlStatus,
+      tubeLeakageStatus,
+      tubeLeakage: Number(tubeLeakage)
     };
   };
 
@@ -684,11 +805,23 @@ export function UkesModule() {
       
       // Determine overall compliance
       let finalVerdict = "LOLOS UJI KESESUAIAN";
-      if (calc.kvpStatus === "Tidak Lolos" || calc.timeStatus === "Tidak Lolos" || calc.doseStatus === "Tidak Lolos") {
+      if (
+        calc.kvpStatus === "Tidak Lolos" || 
+        calc.timeStatus === "Tidak Lolos" || 
+        calc.doseStatus === "Tidak Lolos" || 
+        calc.tubeLeakageStatus === "Tidak Lolos"
+      ) {
         finalVerdict = "TIDAK LOLOS KESESUAIAN (Kritis)";
       } else if (calc.hvlStatus === "Tidak Lolos" || calc.collimationStatus === "Tidak Lolos") {
         finalVerdict = "LOLOS BERSYARAT (Butuh Filter Tambahan / Kalibrasi Kolimator)";
       }
+
+      const customParamsObj: Record<string, 'Lolos' | 'Tidak Lolos'> = {};
+      customParameters.forEach(item => {
+        if (item.name.trim()) {
+          customParamsObj[item.name.trim()] = item.status;
+        }
+      });
 
       const ukesData = {
         deviceName: formDeviceName,
@@ -709,8 +842,10 @@ export function UkesModule() {
           sidValue: Number(sidVal),
           misalignX: Number(misX),
           misalignY: Number(misY),
-          hvlValue: Number(hvlVal)
+          hvlValue: Number(hvlVal),
+          tubeLeakage: Number(tubeLeakage)
         },
+        customParameters: customParamsObj,
         calculations: calc,
         createdAt: serverTimestamp()
       };
@@ -755,6 +890,7 @@ export function UkesModule() {
       setFormModel('');
       setFormSerialNumber('');
       setFormFasyankes('');
+      setTubeLeakage(0);
       setIsEditMode(false);
       setEditingRecordId(null);
     } catch (error) {
@@ -769,10 +905,15 @@ export function UkesModule() {
       const nextId = isEditMode && editingRecordId ? editingRecordId : ("local-ukes-" + Date.now());
       const calc = runLiveCalculations();
       let finalVerdict = "LOLOS UJI KESESUAIAN";
-      if (calc.kvpStatus === "Tidak Lolos" || calc.timeStatus === "Tidak Lolos" || calc.doseStatus === "Tidak Lolos") {
-        finalVerdict = "TIDAK LOLOS KESESUAIAN";
+      if (
+        calc.kvpStatus === "Tidak Lolos" || 
+        calc.timeStatus === "Tidak Lolos" || 
+        calc.doseStatus === "Tidak Lolos" || 
+        calc.tubeLeakageStatus === "Tidak Lolos"
+      ) {
+        finalVerdict = "TIDAK LOLOS KESESUAIAN (Kritis)";
       } else if (calc.hvlStatus === "Tidak Lolos" || calc.collimationStatus === "Tidak Lolos") {
-        finalVerdict = "LOLOS BERSYARAT";
+        finalVerdict = "LOLOS BERSYARAT (Butuh Filter Tambahan / Kalibrasi Kolimator)";
       }
 
       const localItem = {
@@ -795,7 +936,8 @@ export function UkesModule() {
           sidValue: Number(sidVal),
           misalignX: Number(misX),
           misalignY: Number(misY),
-          hvlValue: Number(hvlVal)
+          hvlValue: Number(hvlVal),
+          tubeLeakage: Number(tubeLeakage)
         },
         calculations: calc,
         createdAt: new Date()
@@ -871,8 +1013,16 @@ export function UkesModule() {
       const hvlMinRequired = getMinHvlRequired(parsed.parameters.kvpSeting || 70, parsed.deviceName || '');
       const hvlStatus = (parsed.parameters.hvlValue || 2.5) >= hvlMinRequired ? "Lolos" : "Tidak Lolos";
 
+      const tubeLeakageVal = parsed.parameters.tubeLeakage || 0;
+      const tubeLeakageStatus = Number(tubeLeakageVal) <= BAPETEN_LIMITS.tubeLeakage ? "Lolos" : "Tidak Lolos";
+
       let finalVerdict = "LOLOS UJI KESESUAIAN";
-      if (kvpStatus === "Tidak Lolos" || timeStatus === "Tidak Lolos" || doseStatus === "Tidak Lolos") {
+      if (
+        kvpStatus === "Tidak Lolos" || 
+        timeStatus === "Tidak Lolos" || 
+        doseStatus === "Tidak Lolos" || 
+        tubeLeakageStatus === "Tidak Lolos"
+      ) {
         finalVerdict = "TIDAK LOLOS KESESUAIAN (Kritis)";
       } else if (hvlStatus === "Tidak Lolos" || collimationStatus === "Tidak Lolos") {
         finalVerdict = "LOLOS BERSYARAT (Butuh Filter Tambahan / Kalibrasi Kolimator)";
@@ -899,7 +1049,8 @@ export function UkesModule() {
           sidValue: sid,
           misalignX: parsed.parameters.misalignX || 0.5,
           misalignY: parsed.parameters.misalignY || 0.5,
-          hvlValue: parsed.parameters.hvlValue || 2.5
+          hvlValue: parsed.parameters.hvlValue || 2.5,
+          tubeLeakage: Number(tubeLeakageVal)
         },
         calculations: {
           kvpAvg: Number(kvpAvg.toFixed(2)),
@@ -916,7 +1067,9 @@ export function UkesModule() {
           collimationPct: Number(collimationPct.toFixed(2)),
           collimationStatus,
           hvlMinRequired,
-          hvlStatus
+          hvlStatus,
+          tubeLeakageStatus,
+          tubeLeakage: Number(tubeLeakageVal)
         },
         createdAt: serverTimestamp()
       };
@@ -1022,7 +1175,7 @@ export function UkesModule() {
             </button>
           )}
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenNew}
             className="w-full lg:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-widest px-6 py-3.5 rounded-2xl transition-all shadow-lg hover:shadow-indigo-500/10 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -1434,6 +1587,38 @@ export function UkesModule() {
                                 </tr>
                               </table>
 
+                              <h3>5. KEBOCORAN RADIASI WADAH TABUNG (TUBE HOUSING LEAKAGE)</h3>
+                              <table>
+                                <tr>
+                                  <th>Jarak Pengukuran</th>
+                                  <th>Laju Dosis Bocor Terukur</th>
+                                  <th>Standar Maksimum BAPETEN</th>
+                                  <th>Status Evaluasi</th>
+                                </tr>
+                                <tr>
+                                  <td>1 Meter</td>
+                                  <td>${(selectedRecord.parameters.tubeLeakage || 0).toFixed(2)} mGy/jam</td>
+                                  <td>&le; 1.0 mGy/jam</td>
+                                  <td><b>${(selectedRecord.calculations?.tubeLeakageStatus || (selectedRecord.parameters.tubeLeakage <= 1.0 ? "Lolos" : "Tidak Lolos")).toUpperCase()}</b></td>
+                                </tr>
+                              </table>
+
+                              ${selectedRecord.customParameters && Object.keys(selectedRecord.customParameters).length > 0 ? `
+                                <h3>6. PARAMETER PENGUJIAN TAMBAHAN / KUSTOM</h3>
+                                <table>
+                                  <tr>
+                                    <th>Parameter Kustom</th>
+                                    <th>Status Evaluasi</th>
+                                  </tr>
+                                  ${Object.entries(selectedRecord.customParameters as Record<string, string>).map(([name, status]) => `
+                                    <tr>
+                                      <td>${name}</td>
+                                      <td><b>${status.toUpperCase()}</b></td>
+                                    </tr>
+                                  `).join('')}
+                                </table>
+                              ` : ''}
+
                               <div class="verdict">
                                 KESIMPULAN METROLOGI:<br/>
                                 <span style="color: ${selectedRecord.kesimpulan.includes('TIDAK') ? 'red' : 'green'}">${selectedRecord.kesimpulan}</span>
@@ -1528,16 +1713,17 @@ export function UkesModule() {
                         </thead>
                         <tbody>
                           <tr className="border-b border-slate-100 dark:border-slate-900/60 hover:bg-indigo-50/10 dark:hover:bg-indigo-950/10 transition-colors">
-                            <td className="px-3 py-2 font-bold text-slate-600 dark:text-slate-300">Tegangan (kVp)</td>
-                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{selectedRecord.parameters.kvp1 || '-'}</td>
-                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{selectedRecord.parameters.kvp2 || '-'}</td>
-                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{selectedRecord.parameters.kvp3 || '-'}</td>
+                            <td className="px-3 py-2 font-bold text-slate-600 dark:text-slate-300">Tegangan (kVp)<br/><span className="text-[7.5px] text-slate-400 font-mono">Set: {selectedRecord.parameters.kvpSeting} kVp</span></td>
+                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{(selectedRecord.parameters.kvpValues?.[0] ?? selectedRecord.parameters.kvp1 ?? '-')}</td>
+                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{(selectedRecord.parameters.kvpValues?.[1] ?? selectedRecord.parameters.kvp2 ?? '-')}</td>
+                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{(selectedRecord.parameters.kvpValues?.[2] ?? selectedRecord.parameters.kvp3 ?? '-')}</td>
                             <td className="px-3 py-2 text-center font-extrabold text-indigo-600 dark:text-indigo-400 bg-slate-50/20 dark:bg-slate-950/20">{selectedRecord.calculations.kvpAvg.toFixed(2)}</td>
                             <td className="px-2 py-1 text-center">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  const txt = `Tegangan (kVp) [Setting: ${selectedRecord.parameters.kvpSeting} kVp] - Run 1: ${selectedRecord.parameters.kvp1 || '-'}, Run 2: ${selectedRecord.parameters.kvp2 || '-'}, Run 2: ${selectedRecord.parameters.kvp3 || '-'}, Rataan: ${selectedRecord.calculations.kvpAvg.toFixed(2)}`;
+                                  const kvpVals = selectedRecord.parameters.kvpValues || [];
+                                  const txt = `Tegangan (kVp) [Setting: ${selectedRecord.parameters.kvpSeting} kVp] - Run 1: ${kvpVals[0] ?? selectedRecord.parameters.kvp1 ?? '-'}, Run 2: ${kvpVals[1] ?? selectedRecord.parameters.kvp2 ?? '-'}, Run 3: ${kvpVals[2] ?? selectedRecord.parameters.kvp3 ?? '-'}, Rataan: ${selectedRecord.calculations.kvpAvg.toFixed(2)}`;
                                   copyToClipboard(txt, 'Tegangan');
                                 }}
                                 className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-all text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 active:scale-90 inline-flex items-center justify-center cursor-pointer"
@@ -1548,16 +1734,17 @@ export function UkesModule() {
                             </td>
                           </tr>
                           <tr className="hover:bg-indigo-50/10 dark:hover:bg-indigo-950/10 transition-colors">
-                            <td className="px-3 py-2 font-bold text-slate-600 dark:text-slate-300">Waktu (ms)</td>
-                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{selectedRecord.parameters.time1 || '-'}</td>
-                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{selectedRecord.parameters.time2 || '-'}</td>
-                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{selectedRecord.parameters.time3 || '-'}</td>
+                            <td className="px-3 py-2 font-bold text-slate-600 dark:text-slate-300">Waktu (ms)<br/><span className="text-[7.5px] text-slate-400 font-mono">Set: {selectedRecord.parameters.timeSeting} ms</span></td>
+                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{(selectedRecord.parameters.timeValues?.[0] ?? selectedRecord.parameters.time1 ?? '-')}</td>
+                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{(selectedRecord.parameters.timeValues?.[1] ?? selectedRecord.parameters.time2 ?? '-')}</td>
+                            <td className="px-3 py-2 text-center text-slate-500 font-bold">{(selectedRecord.parameters.timeValues?.[2] ?? selectedRecord.parameters.time3 ?? '-')}</td>
                             <td className="px-3 py-2 text-center font-extrabold text-indigo-600 dark:text-indigo-400 bg-slate-50/20 dark:bg-slate-950/20">{selectedRecord.calculations.timeAvg.toFixed(2)}</td>
                             <td className="px-2 py-1 text-center">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  const txt = `Waktu (ms) [Setting: ${selectedRecord.parameters.timeSeting} ms] - Run 1: ${selectedRecord.parameters.time1 || '-'}, Run 2: ${selectedRecord.parameters.time2 || '-'}, Run 3: ${selectedRecord.parameters.time3 || '-'}, Rataan: ${selectedRecord.calculations.timeAvg.toFixed(2)}`;
+                                  const timeVals = selectedRecord.parameters.timeValues || [];
+                                  const txt = `Waktu (ms) [Setting: ${selectedRecord.parameters.timeSeting} ms] - Run 1: ${timeVals[0] ?? selectedRecord.parameters.time1 ?? '-'}, Run 2: ${timeVals[1] ?? selectedRecord.parameters.time2 ?? '-'}, Run 3: ${timeVals[2] ?? selectedRecord.parameters.time3 ?? '-'}, Rataan: ${selectedRecord.calculations.timeAvg.toFixed(2)}`;
                                   copyToClipboard(txt, 'Waktu');
                                 }}
                                 className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-all text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 active:scale-90 inline-flex items-center justify-center cursor-pointer"
@@ -1626,11 +1813,12 @@ export function UkesModule() {
                   <div className="overflow-x-auto scroll-smooth snap-x touch-pan-x scrollbar-thin scrollbar-thumb-indigo-500/20 scrollbar-track-transparent pb-1">
                     <div className="flex sm:grid sm:grid-cols-5 gap-2 mt-3 min-w-[340px] sm:min-w-0 p-1">
                       {[1, 2, 3, 4, 5].map((idx) => {
-                        const doseVal = selectedRecord.parameters[`dose${idx}`];
+                        const doseVals = selectedRecord.parameters.doseValues || [];
+                        const doseVal = doseVals[idx - 1] ?? selectedRecord.parameters[`dose${idx}`];
                         return (
                           <div key={idx} className="bg-white dark:bg-[#0c111d] rounded-xl p-2 border border-slate-150 dark:border-slate-850 text-center shadow-sm flex-1 min-w-[70px] sm:min-w-0">
                             <span className="text-[7px] text-slate-400 font-black uppercase block font-mono">Run {idx}</span>
-                            <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 block font-mono mt-0.5">{doseVal ? doseVal.toFixed(3) : '-'}</span>
+                            <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 block font-mono mt-0.5">{doseVal !== undefined && doseVal !== null ? Number(doseVal).toFixed(3) : '-'}</span>
                             <span className="text-[6.5px] text-slate-400 block font-mono">mGy</span>
                           </div>
                         );
@@ -1725,6 +1913,84 @@ export function UkesModule() {
                     </div>
                   </div>
                 </div>
+
+                {/* Section 4: Kebocoran Radiasi Wadah Tabung */}
+                <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2.5">
+                  <h4 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono flex justify-between items-center">
+                    <span>4. Kebocoran Radiasi Wadah Tabung</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const txt = `Kebocoran Radiasi Wadah Tabung - Laju Dosis Bocor pada 1m: ${(selectedRecord.parameters.tubeLeakage || 0).toFixed(2)} mGy/jam (Batas BAPETEN: <= 1.0 mGy/jam)`;
+                        copyToClipboard(txt, 'Kebocoran_Radiasi');
+                      }}
+                      className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-all cursor-pointer"
+                      title="Salin Data Kebocoran"
+                    >
+                      {copiedRow === 'Kebocoran_Radiasi' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <ClipboardCopy className="w-3.5 h-3.5" />}
+                    </button>
+                  </h4>
+                  <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-900 font-mono text-[10px] space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Laju Dosis Bocor (1 meter):</span>
+                      <span className="font-bold">{(selectedRecord.parameters.tubeLeakage || 0).toFixed(2)} mGy/jam</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Batas Maksimum BAPETEN:</span>
+                      <span className="font-bold">&le; 1.00 mGy/jam</span>
+                    </div>
+                    <div className="flex justify-between border-t border-slate-200 dark:border-slate-800 pt-2 mt-1">
+                      <span className="text-slate-400 text-[8px] uppercase font-bold font-mono">Status Kebocoran:</span>
+                      <span className={cn(
+                        "text-[9px] font-black uppercase px-2 py-0.5 rounded font-mono",
+                        selectedRecord.calculations.tubeLeakageStatus === 'Lolos' ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800 animate-pulse font-extrabold"
+                      )}>{selectedRecord.calculations.tubeLeakageStatus} BAPETEN</span>
+                    </div>
+                  </div>
+                  {selectedRecord.calculations.tubeLeakageStatus === 'Tidak Lolos' && (
+                    <div className="mt-2 text-red-750 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-semibold leading-normal font-mono glow-fail-danger">
+                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5 animate-bounce" />
+                      <span>
+                        ⚠️ PENDETEKSIAN BAHAYA: Kebocoran Radiasi Wadah Tabung ({(selectedRecord.parameters.tubeLeakage || 0).toFixed(2)} mGy/jam) melanggar batas keselamatan BAPETEN! Sangat berbahaya jika dioperasikan!
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Section 5: Parameter Tambahan (Kustom) */}
+                {selectedRecord.customParameters && Object.keys(selectedRecord.customParameters).length > 0 && (
+                  <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2.5">
+                    <h4 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono flex justify-between items-center">
+                      <span>5. Parameter Pengujian Kustom / Tambahan</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const customText = Object.entries(selectedRecord.customParameters as Record<string, string>)
+                            .map(([name, status]) => `${name}: ${status}`)
+                            .join(', ');
+                          const txt = `Parameter Pengujian Kustom - ${customText}`;
+                          copyToClipboard(txt, 'Parameter_Kustom');
+                        }}
+                        className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-all cursor-pointer"
+                        title="Salin Data Parameter Kustom"
+                      >
+                        {copiedRow === 'Parameter_Kustom' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <ClipboardCopy className="w-3.5 h-3.5" />}
+                      </button>
+                    </h4>
+                    <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-900 font-mono text-[10px] space-y-2">
+                      {Object.entries(selectedRecord.customParameters as Record<string, string>).map(([name, status]) => (
+                        <div key={name} className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-900 last:border-b-0">
+                          <span className="text-slate-650 dark:text-slate-350">{name}:</span>
+                          <span className={cn(
+                            "text-[8.5px] font-black uppercase px-2 py-0.5 rounded font-mono",
+                            status === 'Lolos' ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800 animate-pulse font-extrabold"
+                          )}>{status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Final Verdict Compliance statement */}
@@ -2020,6 +2286,103 @@ export function UkesModule() {
                           <span>⚠️ VAL_HVL_WARNING: Nilai HVL ({hvlVal} mm Al) di bawah standar proteksi radiasi BAPETEN (&ge; {calculated.hvlMinRequired.toFixed(1)} mm Al untuk {kvpSet} kVp)! Sinar-X membutuhkan perisasi/penyaringan tambahan untuk meredam radiasi lemah yang tidak berguna.</span>
                         </div>
                       )}
+                    </div>
+
+                    {/* Kebocoran Radiasi Wadah Tabung */}
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-900 space-y-2.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono">Kebocoran Radiasi Wadah Tabung</span>
+                        <span className={cn(
+                          "text-[8px] font-black uppercase px-2 py-0.5 rounded font-mono",
+                          calculated.tubeLeakageStatus === 'Lolos' ? "bg-emerald-100 text-emerald-800" : "bg-red-200 text-red-850 animate-pulse font-extrabold"
+                        )}>Status: {calculated.tubeLeakageStatus} ({calculated.tubeLeakageStatus === 'Lolos' ? 'Batas Aman' : 'Bahaya Dosis Tinggi'})</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+                        <div>
+                          <label className="text-[8px] text-slate-400 block mb-0.5">Laju Dosis Bocor at 1m (mGy/jam)</label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={tubeLeakage}
+                            onChange={(e) => setTubeLeakage(Number(e.target.value))}
+                            className={cn(
+                              "w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-bold",
+                              Number(tubeLeakage) > BAPETEN_LIMITS.tubeLeakage && "glow-fail-danger"
+                            )}
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center text-[8.5px] text-slate-500 font-mono italic leading-tight pl-2">
+                          <span>Nilai batas acuan kelaikan: &le; 1.0 mGy/jam</span>
+                          <span>Pengukuran dilakukan pada jarak 1 meter dari wadah tabung.</span>
+                        </div>
+                      </div>
+                      {Number(tubeLeakage) > BAPETEN_LIMITS.tubeLeakage && (
+                        <div className="mt-2 text-red-750 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-mono leading-normal font-bold glow-fail-danger">
+                          <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5 animate-bounce" />
+                          <span>⚠️ VAL_LEAK_WARNING: Kebocoran Radiasi ({tubeLeakage} mGy/jam) melanggar ambang batas BAPETEN (&le; 1.0 mGy/jam)! Risiko paparan radiasi sekunder/bocor sangat kritis bagi keselamatan personil!</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Section 7: Parameter Kustom / Tambahan (Dynamic Accordion) */}
+                    <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#0c111d] mt-4 col-span-1 md:col-span-2">
+                      <div className="p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-350 font-mono flex items-center gap-1.5">
+                          <Plus className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
+                          Parameter Pengujian Tambahan / Kustom ({customParameters.length} Poin)
+                        </span>
+                      </div>
+                      <div className="p-4 space-y-2">
+                        {customParameters.map((item) => (
+                          <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-indigo-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
+                            <input
+                              type="text"
+                              value={item.name}
+                              onChange={(e) => updateCustomParameterName(item.id, e.target.value)}
+                              className="text-[10px] font-mono text-slate-850 dark:text-slate-200 bg-transparent border-0 border-b border-transparent focus:border-indigo-500 outline-none w-full py-0.5"
+                              placeholder="Nama parameter kustom..."
+                            />
+                            <div className="flex gap-1.5 items-center shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => updateCustomParameterStatus(item.id, 'Lolos')}
+                                className={cn(
+                                  "px-2 py-0.75 rounded text-[8.5px] font-black uppercase font-mono transition-all cursor-pointer",
+                                  item.status === 'Lolos' ? "bg-emerald-50 text-emerald-800 bg-emerald-100 border border-emerald-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
+                                )}
+                              >
+                                Lolos
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => updateCustomParameterStatus(item.id, 'Tidak Lolos')}
+                                className={cn(
+                                  "px-2 py-0.75 rounded text-[8.5px] font-black uppercase font-mono transition-all cursor-pointer",
+                                  item.status === 'Tidak Lolos' ? "bg-red-50 text-red-800 bg-red-100 border border-red-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
+                                )}
+                              >
+                                Gagal
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteCustomParameter(item.id)}
+                                className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors cursor-pointer"
+                                title="Hapus parameter ini"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        <button
+                          type="button"
+                          onClick={addCustomParameter}
+                          className="w-full mt-2 py-2 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl text-[9px] font-black uppercase font-mono text-indigo-600 dark:text-cyan-400 hover:bg-indigo-50/50 dark:hover:bg-cyan-950/10 transition-colors cursor-pointer"
+                        >
+                          + Tambah Parameter Kustom Baru
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

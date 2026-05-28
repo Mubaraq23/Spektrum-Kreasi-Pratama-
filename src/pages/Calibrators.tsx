@@ -41,9 +41,9 @@ interface UploadQueueItem {
 
 export function Calibrators() {
   const { isAdmin, user } = useAuth();
-  console.log('Calibrators Access:', { isAdmin, userEmail: user?.email });
   const [calibrators, setCalibrators] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedCalibrator, setSelectedCalibrator] = useState<any>(null);
@@ -127,7 +127,6 @@ export function Calibrators() {
 
         setUploadQueue(prev => prev.map(item => item.id === queueId ? { ...item, status: 'extracted', data: mappedData } : item));
       } catch (error: any) {
-        console.error(`Error extracting file ${file.name}:`, error);
         setUploadQueue(prev => prev.map(item => item.id === queueId ? { ...item, status: 'failed', error: error.message || 'Gagal mengekstrak data AI.' } : item));
       }
 
@@ -170,12 +169,17 @@ export function Calibrators() {
         '/calibrators'
       );
 
-      alert(`Berhasil menyimpan ${successCount} standar kalibrasi ke infrastruktur.`);
+      const showToast = (msg: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 4000);
+      };
+      showToast(`✓ Berhasil menyimpan ${successCount} standar kalibrasi ke infrastruktur.`, 'success');
       setUploadQueue([]);
       setIsModalOpen(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'calibrators');
-      alert(`Gagal menyimpan batch standar: ` + (error as Error).message);
+      setToast({ msg: `✕ Gagal menyimpan batch standar: ` + (error as Error).message, type: 'error' });
+      setTimeout(() => setToast(null), 4000);
     } finally {
       setLoading(false);
     }
@@ -441,8 +445,8 @@ export function Calibrators() {
 
       doc.save(`MK-${calibrator.name.replace(/\s+/g, "_")}.pdf`);
     } catch (err) {
-      console.error("Gagal ekspor PDF MK:", err);
-      alert("Gagal melakukan ekspor PDF.");
+      setToast({ msg: '✕ Gagal melakukan ekspor PDF.', type: 'error' });
+      setTimeout(() => setToast(null), 4000);
     }
   };
 
@@ -467,15 +471,34 @@ export function Calibrators() {
       setItemToDelete(null);
       setIsPreviewOpen(false);
     } catch (error: any) {
-      console.error('Delete Error:', error);
       handleFirestoreError(error, OperationType.DELETE, `calibrators/${id}`);
-      alert('Gagal menghapus: ' + (error.message || 'Unknown error'));
+      setToast({ msg: '✕ Gagal menghapus: ' + (error.message || 'Unknown error'), type: 'error' });
+      setTimeout(() => setToast(null), 4000);
     }
   };
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 relative p-1 pb-20 min-h-screen transition-all duration-300 font-sans">
       
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={cn(
+              "fixed top-6 right-6 z-[200] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border text-sm font-black font-mono max-w-sm",
+              toast.type === 'success' ? "bg-emerald-600 text-white border-emerald-500/50" :
+              toast.type === 'error' ? "bg-rose-600 text-white border-rose-500/50" :
+              "bg-blue-600 text-white border-blue-500/50"
+            )}
+          >
+            {toast.msg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Top Small Crisp Data Summary Panel */}
       <div className="w-full flex flex-wrap items-center justify-between gap-4 border-b border-sky-500/10 dark:border-cyan-500/10 pb-3 text-[10px] font-mono tracking-[0.2em] text-slate-400 dark:text-slate-500 select-none">
         <div className="flex items-center gap-4">
@@ -541,10 +564,10 @@ export function Calibrators() {
               key={item.id}
               whileHover={{ y: -8 }}
               onClick={() => openPreview(item)}
-              className="bg-white dark:bg-[#10192d] border border-slate-100 dark:border-cyan-500/25 rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group transition-all hover:shadow-2xl hover:shadow-cyan-500/10 hover:border-cyan-500/40 cursor-pointer"
+              className="luxury-card p-8 relative overflow-hidden group hover:scale-[1.015] active:scale-[0.99] cursor-pointer border border-slate-200/50 dark:border-cyan-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.015)] dark:shadow-none bg-white dark:bg-[#0c1224]/85 backdrop-blur-md transition-all duration-300"
             >
-              <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-5 transition-opacity duration-700">
-                 <Zap className="w-32 h-32 text-blue-600" />
+              <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-1000">
+                 <Zap className="w-32 h-32 text-blue-600 dark:text-cyan-400" />
               </div>
 
               <div className="flex items-start justify-between mb-8 relative z-10">
@@ -552,10 +575,14 @@ export function Calibrators() {
                    <Zap className="w-7 h-7" />
                 </div>
                 <div className={cn(
-                  "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-colors",
-                   item.status === 'active' ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-red-50 text-red-600 border-red-100 animate-pulse"
+                  "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-350 font-mono shadow-sm",
+                   item.status === 'active' ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 dark:text-rose-450 border-rose-500/20 animate-pulse"
                 )}>
-                  {item.status}
+                  <span className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    item.status === 'active' ? "bg-emerald-50 shadow-[0_0_8px_rgba(16,185,129,0.7)]" : "bg-rose-500 shadow-[0_0_8px_rgba(239,68,68,0.7)]"
+                  )} />
+                  {item.status || 'active'}
                 </div>
               </div>
 
@@ -563,27 +590,27 @@ export function Calibrators() {
                  <div>
                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 transition-colors uppercase italic">{item.name}</h3>
                    <div className="flex items-center gap-2">
-                     <span className="text-[10px] text-blue-700 dark:text-cyan-400 font-black uppercase tracking-widest bg-blue-50 dark:bg-cyan-500/10 px-2 py-0.5 rounded-md">{item.brand}</span>
+                     <span className="text-[10px] text-blue-750 dark:text-cyan-400 font-black uppercase tracking-widest bg-blue-50 dark:bg-cyan-500/10 px-2 py-0.5 rounded-md">{item.brand}</span>
                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{item.model}</span>
                    </div>
                  </div>
 
-                     <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-50">
-                        <div>
-                           <p className="text-[8px] text-slate-600 font-black uppercase tracking-widest mb-2 font-mono">Identitas S/N</p>
-                           <p className="text-xs text-slate-900 font-black tracking-tight">{item.serialNumber || '-'}</p>
-                        </div>
-                        <div>
-                           <p className="text-[8px] text-slate-600 font-black uppercase tracking-widest mb-2 font-mono">Nomor Sertifikat</p>
-                           <p className="text-xs text-slate-900 font-black truncate tracking-tight">{item.certificateNumber || '-'}</p>
-                        </div>
-                     </div>
+                 <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-100 dark:border-slate-800/80">
+                    <div>
+                       <p className="text-[8px] text-slate-450 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Identitas S/N</p>
+                       <p className="text-xs text-slate-900 dark:text-white font-black tracking-tight">{item.serialNumber || '-'}</p>
+                    </div>
+                    <div>
+                       <p className="text-[8px] text-slate-450 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Nomor Sertifikat</p>
+                       <p className="text-xs text-slate-900 dark:text-white font-black truncate tracking-tight">{item.certificateNumber || '-'}</p>
+                    </div>
+                 </div>
 
-                     <div className="flex items-center justify-between pt-2">
-                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase tracking-widest font-mono">
-                           <Calendar className="w-4 h-4 text-blue-600" />
-                           Kadaluarsa: <span className="text-slate-950 dark:text-white">{item.expiryDate || '-'}</span>
-                        </div>
+                 <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 dark:text-slate-450 uppercase tracking-widest font-mono">
+                       <Calendar className="w-4 h-4 text-blue-600 dark:text-cyan-400" />
+                       Kadaluarsa: <span className="text-slate-950 dark:text-white">{item.expiryDate || '-'}</span>
+                    </div>
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleEdit(item); }} 
@@ -601,7 +628,7 @@ export function Calibrators() {
                       {isAdmin && (
                         <button 
                            onClick={(e) => { e.stopPropagation(); setItemToDelete(item.id); }}
-                           className="p-2.5 bg-white dark:bg-[#070d19] hover:bg-red-500/10 text-slate-300 dark:text-cyan-400/40 hover:text-red-500 rounded-xl transition-all border border-slate-100 dark:border-cyan-500/10 cursor-pointer"
+                           className="p-2.5 bg-white dark:bg-[#070d19] hover:bg-red-500/10 text-slate-350 dark:text-cyan-400/40 hover:text-red-500 rounded-xl transition-all border border-slate-100 dark:border-cyan-500/10 cursor-pointer"
                            title="Hapus Alat"
                         >
                            <Trash2 className="w-4 h-4" />
@@ -677,36 +704,36 @@ export function Calibrators() {
 
                     <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
                       {uploadQueue.map((item) => (
-                        <div key={item.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden">
+                        <div key={item.id} className="bg-slate-50/60 dark:bg-[#080e1e]/60 border border-slate-200/60 dark:border-cyan-500/15 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm relative overflow-hidden backdrop-blur-md transition-all duration-300">
                           {item.status === 'extracting' && (
-                            <div className="absolute left-0 top-0 h-full w-1.5 bg-blue-500 animate-pulse" />
+                            <div className="absolute left-0 top-0 h-full w-1.5 bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse" />
                           )}
                           {item.status === 'extracted' && (
-                            <div className="absolute left-0 top-0 h-full w-1.5 bg-emerald-500" />
+                            <div className="absolute left-0 top-0 h-full w-1.5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
                           )}
                           {item.status === 'failed' && (
-                            <div className="absolute left-0 top-0 h-full w-1.5 bg-red-500" />
+                            <div className="absolute left-0 top-0 h-full w-1.5 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse" />
                           )}
                           
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-xs font-black text-slate-900 truncate uppercase font-mono">{item.fileName}</h4>
+                            <h4 className="text-xs font-black text-slate-900 dark:text-white truncate uppercase font-mono">{item.fileName}</h4>
                             {item.status === 'extracted' && item.data && (
-                              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">
+                              <p className="text-[10px] text-slate-500 dark:text-cyan-400/80 font-bold uppercase tracking-wider mt-1 font-mono">
                                 {item.data.name} • S/N: {item.data.serialNumber} • {item.data.parameters?.length || 0} Param
                               </p>
                             )}
                             {item.status === 'failed' && (
-                              <p className="text-[10px] text-red-500 font-semibold mt-1">
+                              <p className="text-[10px] text-red-500 dark:text-red-400 font-semibold mt-1 font-mono">
                                 Error: {item.error}
                               </p>
                             )}
                             {item.status === 'pending' && (
-                              <p className="text-[10px] text-slate-400 font-semibold mt-1">
+                              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
                                 Menunggu giliran...
                               </p>
                             )}
                             {item.status === 'extracting' && (
-                              <p className="text-[10px] text-blue-600 font-bold animate-pulse mt-1 uppercase tracking-wider">
+                              <p className="text-[10px] text-cyan-600 dark:text-cyan-400 font-bold animate-pulse mt-1 uppercase tracking-wider font-mono">
                                 Menganalisis dengan Gemini AI...
                               </p>
                             )}
@@ -719,14 +746,14 @@ export function Calibrators() {
                                   setExtractedData(item.data);
                                   setActiveQueueItemId(item.id);
                                 }}
-                                className="px-3.5 py-1.5 bg-white border border-slate-200 text-[#06B6D4] hover:bg-[#06B6D4]/10 hover:text-slate-950 font-black rounded-lg text-[9px] uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                                className="px-3.5 py-1.5 bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/20 text-[#06B6D4] hover:bg-[#06B6D4]/10 dark:hover:bg-cyan-500/10 hover:text-slate-950 dark:hover:text-cyan-400 font-black rounded-lg text-[9px] uppercase tracking-wider transition-all cursor-pointer shadow-sm font-mono"
                               >
                                 Edit Parameter
                               </button>
                             )}
                             <button
                               onClick={() => setUploadQueue(prev => prev.filter(q => q.id !== item.id))}
-                              className="p-1.5 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 border border-slate-100 rounded-lg transition-colors cursor-pointer shadow-sm"
+                              className="p-1.5 bg-white dark:bg-[#10192d] hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-450 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 border border-slate-100 dark:border-slate-800/80 rounded-lg transition-colors cursor-pointer shadow-sm"
                               title="Hapus"
                             >
                               <X className="w-3.5 h-3.5" />
@@ -1016,29 +1043,29 @@ export function Calibrators() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white border border-slate-200 rounded-[3rem] w-full max-w-5xl shadow-3xl relative z-10 overflow-hidden max-h-[90vh] flex flex-col"
+              className="bg-white dark:bg-[#0c1224] border border-slate-200 dark:border-cyan-500/25 rounded-[3rem] w-full max-w-5xl shadow-3xl relative z-10 overflow-hidden max-h-[90vh] flex flex-col"
             >
-              <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="p-8 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/50 dark:bg-[#080e1e]/60">
                  <div className="flex items-center gap-5">
-                   <div className="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
-                      <Zap className="w-9 h-9 fill-white/20" />
+                   <div className="w-16 h-16 bg-blue-600 dark:bg-cyan-500/10 border border-cyan-500/20 rounded-3xl flex items-center justify-center text-white dark:text-cyan-400 shadow-xl shadow-blue-500/10">
+                      <Zap className="w-9 h-9 fill-white/10 dark:fill-cyan-400/10" />
                    </div>
                    <div>
-                     <h2 className="text-3xl font-black text-slate-900 tracking-tight italic uppercase leading-none mb-1">{selectedCalibrator.name}</h2>
-                     <p className="text-[10px] text-blue-600 font-bold uppercase tracking-[0.3em] font-mono">Master Fleet Intelligence • {selectedCalibrator.brand}</p>
+                     <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight italic uppercase leading-none mb-1">{selectedCalibrator.name}</h2>
+                     <p className="text-[10px] text-blue-600 dark:text-cyan-400 font-bold uppercase tracking-[0.3em] font-mono">Master Fleet Intelligence • {selectedCalibrator.brand}</p>
                    </div>
                  </div>
-                 <button onClick={() => setIsPreviewOpen(false)} className="p-4 bg-white hover:bg-slate-100 rounded-[1.5rem] text-slate-400 transition-all border border-slate-100 shadow-sm">
+                 <button onClick={() => setIsPreviewOpen(false)} className="p-4 bg-white dark:bg-[#10192d] hover:bg-slate-100 dark:hover:bg-[#1f283d] rounded-[1.5rem] text-slate-400 dark:text-slate-500 transition-all border border-slate-100 dark:border-slate-800 shadow-sm cursor-pointer">
                     <X className="w-6 h-6" />
                  </button>
               </div>
 
-              <div className="p-10 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/30">
+              <div className="p-10 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/30 dark:bg-[#030612]/30">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
                   <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm space-y-8">
-                      <h4 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
-                        <HardDrive className="w-4 h-4 text-blue-500" />
+                    <div className="bg-white dark:bg-[#10192d] border border-slate-100 dark:border-cyan-500/15 rounded-[2.5rem] p-8 shadow-sm space-y-8">
+                      <h4 className="text-[10px] font-black text-slate-350 dark:text-slate-550 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                        <HardDrive className="w-4 h-4 text-blue-500 dark:text-cyan-400" />
                         Aset Core Data
                       </h4>
                         <div className="space-y-6">
@@ -1050,31 +1077,31 @@ export function Calibrators() {
                         </div>
                     </div>
 
-                    <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-xl">
+                    <div className="bg-slate-900 dark:bg-[#10192d] rounded-[2.5rem] p-8 text-white shadow-xl border border-slate-800/80 dark:border-cyan-500/10">
                       <div className="flex items-center justify-between mb-6">
                         <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-widest font-mono">Operational Status</h4>
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
                       </div>
-                      <p className="text-[11px] text-slate-400 leading-relaxed font-medium">Ini adalah aset berlisensi dalam Spektrum Global Network. Standar ini siap digunakan untuk seluruh protokol kalibrasi digital.</p>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-300 leading-relaxed font-medium">Ini adalah aset berlisensi dalam Spektrum Global Network. Standar ini siap digunakan untuk seluruh protokol kalibrasi digital.</p>
                     </div>
                   </div>
 
                   <div className="lg:col-span-3 space-y-8">
-                    <div className="bg-white border border-slate-100 rounded-[2.5rem] p-10 shadow-sm h-full flex flex-col">
+                    <div className="bg-white dark:bg-[#10192d] border border-slate-100 dark:border-cyan-500/15 rounded-[2.5rem] p-10 shadow-sm h-full flex flex-col">
                       <div className="flex items-center justify-between mb-8">
                         <div>
-                          <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] font-mono leading-none mb-2">Metrology Matrix Analysis</h4>
-                          <p className="text-sm text-slate-400 font-medium italic italic">Data koreksi dan ketidakpastian yang terverifikasi</p>
+                          <h4 className="text-[10px] font-black text-blue-600 dark:text-cyan-400 uppercase tracking-[0.3em] font-mono leading-none mb-2">Metrology Matrix Analysis</h4>
+                          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium italic">Data koreksi dan ketidakpastian yang terverifikasi</p>
                         </div>
-                        <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300">
+                        <div className="w-10 h-10 bg-slate-50 dark:bg-[#0c1224] rounded-xl flex items-center justify-center text-slate-350">
                            <Settings2 className="w-5 h-5" />
                         </div>
                       </div>
 
-                      <div className="bg-slate-50 border border-slate-200 rounded-3xl overflow-x-auto shadow-inner flex-1 custom-scrollbar">
-                        <table className="w-full text-left min-w-[600px]">
+                      <div className="bg-slate-50/80 dark:bg-[#070d19] border border-slate-200 dark:border-cyan-500/10 rounded-3xl overflow-x-auto shadow-inner flex-1 custom-scrollbar">
+                        <table className="w-full text-left min-w-[600px] border-collapse">
                           <thead>
-                            <tr className="bg-slate-100/50 text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] border-b border-slate-200 font-mono italic">
+                            <tr className="bg-slate-100/50 dark:bg-[#0c1224]/80 text-[10px] font-black text-slate-700 dark:text-cyan-400 uppercase tracking-[0.2em] border-b border-slate-200 dark:border-slate-800/80 font-mono italic">
                               <th className="px-8 py-5">Peta Parameter</th>
                               <th className="px-8 py-5">Ch.</th>
                               <th className="px-8 py-5 text-center">Titik Uji</th>
@@ -1082,31 +1109,31 @@ export function Calibrators() {
                               <th className="px-8 py-5 text-right">Ketidakpastian</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-slate-100">
+                          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/40">
                             {selectedCalibrator.parameters?.length > 0 ? (
                               selectedCalibrator.parameters.map((p: any, idx: number) => (
-                                <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
+                                <tr key={idx} className="hover:bg-blue-50/30 dark:hover:bg-cyan-500/5 transition-colors">
                                   <td className="px-8 py-6">
-                                     <p className="text-xs font-black text-blue-600 uppercase italic leading-none">{p.parameterName || 'N/A'}</p>
+                                     <p className="text-xs font-black text-blue-600 dark:text-cyan-400 uppercase italic leading-none">{p.parameterName || 'N/A'}</p>
                                   </td>
                                   <td className="px-8 py-6">
-                                     <p className="text-[10px] font-black text-slate-300 uppercase font-mono">{p.channel || 'UTAMA'}</p>
+                                     <p className="text-[10px] font-black text-slate-350 dark:text-slate-500 uppercase font-mono">{p.channel || 'UTAMA'}</p>
                                   </td>
                                   <td className="px-8 py-6 text-center">
-                                     <span className="text-sm font-black text-slate-900">{p.point}</span>
+                                     <span className="text-sm font-black text-slate-900 dark:text-white">{p.point}</span>
                                      <span className="text-[10px] text-slate-400 ml-1 font-black uppercase tracking-tighter">{p.unit}</span>
                                   </td>
-                                  <td className="px-8 py-6 text-right font-black text-base text-blue-600 font-mono">
+                                  <td className="px-8 py-6 text-right font-black text-base text-blue-600 dark:text-cyan-400 font-mono">
                                     {p.correction}
                                   </td>
-                                  <td className="px-8 py-6 text-right font-mono text-xs text-slate-400 font-black">
+                                  <td className="px-8 py-6 text-right font-mono text-xs text-slate-405 dark:text-slate-550 font-black">
                                     {p.uncertainty}
                                   </td>
                                 </tr>
                               ))
                             ) : (
                               <tr>
-                                <td colSpan={5} className="px-8 py-20 text-center text-slate-300 text-xs font-black uppercase tracking-widest italic">
+                                <td colSpan={5} className="px-8 py-20 text-center text-slate-300 dark:text-slate-700 text-xs font-black uppercase tracking-widest italic">
                                   Data peta struktural kosong
                                 </td>
                               </tr>
@@ -1119,13 +1146,13 @@ export function Calibrators() {
                 </div>
               </div>
 
-              <div className="p-8 bg-slate-50/50 border-t border-slate-100 flex justify-between items-center">
+              <div className="p-8 bg-slate-50/50 dark:bg-[#080e1e]/60 border-t border-slate-100 dark:border-slate-800/80 flex justify-between items-center">
                 {isAdmin && (
                   <button 
                     onClick={() => {
                       setItemToDelete(selectedCalibrator.id);
                     }}
-                    className="px-8 py-4 bg-white hover:bg-red-50 border border-slate-200 rounded-2xl text-[10px] font-black text-red-500 transition-all uppercase tracking-widest flex items-center gap-3 shadow-sm group"
+                    className="px-8 py-4 bg-white dark:bg-[#10192d] hover:bg-red-50 dark:hover:bg-red-950/20 border border-slate-200 dark:border-slate-800 rounded-2xl text-[10px] font-black text-red-500 dark:text-red-400 transition-all uppercase tracking-widest flex items-center gap-3 shadow-sm group cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
                     Hapus Data Aset
@@ -1141,7 +1168,7 @@ export function Calibrators() {
                 </button>
                 <button 
                   onClick={() => setIsPreviewOpen(false)}
-                  className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black transition-all uppercase tracking-[0.2em] active:scale-95 shadow-xl shadow-blue-500/20"
+                  className="px-12 py-4 bg-blue-600 dark:bg-cyan-500 hover:bg-blue-700 dark:hover:bg-cyan-600 text-white dark:text-slate-950 rounded-2xl text-xs font-black transition-all uppercase tracking-[0.2em] active:scale-95 shadow-xl shadow-blue-500/20 dark:shadow-cyan-500/10 cursor-pointer"
                 >
                   Tutup Matriks
                 </button>

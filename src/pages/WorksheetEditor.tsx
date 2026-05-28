@@ -1100,6 +1100,7 @@ export function WorksheetEditor() {
     results: {},
   });
   const [measurements, setMeasurements] = useState<any[]>([]);
+  const [isAutomationOpen, setIsAutomationOpen] = useState<boolean>(false);
 
   // Decision Rules, CMC, and Drift justification state variables
   const [decisionRule, setDecisionRule] = useState<"simple" | "strict">("simple");
@@ -4320,198 +4321,238 @@ export function WorksheetEditor() {
                     </div>
                   </div>
 
-                  {/* AUTOMATION ENGINE: TWO-SECTION DUPLEX CONTROLLER */}
-                  <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-                    {/* WIDGET 1: THE INTELLIGENT COMPACT SIMULATOR (Left) */}
-                    <div className="xl:col-span-5 bg-gradient-to-r from-slate-900 to-[#101b33] p-5 rounded-3xl border border-slate-850 shadow-md relative overflow-hidden flex flex-col justify-between">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/[0.03] rounded-full filter blur-xl" />
-                      
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-                          <h4 className="text-[10px] font-black text-white uppercase tracking-widest font-mono">
-                            Metrology Fast-Play Simulator
-                          </h4>
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                          Mensimulasikan input data ukur riil dalam milidetik untuk verifikasi kelulusan batas alat tanpa pengisian formulir manual.
-                        </p>
-                      </div>
+                  {/* COLLAPSIBLE AUTOMATION ENGINE & SIMULATOR PANEL */}
+                  <div className="border border-slate-200 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-sm bg-white dark:bg-[#090d1a] transition-all duration-300">
+                    <button
+                      type="button"
+                      onClick={() => setIsAutomationOpen(!isAutomationOpen)}
+                      className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-150 dark:border-slate-800/80 hover:bg-slate-100/60 dark:hover:bg-slate-850 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                        Konsol Otomatisasi & Simulator Metrologi (Opsional / Kustom)
+                      </span>
+                      {isAutomationOpen ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
+                    </button>
+                    
+                    <AnimatePresence initial={false}>
+                      {isAutomationOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="p-5 space-y-6 bg-slate-50/20 dark:bg-slate-950/10">
+                            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                              {/* WIDGET 1: THE INTELLIGENT COMPACT SIMULATOR (Left) */}
+                              <div className="xl:col-span-5 bg-gradient-to-r from-slate-900 to-[#101b33] p-5 rounded-3xl border border-slate-850 shadow-md relative overflow-hidden flex flex-col justify-between">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/[0.03] rounded-full filter blur-xl" />
+                                
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest font-mono">
+                                      Metrology Fast-Play Simulator
+                                    </h4>
+                                  </div>
+                                  <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                                    Mensimulasikan input data ukur riil dalam milidetik untuk verifikasi kelulusan batas alat tanpa pengisian formulir manual.
+                                  </p>
+                                </div>
 
-                      <div className="grid grid-cols-2 gap-2 mt-4">
-                        <button
-                          type="button"
-                          onClick={handleAutoSimulatePassed}
-                          className="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-black text-[9px] uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-sm active:scale-95 text-center"
-                          title="Simulasikan seluruh titik uji lolos nilai toleransi"
-                        >
-                          🟢 Lolos MPE (Optimal)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleAutoSimulateFailed}
-                          className="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 font-black text-[9px] uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-sm active:scale-95 text-center"
-                          title="Simulasikan beberapa titik ukur melampaui toleransi untuk menguji validasi warna merah"
-                        >
-                          🔴 Gagal MPE (Kritis)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleAutoZeroDeviations}
-                          className="bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-black text-[9px] uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-sm active:scale-95 text-center col-span-2"
-                        >
-                          🎯 Setel Seluruh Deviasi = 0
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleAutoFillAllMeasurements}
-                          className="bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-500 dark:text-amber-400 font-bold text-[9px] uppercase tracking-wider py-2 py-1.5 rounded-xl transition-all shadow-sm active:scale-95 text-center col-span-2 mt-1"
-                        >
-                          ⚡ Auto-Fill dari Kalibrator Master
-                        </button>
-                      </div>
-                    </div>
+                                <div className="grid grid-cols-2 gap-2 mt-4">
+                                  <button
+                                    type="button"
+                                    onClick={handleAutoSimulatePassed}
+                                    className="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-black text-[9px] uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-sm active:scale-95 text-center cursor-pointer"
+                                    title="Simulasikan seluruh titik uji lolos nilai toleransi"
+                                  >
+                                    🟢 Lolos MPE (Optimal)
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleAutoSimulateFailed}
+                                    className="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 font-black text-[9px] uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-sm active:scale-95 text-center cursor-pointer"
+                                    title="Simulasikan beberapa titik ukur melampaui toleransi untuk menguji validasi warna merah"
+                                  >
+                                    🔴 Gagal MPE (Kritis)
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleAutoZeroDeviations}
+                                    className="bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-black text-[9px] uppercase tracking-wider py-2.5 px-3 rounded-xl transition-all shadow-sm active:scale-95 text-center col-span-2 cursor-pointer"
+                                  >
+                                    🎯 Setel Seluruh Deviasi = 0
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleAutoFillAllMeasurements}
+                                    className="bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-500 dark:text-amber-400 font-bold text-[9px] uppercase tracking-wider py-2 py-1.5 rounded-xl transition-all shadow-sm active:scale-95 text-center col-span-2 mt-1 cursor-pointer"
+                                  >
+                                    ⚡ Auto-Fill dari Kalibrator Master
+                                  </button>
+                                </div>
+                              </div>
 
-                    {/* WIDGET 2: AUTO INTERVAL/SEQUENCE POINT GENERATOR (Right) */}
-                    <div className="xl:col-span-7 bg-white dark:bg-slate-900/40 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#b38728]" />
-                            <h4 className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest font-mono">
-                              Generator Rentang Titik Otomatis
-                            </h4>
+                              {/* WIDGET 2: AUTO INTERVAL/SEQUENCE POINT GENERATOR (Right) */}
+                              <div className="xl:col-span-7 bg-white dark:bg-slate-900/40 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm flex flex-col justify-between">
+                                <div>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-[#b38728]" />
+                                      <h4 className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest font-mono">
+                                        Generator Rentang Titik Otomatis
+                                      </h4>
+                                    </div>
+                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded-full">
+                                      Rapid Grid Creator
+                                    </span>
+                                  </div>
+                                  <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                    Membuat deret titik ukur kalibrasi secara linier bertahap dalam sekali klik.
+                                  </p>
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-3">
+                                  <div className="flex flex-col gap-1 col-span-2 sm:col-span-2">
+                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider">Parameter</span>
+                                    <input
+                                      type="text"
+                                      value={seqName}
+                                      onChange={(e) => setSeqName(e.target.value)}
+                                      placeholder="Tegangan"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Dari</span>
+                                    <input
+                                      type="number"
+                                      value={seqStart}
+                                      onChange={(e) => setSeqStart(e.target.value)}
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Sampai</span>
+                                    <input
+                                      type="number"
+                                      value={seqEnd}
+                                      onChange={(e) => setSeqEnd(e.target.value)}
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah Titik</span>
+                                    <input
+                                      type="number"
+                                      value={seqSteps}
+                                      onChange={(e) => setSeqSteps(e.target.value)}
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Satuan</span>
+                                    <input
+                                      type="text"
+                                      value={seqUnit}
+                                      onChange={(e) => setSeqUnit(e.target.value)}
+                                      placeholder="V"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center justify-end gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 w-full">
+                                  {identityData.methodId && measurements.length === 0 && (
+                                    <button
+                                      type="button"
+                                      onClick={initMeasurementsFromMethod}
+                                      className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[9px] uppercase tracking-wider py-1.5 px-3 rounded-lg transition-all cursor-pointer"
+                                    >
+                                      Generate dari MK
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      handleAutoGenerateSequence(
+                                        seqName,
+                                        Number(seqStart) || 0,
+                                        Number(seqEnd) || 0,
+                                        Number(seqSteps) || 1,
+                                        seqUnit
+                                      );
+                                    }}
+                                    className="bg-gradient-to-r from-amber-400 via-amber-500 to-[#b38728] text-slate-950 hover:from-amber-500 hover:to-amber-600 hover:text-white font-black text-[9px] uppercase tracking-wider py-1.5 px-4.5 rounded-lg transition-all shadow-sm active:scale-95 cursor-pointer"
+                                  >
+                                    ⚡ Generate Deret Titik
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded-full">
-                            Rapid Grid Creator
-                          </span>
-                        </div>
-                        <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-0.5">
-                          Membuat deret titik ukur kalibrasi secara linier bertahap dalam sekali klik.
-                        </p>
-                      </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-3">
-                        <div className="flex flex-col gap-1 col-span-2 sm:col-span-2">
-                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider">Parameter</span>
-                          <input
-                            type="text"
-                            value={seqName}
-                            onChange={(e) => setSeqName(e.target.value)}
-                            placeholder="Tegangan"
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Dari</span>
-                          <input
-                            type="number"
-                            value={seqStart}
-                            onChange={(e) => setSeqStart(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Sampai</span>
-                          <input
-                            type="number"
-                            value={seqEnd}
-                            onChange={(e) => setSeqEnd(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah Titik</span>
-                          <input
-                            type="number"
-                            value={seqSteps}
-                            onChange={(e) => setSeqSteps(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-mono font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                          <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Satuan</span>
-                          <input
-                            type="text"
-                            value={seqUnit}
-                            onChange={(e) => setSeqUnit(e.target.value)}
-                            placeholder="V"
-                            className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[10px] font-extrabold px-2 py-1 rounded-xl outline-none focus:border-[#b38728] text-center w-full"
-                            style={{ fontSize: '11px', padding: '6px 8px', height: '32px', minHeight: '32px' }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center justify-end gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 w-full">
-                        {identityData.methodId && measurements.length === 0 && (
-                          <button
-                            type="button"
-                            onClick={initMeasurementsFromMethod}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[9px] uppercase tracking-wider py-1.5 px-3 rounded-lg transition-all"
-                          >
-                            Generate dari MK
-                          </button>
+                  {/* General Metrology Controls action row */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 mt-4 mb-2">
+                    <div className="flex items-center gap-2">
+                      <TableIcon className="w-5 h-5 text-[#b38728]" />
+                      <h3 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest font-mono italic">
+                        Tabel Data Pengukuran Kalibrasi
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMeasurements([
+                            ...measurements,
+                            {
+                              parameterName: "",
+                              point: 0,
+                              actual: 0,
+                              deviation: 0,
+                              unit: "",
+                              resolution: Number(bulkRes) || 0.01,
+                              masterUnc: Number(bulkMUnc) || 0.001,
+                              drift: Number(bulkDrift) || 0,
+                            },
+                          ]);
+                        }}
+                        className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3.5 rounded-lg transition-all border border-slate-250 dark:border-slate-700 shadow-sm cursor-pointer active:scale-95"
+                      >
+                        Tambah Satu Baris
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDownloadCSV}
+                        className="bg-emerald-55/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200/50 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-350 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                      >
+                        <Download className="w-3.5 h-3.5" /> Unduh CSV
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditMetrologyMode(!editMetrologyMode)}
+                        className={cn(
+                          "font-extrabold text-[9px] uppercase tracking-wider py-1.5 px-3.5 rounded-lg transition-all border flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
+                          editMetrologyMode
+                            ? "bg-[#b38728]/15 border-[#b38728]/40 text-[#b38728] hover:bg-[#b38728]/25 dark:border-[#b38728]/40"
+                            : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
                         )}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setMeasurements([
-                              ...measurements,
-                              {
-                                parameterName: "",
-                                point: 0,
-                                actual: 0,
-                                deviation: 0,
-                                unit: "",
-                                resolution: Number(bulkRes) || 0.01,
-                                masterUnc: Number(bulkMUnc) || 0.001,
-                                drift: Number(bulkDrift) || 0,
-                              },
-                            ]);
-                          }}
-                          className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3.5 rounded-lg transition-all"
-                        >
-                          Tambah Satu Baris
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleDownloadCSV}
-                          className="bg-emerald-55/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200/50 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-350 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3.5 rounded-lg transition-all flex items-center gap-1.5"
-                        >
-                          <Download className="w-3.5 h-3.5" /> Unduh CSV
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleAutoGenerateSequence(
-                              seqName,
-                              Number(seqStart) || 0,
-                              Number(seqEnd) || 0,
-                              Number(seqSteps) || 1,
-                              seqUnit
-                            );
-                          }}
-                          className="bg-gradient-to-r from-amber-400 via-amber-500 to-[#b38728] text-slate-950 hover:from-amber-500 hover:to-amber-600 hover:text-white font-black text-[9px] uppercase tracking-wider py-1.5 px-4.5 rounded-lg transition-all shadow-sm active:scale-95"
-                        >
-                          ⚡ Generate Deret Titik
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEditMetrologyMode(!editMetrologyMode)}
-                          className={cn(
-                            "font-extrabold text-[9px] uppercase tracking-wider py-1.5 px-3.5 rounded-lg transition-all border flex items-center gap-1.5 shadow-sm active:scale-95",
-                            editMetrologyMode
-                              ? "bg-[#b38728]/15 border-[#b38728]/40 text-[#b38728] hover:bg-[#b38728]/25 dark:border-[#b38728]/40"
-                              : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white"
-                          )}
-                        >
-                          {editMetrologyMode ? "🔒 Kunci Metrologi" : "🔓 Edit Metrologi"}
-                        </button>
-                      </div>
+                      >
+                        {editMetrologyMode ? "🔒 Kunci Metrologi" : "🔓 Edit Metrologi"}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -5858,30 +5899,24 @@ export function WorksheetEditor() {
                             )}
                           >
 
-                            {editMetrologyMode ? (
-                              <td className="px-2 py-1.5 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
-                                <input
-                                  type="text"
-                                  id={`input-parameterName-${idx}`}
-                                  onKeyDown={(e) => handleTableKeyDown(e, idx, 'parameterName')}
-                                  value={m.parameterName || ""}
-                                  placeholder="Parameter name..."
-                                  onChange={(e) => {
-                                    const newM = [...measurements];
-                                    newM[idx].parameterName = e.target.value;
-                                    autoFillFromCalibrator(newM, idx, newM[idx].point, e.target.value);
-                                    setMeasurements(newM);
-                                  }}
-                                  className="w-full bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-2 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none transition-all placeholder:text-slate-400 font-mono"
-                                />
-                              </td>
-                            ) : (
-                              <td className="px-3 py-2 border-r border-b border-slate-200/40 dark:border-slate-850/45 bg-slate-50/[0.08] dark:bg-slate-900/[0.02]">
-                                <span className="text-slate-800 dark:text-slate-200 font-black text-xs block font-sans tracking-wide">
-                                  {m.parameterName || "—"}
-                                </span>
-                              </td>
-                            )}
+                            {/* parameterName: always inline-editable – double-click/focus to rename */}
+                            <td className="px-2 py-1.5 border-r border-b border-slate-200/40 dark:border-slate-850/45 bg-slate-50/[0.05] dark:bg-slate-900/[0.02] group/pname">
+                              <input
+                                type="text"
+                                id={`input-parameterName-${idx}`}
+                                onKeyDown={(e) => handleTableKeyDown(e, idx, 'parameterName')}
+                                value={m.parameterName || ""}
+                                placeholder="Nama parameter..."
+                                title="Klik untuk mengganti nama parameter"
+                                onChange={(e) => {
+                                  const newM = [...measurements];
+                                  newM[idx].parameterName = e.target.value;
+                                  autoFillFromCalibrator(newM, idx, newM[idx].point, e.target.value);
+                                  setMeasurements(newM);
+                                }}
+                                className="w-full bg-transparent border border-transparent hover:border-slate-300 dark:hover:border-slate-700 focus:border-[#b38728] dark:focus:border-[#b38728] focus:bg-white dark:focus:bg-[#040816] rounded-md px-2 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none transition-all placeholder:text-slate-400 font-sans cursor-pointer focus:cursor-text"
+                              />
+                            </td>
 
                             {editMetrologyMode ? (
                               <td className="px-2 py-1.5 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
@@ -7105,7 +7140,7 @@ export function WorksheetEditor() {
 
                           <td className={cn(
                             "px-2 py-1.5 border-r border-b transition-colors duration-200 text-right",
-                            isOut ? "bg-red-50/70 border-red-200 dark:bg-rose-950/20 dark:border-rose-900/40" :
+                            isOut ? "glow-fail-danger" :
                             isValid ? "bg-emerald-50/50 border-emerald-250/50 dark:bg-emerald-950/15 dark:border-emerald-900/40" :
                             "bg-white/40 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/55"
                           )}>
@@ -7140,7 +7175,7 @@ export function WorksheetEditor() {
                           </td>
                           <td className={cn(
                             "px-2 py-1.5 border-r border-b transition-colors duration-200 text-center",
-                            isOut ? "bg-red-50/70 border-red-200 dark:bg-rose-950/20 dark:border-rose-900/40" :
+                            isOut ? "glow-fail-danger" :
                             isValid ? "bg-emerald-50/50 border-emerald-250/50 dark:bg-emerald-950/15 dark:border-emerald-900/40" :
                             "bg-white/40 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/55"
                           )}>
@@ -7161,7 +7196,7 @@ export function WorksheetEditor() {
 
                           <td className={cn(
                             "px-2 py-1.5 border-r border-b transition-colors duration-200 text-center",
-                            isOut ? "bg-red-50/70 border-red-200 dark:bg-rose-950/20 dark:border-rose-900/40" :
+                            isOut ? "glow-fail-danger" :
                             isValid ? "bg-emerald-50/50 border-emerald-250/50 dark:bg-emerald-950/15 dark:border-emerald-900/40" :
                             "bg-white/40 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/55"
                           )}>
@@ -7557,6 +7592,13 @@ function CheckItem({ label, value, onChange, onLabelChange, onDelete, variant = 
   const [isEditing, setIsEditing] = useState(false);
   const [tempLabel, setTempLabel] = useState(label);
 
+  // Sync tempLabel when the label prop changes externally
+  useEffect(() => {
+    if (!isEditing) {
+      setTempLabel(label);
+    }
+  }, [label, isEditing]);
+
   const isGold = variant === "gold";
   const isBaik = value === "Baik";
   const isRusak = value === "Rusak";
@@ -7591,13 +7633,18 @@ function CheckItem({ label, value, onChange, onLabelChange, onDelete, variant = 
           </form>
         ) : (
           <span onClick={() => setIsEditing(true)} title="Klik untuk mengubah label"
-            className={cn("text-[10px] font-black uppercase tracking-tight cursor-pointer transition-colors whitespace-normal break-words italic font-mono",
+            className={cn("text-[10px] font-black uppercase tracking-tight cursor-pointer transition-colors whitespace-normal break-words italic font-mono flex items-center gap-1.5 flex-wrap",
               isBaik ? "text-emerald-800 dark:text-emerald-300" :
               isRusak ? "text-rose-800 dark:text-rose-300" :
               isGold ? "text-slate-800 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400" :
               "text-slate-800 dark:text-slate-300 hover:text-blue-600 dark:hover:text-cyan-400"
             )}
-          >{label}</span>
+          >
+            {label}
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-100 dark:bg-slate-800 text-[8px] font-sans px-1 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-normal normal-case">
+              Ubah
+            </span>
+          </span>
         )}
       </div>
       <div className="flex items-center gap-2 shrink-0">

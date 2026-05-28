@@ -23,7 +23,8 @@ import {
   Eye, 
   Activity,
   ClipboardList,
-  UserCheck
+  UserCheck,
+  Shield
 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy, addDoc, serverTimestamp, deleteDoc, doc, updateDoc, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -173,6 +174,66 @@ export function IPMModule() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
+  // Collapsible Accordion states for premium checklists
+  const [isVisualAccordionOpen, setIsVisualAccordionOpen] = useState(true);
+  const [isFunctionalAccordionOpen, setIsFunctionalAccordionOpen] = useState(true);
+
+  // Dynamic array parameter states with stable IDs to avoid losing focus when editing names
+  interface ChecklistItem {
+    id: string;
+    name: string;
+    status: 'Lolos' | 'Tidak Lolos';
+  }
+  const [visualArray, setVisualArray] = useState<ChecklistItem[]>([]);
+  const [functionalArray, setFunctionalArray] = useState<ChecklistItem[]>([]);
+
+  // Helpers to add, edit, or delete items inside the visual/functional checklists
+  const addVisualParameter = () => {
+    setVisualArray(prev => [
+      ...prev,
+      {
+        id: `vis-${Date.now()}-${Math.random()}`,
+        name: `Parameter Fisik Baru ${prev.length + 1}`,
+        status: 'Lolos'
+      }
+    ]);
+  };
+
+  const deleteVisualParameter = (id: string) => {
+    setVisualArray(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateVisualParameterName = (id: string, name: string) => {
+    setVisualArray(prev => prev.map(item => item.id === id ? { ...item, name } : item));
+  };
+
+  const updateVisualParameterStatus = (id: string, status: 'Lolos' | 'Tidak Lolos') => {
+    setVisualArray(prev => prev.map(item => item.id === id ? { ...item, status } : item));
+  };
+
+  const addFunctionalParameter = () => {
+    setFunctionalArray(prev => [
+      ...prev,
+      {
+        id: `func-${Date.now()}-${Math.random()}`,
+        name: `Parameter Fungsi Baru ${prev.length + 1}`,
+        status: 'Lolos'
+      }
+    ]);
+  };
+
+  const deleteFunctionalParameter = (id: string) => {
+    setFunctionalArray(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateFunctionalParameterName = (id: string, name: string) => {
+    setFunctionalArray(prev => prev.map(item => item.id === id ? { ...item, name } : item));
+  };
+
+  const updateFunctionalParameterStatus = (id: string, status: 'Lolos' | 'Tidak Lolos') => {
+    setFunctionalArray(prev => prev.map(item => item.id === id ? { ...item, status } : item));
+  };
+
   const [purging, setPurging] = useState(false);
   const [isPurgeConfirmOpen, setIsPurgeConfirmOpen] = useState(false);
 
@@ -209,6 +270,20 @@ export function IPMModule() {
     setFormStatus(task.status || 'Menunggu Jadwal');
     setVisualChecks(task.visualChecks || {});
     setFunctionalChecks(task.functionalChecks || {});
+    
+    const visArr = Object.entries(task.visualChecks || {}).map(([name, status], idx) => ({
+      id: `vis-${idx}-${Date.now()}`,
+      name,
+      status: status as 'Lolos' | 'Tidak Lolos'
+    }));
+    setVisualArray(visArr);
+
+    const funcArr = Object.entries(task.functionalChecks || {}).map(([name, status], idx) => ({
+      id: `func-${idx}-${Date.now()}`,
+      name,
+      status: status as 'Lolos' | 'Tidak Lolos'
+    }));
+    setFunctionalArray(funcArr);
     setExecutionNotes(task.executionNotes || '');
     
     // Measurements
@@ -252,228 +327,207 @@ export function IPMModule() {
       const marginX = 20;
       let yPos = 25;
       const pageHeight = 280;
+      const pageWidth = 190;
 
-      // Header logo / Brand info
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(30, 41, 59); // slate-800
-      doc.text("PT. SPEKTRUM KREASI PRATAMA", marginX, yPos);
-      yPos += 5.5;
+      // ─── Helper: Draw professional double-border frame ───────────────────
+      const drawBorder = () => {
+        doc.setDrawColor(30, 64, 175);
+        doc.setLineWidth(1.2);
+        doc.rect(8, 8, 194, 281);
+        doc.setLineWidth(0.4);
+        doc.rect(10, 10, 190, 277);
+        doc.setDrawColor(148, 163, 184);
+        doc.setLineWidth(0.2);
+        doc.rect(11.5, 11.5, 187, 274);
+      };
+      drawBorder();
 
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.setTextColor(100, 116, 139); // slate-500
-      doc.text("DIVISI PEMELIHARAAN PREVENTIF & KALIBRASI INTERNAL ALKES", marginX, yPos);
-      yPos += 4;
+      // ─── Header ──────────────────────────────────────────────────────────
+      doc.setFillColor(2, 132, 199);
+      doc.ellipse(22, 26, 3, 4, 'F');
+      doc.setFillColor(30, 58, 138);
+      doc.ellipse(24, 28, 3, 4, 'F');
 
-      doc.setDrawColor(226, 232, 240); // slate-200
-      doc.setLineWidth(0.5);
-      doc.line(marginX, yPos, 190, yPos);
-      yPos += 8;
-
-      // Report Title
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
-      doc.setTextColor(15, 23, 42); // slate-900
-      doc.text("LAPORAN PEMELIHARAAN PREVENTIF TERJADWAL (IPM)", marginX, yPos);
-      yPos += 5;
-      
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(8);
+      doc.setTextColor(29, 78, 216);
+      doc.text("PT. SPEKTRUM KREASI PRATAMA", 34, 25);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
       doc.setTextColor(100, 116, 139);
-      doc.text("Sistem Kepatuhan Uji Fungsi & Keamanan Listrik NFPA 99", marginX, yPos);
-      yPos += 10;
+      doc.text("Jl. K.H.M. Yusuf Raya No.14, Mekar Jaya, Sukmajaya, Kota Depok – (021) 2961-0080", 34, 30);
+      doc.text("DIVISI PEMELIHARAAN PREVENTIF & KALIBRASI INTERNAL ALKES", 34, 34);
 
-      // Metadata block
-      doc.setFont("Helvetica", "bold");
-      doc.setFontSize(8.5);
-      doc.setTextColor(71, 85, 105);
-      
+      doc.setDrawColor(29, 78, 216);
+      doc.setLineWidth(0.8);
+      doc.line(marginX, 38, pageWidth + marginX, 38);
+      yPos = 45;
+
+      // ─── Title block ─────────────────────────────────────────────────────
+      doc.setFillColor(241, 245, 249);
+      doc.rect(marginX, yPos, 170, 14, 'F');
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setTextColor(15, 23, 42);
+      doc.text("LAPORAN PEMELIHARAAN PREVENTIF TERJADWAL (IPM)", 105, yPos + 5.5, { align: "center" });
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text("Sistem Kepatuhan Uji Fungsi & Keamanan Listrik NFPA 99 | Permenkes RI No. 54/2015", 105, yPos + 10.5, { align: "center" });
+      yPos += 18;
+
+      // ─── Metadata two-column block ────────────────────────────────────────
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(29, 78, 216);
       doc.text("IDENTITAS ALAT KESEHATAN", marginX, yPos);
-      doc.text("INFORMASI INSPEKSI & PERIODE", 110, yPos);
+      doc.text("INFORMASI INSPEKSI & PERIODE", 113, yPos);
       yPos += 5;
 
-      doc.setFont("Helvetica", "normal");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
       doc.setTextColor(15, 23, 42);
 
       const metadataLeft = [
         ["Nama Alkes:", task.deviceName || "-"],
         ["Merek / Model:", `${task.brand || "-"} / ${task.model || "-"}`],
         ["Nomor Seri:", task.serialNumber || "-"],
-        ["Ruang / Dept:", `${task.location || "-"} / ${task.department || "-"}`]
+        ["Lokasi / Dept.:", `${task.location || "-"} – ${task.department || "-"}`]
       ];
-
       const metadataRight = [
         ["Teknisi Utama:", task.technicianName || "-"],
         ["Tgl Pemeliharaan:", formatDate(task.lastMaintenanceDate)],
-        ["Jadwal Berikutnya:", formatDate(task.nextMaintenanceDate)],
-        ["Label Kelaikan:", task.status || "-"]
+        ["Jadwal Berikutnya:", formatDate(task.nextMaintenanceDate) || "-"],
+        ["Status Kelaikan:", task.status || "-"]
       ];
 
       let leftY = yPos;
       metadataLeft.forEach(([label, val]) => {
-        doc.setFont("Helvetica", "bold");
-        doc.text(label, marginX, leftY);
-        doc.setFont("Helvetica", "normal");
-        doc.text(val, marginX + 25, leftY);
+        doc.setFont("helvetica", "bold"); doc.text(label, marginX, leftY);
+        doc.setFont("helvetica", "normal"); doc.text(String(val).slice(0, 42), marginX + 27, leftY);
         leftY += 4.5;
       });
-
       let rightY = yPos;
       metadataRight.forEach(([label, val]) => {
-        doc.setFont("Helvetica", "bold");
-        doc.text(label, 110, rightY);
-        doc.setFont("Helvetica", "normal");
-        doc.text(val, 110 + 32, rightY);
+        doc.setFont("helvetica", "bold"); doc.text(label, 113, rightY);
+        doc.setFont("helvetica", "normal");
+        const isStatus = label === "Status Kelaikan:";
+        if (isStatus) {
+          const color = val === 'Lolos' ? [16, 185, 129] : val === 'Bersyarat' ? [245, 158, 11] : [239, 68, 68];
+          doc.setTextColor(color[0] as number, color[1] as number, color[2] as number);
+        }
+        doc.text(String(val), 113 + 28, rightY);
+        doc.setTextColor(15, 23, 42);
         rightY += 4.5;
       });
+      yPos = Math.max(leftY, rightY) + 5;
 
-      yPos = Math.max(leftY, rightY) + 7;
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.4);
+      doc.line(marginX, yPos - 2, pageWidth + marginX, yPos - 2);
 
-      // elegant separator line
-      doc.setDrawColor(241, 245, 249);
-      doc.line(marginX, yPos - 3, 190, yPos - 3);
+      const successColor: [number, number, number] = [16, 185, 129];
+      const failColor: [number, number, number] = [239, 68, 68];
 
-      const successColor = [16, 185, 129];
-      const failColor = [239, 68, 68];
+      // ─── Helper: section heading ──────────────────────────────────────────
+      const sectionHead = (title: string, num: string) => {
+        if (yPos > pageHeight - 35) { doc.addPage(); drawBorder(); yPos = 25; }
+        doc.setFillColor(239, 246, 255);
+        doc.rect(marginX, yPos, 170, 6, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(30, 58, 138);
+        doc.text(`${num}. ${title}`, marginX + 3, yPos + 4.2);
+        yPos += 8;
+      };
 
-      // Section 1: Visual checks
+      // ─── Helper: table header row ─────────────────────────────────────────
+      const tableHead = (cols: { text: string; x: number }[], rowH = 5.5) => {
+        doc.setFillColor(248, 250, 252);
+        doc.rect(marginX, yPos, 170, rowH, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7.5);
+        doc.setTextColor(71, 85, 105);
+        cols.forEach(c => doc.text(c.text, c.x, yPos + 4));
+        yPos += rowH;
+      };
+
+      // ─── Section 1: Visual checks ─────────────────────────────────────────
       const hasVisual = Object.keys(task.visualChecks || {}).length > 0;
       if (hasVisual) {
-        doc.setFont("Helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(30, 58, 138); // navy
-        doc.text("1. HASIL INVENTARISASI & PEMERIKSAAN VISUAL", marginX, yPos);
-        yPos += 5;
-
-        // Table Header
-        doc.setFillColor(241, 245, 249);
-        doc.rect(marginX, yPos, 170, 5.5, "F");
-        doc.setFont("Helvetica", "bold");
-        doc.setFontSize(7.5);
-        doc.setTextColor(71, 85, 105);
-        doc.text("Kriteria Inspeksi Fisik / Chassis / Kabel", marginX + 3, yPos + 4);
-        doc.text("Hasil Evaluasi", marginX + 140, yPos + 4);
-        yPos += 5.5;
-
-        doc.setFont("Helvetica", "normal");
+        sectionHead("PEMERIKSAAN FISIK / VISUAL & CHASSIS", "1");
+        tableHead([
+          { text: "Kriteria Inspeksi Fisik / Chassis / Kabel", x: marginX + 3 },
+          { text: "Status", x: marginX + 150 }
+        ]);
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(7.5);
         doc.setTextColor(15, 23, 42);
-
         Object.entries(task.visualChecks).forEach(([item, status]: any) => {
-          if (yPos > pageHeight - 20) {
-            doc.addPage();
-            yPos = 25;
-          }
-          doc.text(item, marginX + 3, yPos + 4);
-          
-          doc.setFont("Helvetica", "bold");
+          if (yPos > pageHeight - 20) { doc.addPage(); drawBorder(); yPos = 25; }
+          const wrapped = doc.splitTextToSize(item, 120);
+          const rowH = Math.max(5.5, wrapped.length * 4);
+          doc.text(wrapped, marginX + 3, yPos + 4);
+          doc.setFont("helvetica", "bold");
           const c = status === "Lolos" ? successColor : failColor;
           doc.setTextColor(c[0], c[1], c[2]);
-          doc.text(status.toUpperCase(), marginX + 140, yPos + 4);
-          doc.setFont("Helvetica", "normal");
+          doc.text(status.toUpperCase(), marginX + 150, yPos + 4);
+          doc.setFont("helvetica", "normal");
           doc.setTextColor(15, 23, 42);
-          yPos += 5.5;
+          yPos += rowH;
         });
-        yPos += 4;
+        yPos += 3;
       }
 
-      // Section 2: Functional checks
+      // ─── Section 2: Functional checks ─────────────────────────────────────
       const hasFunc = Object.keys(task.functionalChecks || {}).length > 0;
       if (hasFunc) {
-        if (yPos > pageHeight - 35) {
-          doc.addPage();
-          yPos = 25;
-        }
-        doc.setFont("Helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(30, 58, 138);
-        doc.text("2. PEMERIKSAAN FUNGSI OPERASIONAL & SYSTEM ALARM", marginX, yPos);
-        yPos += 5;
-
-        // Table Header
-        doc.setFillColor(241, 245, 249);
-        doc.rect(marginX, yPos, 170, 5.5, "F");
-        doc.setFont("Helvetica", "bold");
-        doc.setFontSize(7.5);
-        doc.setTextColor(71, 85, 105);
-        doc.text("Fitur & Respon Sensor Keamanan", marginX + 3, yPos + 4);
-        doc.text("Hasil Evaluasi", marginX + 140, yPos + 4);
-        yPos += 5.5;
-
-        doc.setFont("Helvetica", "normal");
+        sectionHead("PEMERIKSAAN FUNGSI OPERASIONAL & SISTEM ALARM", "2");
+        tableHead([
+          { text: "Fitur & Respon Sensor Keamanan", x: marginX + 3 },
+          { text: "Status", x: marginX + 150 }
+        ]);
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(7.5);
         doc.setTextColor(15, 23, 42);
-
         Object.entries(task.functionalChecks).forEach(([item, status]: any) => {
-          if (yPos > pageHeight - 20) {
-            doc.addPage();
-            yPos = 25;
-          }
-          doc.text(item, marginX + 3, yPos + 4);
-          
-          doc.setFont("Helvetica", "bold");
+          if (yPos > pageHeight - 20) { doc.addPage(); drawBorder(); yPos = 25; }
+          const wrapped = doc.splitTextToSize(item, 120);
+          const rowH = Math.max(5.5, wrapped.length * 4);
+          doc.text(wrapped, marginX + 3, yPos + 4);
+          doc.setFont("helvetica", "bold");
           const c = status === "Lolos" ? successColor : failColor;
           doc.setTextColor(c[0], c[1], c[2]);
-          doc.text(status.toUpperCase(), marginX + 140, yPos + 4);
-          doc.setFont("Helvetica", "normal");
+          doc.text(status.toUpperCase(), marginX + 150, yPos + 4);
+          doc.setFont("helvetica", "normal");
           doc.setTextColor(15, 23, 42);
-          yPos += 5.5;
+          yPos += rowH;
         });
-        yPos += 4;
+        yPos += 3;
       }
 
-      // Section 3: Measurements
+      // ─── Section 3: Metrologi & EST ───────────────────────────────────────
       if (task.measurements) {
-        if (yPos > pageHeight - 55) {
-          doc.addPage();
-          yPos = 25;
-        }
-        doc.setFont("Helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(30, 58, 138);
-        doc.text("3. DATA INSPEKSI METROLOGI & KESELAMATAN LISTRIK (EST)", marginX, yPos);
-        yPos += 5;
-
-        doc.setFillColor(241, 245, 249);
-        doc.rect(marginX, yPos, 170, 5.5, "F");
-        doc.setFont("Helvetica", "bold");
-        doc.setFontSize(7.5);
-        doc.setTextColor(71, 85, 105);
-        doc.text("Parameter Metrologi Uji Fungsi", marginX + 3, yPos + 4);
-        doc.text("Target / Batas", marginX + 65, yPos + 4);
-        doc.text("Nilai Terukur", marginX + 110, yPos + 4);
-        doc.text("Kesimpulan", marginX + 145, yPos + 4);
-        yPos += 5.5;
-
-        doc.setFont("Helvetica", "normal");
+        sectionHead("DATA INSPEKSI METROLOGI & KESELAMATAN LISTRIK (EST)", "3");
+        tableHead([
+          { text: "Parameter Metrologi Uji Fungsi", x: marginX + 3 },
+          { text: "Target / Batas", x: marginX + 70 },
+          { text: "Nilai Terukur", x: marginX + 112 },
+          { text: "Evaluasi", x: marginX + 148 }
+        ]);
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(8);
         doc.setTextColor(15, 23, 42);
 
-        // specific measurements
-        if (task.measurements.template === 'Infusion / Syringe Pump') {
-          doc.text("Volumetric Flow Rate (Laju Alir)", marginX + 3, yPos + 4);
-          doc.text(`${task.measurements.flowRateTarget || 100} ml/jam`, marginX + 65, yPos + 4);
-          doc.text(`${task.measurements.flowRateMeasured} ml/jam`, marginX + 110, yPos + 4);
-          doc.setFont("Helvetica", "bold");
-          doc.text("LOLOS", marginX + 145, yPos + 4);
-          doc.setFont("Helvetica", "normal");
-          yPos += 5.5;
+        // ── Template-specific rows (BUG FIX: use task.template not task.measurements.template)
+        const tmpl = task.template || 'General Equipment';
 
-          doc.text("Occlusion Pressure (Tekn. Penyumbatan)", marginX + 3, yPos + 4);
-          doc.text(`${task.measurements.occlusionTarget || 300} mmHg`, marginX + 65, yPos + 4);
-          doc.text(`${task.measurements.occlusionMeasured} mmHg`, marginX + 110, yPos + 4);
-          doc.setFont("Helvetica", "bold");
-          doc.text("LOLOS", marginX + 145, yPos + 4);
-          doc.setFont("Helvetica", "normal");
-          yPos += 5.5;
-        } else if (task.measurements.template === 'Patient Monitor') {
-          doc.text("ECG Heart Rate Simulation", marginX + 3, yPos + 4);
-          doc.text(`${task.measurements.ecgTarget || 80} bpm`, marginX + 65, yPos + 4);
-          doc.text(`${task.measurements.ecgMeasured} bpm`, marginX + 110, yPos + 4);
-          doc.setFont("Helvetica", "bold");
-          doc.text("LOLOS", marginX + 145, yPos + 4);
-          doc.setFont("Helvetica", "normal");
+        if (tmpl === 'Infusion / Syringe Pump') {
+          const frT = task.measurements.flowRateTarget || 100;
+          const frM = task.measurements.flowRateMeasured ?? 99.5;
+          const frOk = Math.abs(frM - frT) / frT <= 0.05;
+          doc.text("Volumetric Flow Rate (Laju Alir)", marginX + 3, yPos + 4);
           yPos += 5.5;
 
           doc.text("SpO2 Oxygen Saturation Simulation", marginX + 3, yPos + 4);
@@ -634,6 +688,20 @@ export function IPMModule() {
     
     setVisualChecks(vis);
     setFunctionalChecks(func);
+
+    const visArr = template.visual.map((item, idx) => ({
+      id: `vis-${idx}-${Date.now()}`,
+      name: item,
+      status: 'Lolos' as const
+    }));
+    setVisualArray(visArr);
+
+    const funcArr = template.functional.map((item, idx) => ({
+      id: `func-${idx}-${Date.now()}`,
+      name: item,
+      status: 'Lolos' as const
+    }));
+    setFunctionalArray(funcArr);
   }, [formTemplate]);
 
   // Handle opening new form
@@ -664,6 +732,20 @@ export function IPMModule() {
     });
     setVisualChecks(vis);
     setFunctionalChecks(func);
+
+    const visArr = template.visual.map((item, idx) => ({
+      id: `vis-${idx}-${Date.now()}`,
+      name: item,
+      status: 'Lolos' as const
+    }));
+    setVisualArray(visArr);
+
+    const funcArr = template.functional.map((item, idx) => ({
+      id: `func-${idx}-${Date.now()}`,
+      name: item,
+      status: 'Lolos' as const
+    }));
+    setFunctionalArray(funcArr);
     
     setMeasGroundResistance(0.12);
     setMeasLeakageCurrent(35);
@@ -719,6 +801,20 @@ export function IPMModule() {
         }
       }
 
+      const finalVisual: Record<string, 'Lolos' | 'Tidak Lolos'> = {};
+      visualArray.forEach(item => {
+        if (item.name.trim()) {
+          finalVisual[item.name.trim()] = item.status;
+        }
+      });
+
+      const finalFunctional: Record<string, 'Lolos' | 'Tidak Lolos'> = {};
+      functionalArray.forEach(item => {
+        if (item.name.trim()) {
+          finalFunctional[item.name.trim()] = item.status;
+        }
+      });
+
       const taskData: any = {
         deviceName: formDeviceName,
         brand: formBrand,
@@ -732,8 +828,8 @@ export function IPMModule() {
         nextMaintenanceDate: nextDateString,
         status: formStatus,
         template: formTemplate,
-        visualChecks: formStatus === 'Menunggu Jadwal' ? {} : visualChecks,
-        functionalChecks: formStatus === 'Menunggu Jadwal' ? {} : functionalChecks,
+        visualChecks: formStatus === 'Menunggu Jadwal' ? {} : finalVisual,
+        functionalChecks: formStatus === 'Menunggu Jadwal' ? {} : finalFunctional,
         measurements: measurements,
         executionNotes: executionNotes || "Pemeliharaan preventif selesai dilaksanakan."
       };
@@ -1626,70 +1722,156 @@ export function IPMModule() {
                   {/* Render checklist inputs directly if NOT "Menunggu Jadwal" */}
                   {formStatus !== 'Menunggu Jadwal' && (
                     <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                      <div>
-                        <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-widest font-mono mb-2">Pemeriksaan Fisik Checklist</h4>
-                        <div className="space-y-2">
-                          {Object.keys(visualChecks).map((item) => (
-                            <div key={item} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-900">
-                              <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 max-w-md">{item}</span>
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setVisualChecks(prev => ({ ...prev, [item]: 'Lolos' }))}
-                                  className={cn(
-                                    "px-2.5 py-1 rounded text-[9px] font-black uppercase font-mono transition-all",
-                                    visualChecks[item] === 'Lolos' ? "bg-emerald-50 text-emerald-800 bg-emerald-100 border border-emerald-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
-                                  )}
-                                >
-                                  Lolos
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setVisualChecks(prev => ({ ...prev, [item]: 'Tidak Lolos' }))}
-                                  className={cn(
-                                    "px-2.5 py-1 rounded text-[9px] font-black uppercase font-mono transition-all",
-                                    visualChecks[item] === 'Tidak Lolos' ? "bg-red-50 text-red-800 bg-red-100 border border-red-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
-                                  )}
-                                >
-                                  Tidak Lolos
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                      {/* Visual Checklist Accordion Panel */}
+                      <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                        <button
+                          type="button"
+                          onClick={() => setIsVisualAccordionOpen(!isVisualAccordionOpen)}
+                          className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
+                        >
+                          <span className="flex items-center gap-2">
+                            <ClipboardList className="w-4 h-4 text-blue-500" />
+                            Pemeriksaan Fisik / Visual ({visualArray.length} Poin)
+                          </span>
+                          {isVisualAccordionOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        </button>
+                        
+                        <AnimatePresence initial={false}>
+                          {isVisualAccordionOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25, ease: "easeInOut" }}
+                              className="p-4 bg-white dark:bg-[#0c111d] space-y-2 overflow-hidden"
+                            >
+                              {visualArray.map((item) => (
+                                <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
+                                  <input
+                                    type="text"
+                                    value={item.name}
+                                    onChange={(e) => updateVisualParameterName(item.id, e.target.value)}
+                                    className="text-[10px] font-mono text-slate-800 dark:text-slate-200 bg-transparent border-0 border-b border-transparent focus:border-blue-500 outline-none w-full py-0.5"
+                                  />
+                                  <div className="flex gap-1.5 items-center shrink-0">
+                                    <button
+                                      type="button"
+                                      onClick={() => updateVisualParameterStatus(item.id, 'Lolos')}
+                                      className={cn(
+                                        "px-2 py-0.75 rounded text-[8.5px] font-black uppercase font-mono transition-all cursor-pointer",
+                                        item.status === 'Lolos' ? "bg-emerald-50 text-emerald-800 bg-emerald-100 border border-emerald-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
+                                      )}
+                                    >
+                                      Lolos
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => updateVisualParameterStatus(item.id, 'Tidak Lolos')}
+                                      className={cn(
+                                        "px-2 py-0.75 rounded text-[8.5px] font-black uppercase font-mono transition-all cursor-pointer",
+                                        item.status === 'Tidak Lolos' ? "bg-red-50 text-red-800 bg-red-100 border border-red-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
+                                      )}
+                                    >
+                                      Gagal
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => deleteVisualParameter(item.id)}
+                                      className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors cursor-pointer"
+                                      title="Hapus parameter ini"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              <button
+                                type="button"
+                                onClick={addVisualParameter}
+                                className="w-full mt-2 py-2 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl text-[9px] font-black uppercase font-mono text-blue-600 dark:text-cyan-400 hover:bg-blue-50/50 dark:hover:bg-cyan-950/10 transition-colors cursor-pointer"
+                              >
+                                + Tambah Parameter Fisik / Visual
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
 
-                      <div>
-                        <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-widest font-mono mb-2">Pemeriksaan Fungsi Checklist</h4>
-                        <div className="space-y-2">
-                          {Object.keys(functionalChecks).map((item) => (
-                            <div key={item} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-900">
-                              <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 max-w-md">{item}</span>
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setFunctionalChecks(prev => ({ ...prev, [item]: 'Lolos' }))}
-                                  className={cn(
-                                    "px-2.5 py-1 rounded text-[9px] font-black uppercase font-mono transition-all",
-                                    functionalChecks[item] === 'Lolos' ? "bg-emerald-50 text-emerald-800 bg-emerald-100 border border-emerald-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
-                                  )}
-                                >
-                                  Lolos
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setFunctionalChecks(prev => ({ ...prev, [item]: 'Tidak Lolos' }))}
-                                  className={cn(
-                                    "px-2.5 py-1 rounded text-[9px] font-black uppercase font-mono transition-all",
-                                    functionalChecks[item] === 'Tidak Lolos' ? "bg-red-50 text-red-800 bg-red-100 border border-red-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
-                                  )}
-                                >
-                                  Tidak Lolos
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                      {/* Functional Checklist Accordion Panel */}
+                      <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                        <button
+                          type="button"
+                          onClick={() => setIsFunctionalAccordionOpen(!isFunctionalAccordionOpen)}
+                          className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-blue-500 animate-pulse" />
+                            Pemeriksaan Fungsi / Alarm ({functionalArray.length} Poin)
+                          </span>
+                          {isFunctionalAccordionOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        </button>
+                        
+                        <AnimatePresence initial={false}>
+                          {isFunctionalAccordionOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25, ease: "easeInOut" }}
+                              className="p-4 bg-white dark:bg-[#0c111d] space-y-2 overflow-hidden"
+                            >
+                              {functionalArray.map((item) => (
+                                <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
+                                  <input
+                                    type="text"
+                                    value={item.name}
+                                    onChange={(e) => updateFunctionalParameterName(item.id, e.target.value)}
+                                    className="text-[10px] font-mono text-slate-800 dark:text-slate-200 bg-transparent border-0 border-b border-transparent focus:border-blue-500 outline-none w-full py-0.5"
+                                  />
+                                  <div className="flex gap-1.5 items-center shrink-0">
+                                    <button
+                                      type="button"
+                                      onClick={() => updateFunctionalParameterStatus(item.id, 'Lolos')}
+                                      className={cn(
+                                        "px-2 py-0.75 rounded text-[8.5px] font-black uppercase font-mono transition-all cursor-pointer",
+                                        item.status === 'Lolos' ? "bg-emerald-50 text-emerald-800 bg-emerald-100 border border-emerald-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
+                                      )}
+                                    >
+                                      Lolos
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => updateFunctionalParameterStatus(item.id, 'Tidak Lolos')}
+                                      className={cn(
+                                        "px-2 py-0.75 rounded text-[8.5px] font-black uppercase font-mono transition-all cursor-pointer",
+                                        item.status === 'Tidak Lolos' ? "bg-red-50 text-red-800 bg-red-100 border border-red-300" : "bg-slate-100 text-slate-500 dark:bg-slate-900"
+                                      )}
+                                    >
+                                      Gagal
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => deleteFunctionalParameter(item.id)}
+                                      className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors cursor-pointer"
+                                      title="Hapus parameter ini"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              <button
+                                type="button"
+                                onClick={addFunctionalParameter}
+                                className="w-full mt-2 py-2 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl text-[9px] font-black uppercase font-mono text-blue-600 dark:text-cyan-400 hover:bg-blue-50/50 dark:hover:bg-cyan-950/10 transition-colors cursor-pointer"
+                              >
+                                + Tambah Parameter Fungsi / Alarm
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
 
                       {/* Metrologi Data Ukur Inputs */}
@@ -1810,7 +1992,7 @@ export function IPMModule() {
                         {formTemplate === 'Anesthesia Machine' && (
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                              <label className="text-[9px] font-bold text-slate-500 font-mono block">O2 Concentration Target / Terukur (%)</label>
+                              <label className="text-[9px] font-bold text-slate-500 font-mono block">O2 Mixing Concentration Target / Terukur (%)</label>
                               <div className="flex gap-2">
                                 <input
                                   type="number"
@@ -1849,26 +2031,97 @@ export function IPMModule() {
                         )}
 
                         {/* Standard Electrical Safety Test fields */}
-                        <div className="grid grid-cols-2 gap-4 bg-slate-100/50 dark:bg-slate-950/80 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm col-span-2">
-                          <div className="space-y-1">
-                            <label className="text-[9px] font-bold text-slate-500 font-mono block">Hambatan Pembumian Grounding Wire (&Omega;) - Batas &le; 0.5</label>
-                            <input
-                              type="number"
-                              step="any"
-                              value={measGroundResistance}
-                              onChange={(e) => setMeasGroundResistance(Number(e.target.value))}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold font-mono text-slate-900 dark:text-white"
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/50 dark:bg-slate-950/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-sm col-span-2">
+                          <div className="col-span-2 pb-1.5 border-b border-slate-150 dark:border-slate-900 flex justify-between items-center">
+                            <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono flex items-center gap-1.5">
+                              <Shield className="w-3.5 h-3.5 text-blue-500" />
+                              Pengujian Keselamatan Listrik (NFPA 99 EST)
+                            </span>
+                            <span className="text-[8px] font-black uppercase px-2 py-0.5 rounded font-mono bg-blue-100 text-blue-800">
+                              Konsol Telemetri EST
+                            </span>
                           </div>
-                          <div className="space-y-1">
-                            <label className="text-[9px] font-bold text-slate-500 font-mono block">Arus Bocor Sasis / Selimut (&mu;A) - Batas &le; 300</label>
-                            <input
-                              type="number"
-                              step="any"
-                              value={measLeakageCurrent}
-                              onChange={(e) => setMeasLeakageCurrent(Number(e.target.value))}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold font-mono text-slate-900 dark:text-white"
-                            />
+
+                          {/* Grounding Resistance Telemetry Meter */}
+                          <div className={cn(
+                            "space-y-2 p-3.5 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 transition-all duration-300",
+                            measGroundResistance > 0.5 && "glow-fail-danger"
+                          )}>
+                            <div className="flex justify-between items-center text-[9px] font-mono">
+                              <span className="text-slate-400 font-bold uppercase">Hambatan Pembumian</span>
+                              <span className={cn(
+                                "font-black uppercase px-1.5 py-0.25 rounded",
+                                measGroundResistance <= 0.5 ? "bg-emerald-100 text-emerald-800" : "bg-red-200 text-red-800 animate-pulse"
+                              )}>
+                                {measGroundResistance <= 0.5 ? "Aman" : "Bahaya (MPE Tinggi)"}
+                              </span>
+                            </div>
+                            <div className="relative pt-1">
+                              <div className="flex justify-between text-[8px] font-mono text-slate-400">
+                                <span>0 &Omega;</span>
+                                <span className="text-red-500 font-bold">Limit: 0.5 &Omega;</span>
+                                <span>1.0 &Omega;</span>
+                              </div>
+                              <div className="overflow-hidden h-2.5 text-xs flex rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                <div
+                                  style={{ width: `${Math.min((measGroundResistance / 1.0) * 100, 100)}%` }}
+                                  className={cn(
+                                    "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500",
+                                    measGroundResistance <= 0.5 ? "bg-emerald-500" : "bg-red-500"
+                                  )}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                step="any"
+                                value={measGroundResistance}
+                                onChange={(e) => setMeasGroundResistance(Number(e.target.value))}
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2 rounded-lg text-xs font-black font-mono text-center shadow-inner"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Chassis Leakage Telemetry Meter */}
+                          <div className={cn(
+                            "space-y-2 p-3.5 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 transition-all duration-300",
+                            measLeakageCurrent > 300 && "glow-fail-danger"
+                          )}>
+                            <div className="flex justify-between items-center text-[9px] font-mono">
+                              <span className="text-slate-400 font-bold uppercase">Arus Bocor Sasis</span>
+                              <span className={cn(
+                                "font-black uppercase px-1.5 py-0.25 rounded",
+                                measLeakageCurrent <= 300 ? "bg-emerald-100 text-emerald-800" : "bg-red-200 text-red-800 animate-pulse"
+                              )}>
+                                {measLeakageCurrent <= 300 ? "Aman" : "Bahaya (Kebocoran)"}
+                              </span>
+                            </div>
+                            <div className="relative pt-1">
+                              <div className="flex justify-between text-[8px] font-mono text-slate-400">
+                                <span>0 &mu;A</span>
+                                <span className="text-red-500 font-bold">Limit: 300 &mu;A</span>
+                                <span>600 &mu;A</span>
+                              </div>
+                              <div className="overflow-hidden h-2.5 text-xs flex rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                <div
+                                  style={{ width: `${Math.min((measLeakageCurrent / 600) * 100, 100)}%` }}
+                                  className={cn(
+                                    "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500",
+                                    measLeakageCurrent <= 300 ? "bg-emerald-500" : "bg-red-500"
+                                  )}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                step="any"
+                                value={measLeakageCurrent}
+                                onChange={(e) => setMeasLeakageCurrent(Number(e.target.value))}
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2 rounded-lg text-xs font-black font-mono text-center shadow-inner"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>

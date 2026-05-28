@@ -5,23 +5,25 @@ service cloud.firestore {
     // CRITICAL HELPERS
     // -------------------------------------------------------------------------
     function isSignedIn() {
-      return true;
+      return request.auth != null;
     }
     
     function isOwner(userId) {
-      return true;
+      return isSignedIn() && request.auth.uid == userId;
     }
 
     function getUserData() {
-      return null;
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
     function hasRole(role) {
-      return true;
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+             getUserData().role == role;
     }
 
     function isAdmin() {
-      return true;
+      return hasRole('admin');
     }
 
     function isValidId(id) {
@@ -91,8 +93,7 @@ service cloud.firestore {
 
     match /calibrators/{calibratorId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && isValidCalibrator(incoming());
-      allow update: if isSignedIn() && isValidCalibrator(incoming());
+      allow create, update: if isSignedIn() && (hasRole('admin') || hasRole('supervisor') || hasRole('technician')) && isValidCalibrator(incoming());
       allow delete: if isAdmin();
     }
 
@@ -103,40 +104,39 @@ service cloud.firestore {
     }
 
     match /notifications/{notificationId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && (resource.data.targetUid == request.auth.uid || resource.data.targetUid == 'all');
       allow create: if isSignedIn();
-      allow update: if isSignedIn();
+      allow update: if isSignedIn() && (resource.data.targetUid == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
 
     match /auditLogs/{logId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
+      allow read: if isSignedIn() && (hasRole('admin') || hasRole('supervisor'));
+      allow create: if isSignedIn() && incoming().operatorId == request.auth.uid;
       allow update, delete: if false;
     }
 
     match /methods/{methodId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && isValidMethod(incoming());
-      allow update: if isSignedIn() && isValidMethod(incoming());
+      allow create, update: if isSignedIn() && (hasRole('admin') || hasRole('supervisor') || hasRole('technician')) && isValidMethod(incoming());
       allow delete: if isAdmin();
     }
 
     match /medicalEquipment/{equipmentId} {
       allow read: if isSignedIn();
-      allow write: if isSignedIn();
+      allow write: if isSignedIn() && (hasRole('admin') || hasRole('supervisor') || hasRole('technician'));
     }
 
     match /certificates/{certificateId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
+      allow create: if isSignedIn() && (hasRole('admin') || hasRole('supervisor') || hasRole('technician')) && exists(/databases/$(database)/documents/medicalEquipment/$(incoming().equipmentId));
+      allow update: if isSignedIn() && (hasRole('admin') || hasRole('supervisor')) && exists(/databases/$(database)/documents/medicalEquipment/$(incoming().equipmentId));
       allow delete: if isAdmin();
     }
 
     match /worksheets/{worksheetId} {
       allow read: if isSignedIn();
-      allow write: if isSignedIn();
+      allow write: if isSignedIn() && (hasRole('admin') || hasRole('supervisor') || hasRole('technician'));
     }
 
     match /work_orders/{orderId} {
@@ -146,15 +146,13 @@ service cloud.firestore {
 
     match /ukes_records/{recordId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && isValidUkesRecord(incoming());
-      allow update: if isSignedIn() && isValidUkesRecord(incoming());
+      allow create, update: if isSignedIn() && (hasRole('admin') || hasRole('supervisor') || hasRole('technician')) && isValidUkesRecord(incoming());
       allow delete: if isAdmin();
     }
 
     match /ipm_tasks/{taskId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && isValidIpmTask(incoming());
-      allow update: if isSignedIn() && isValidIpmTask(incoming());
+      allow create, update: if isSignedIn() && (hasRole('admin') || hasRole('supervisor') || hasRole('technician')) && isValidIpmTask(incoming());
       allow delete: if isAdmin();
     }
 

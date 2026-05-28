@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { LayoutDashboard, Stethoscope, Zap, FileText, BookOpen, Settings, LogOut, Menu, X, Bell, Search, ChevronRight, Award, BarChart3, Wifi, WifiOff, Users, Wand2, BrainCircuit, ShieldCheck, Info, Sun, Moon, Wrench, Atom, ClipboardList, History } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
@@ -43,6 +43,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const darkMode = theme === 'dark';
   const { profile, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const activeNavItem = navItems.find(item => 
+    location.pathname === item.path || 
+    (item.path !== '/dashboard' && location.pathname.startsWith(item.path + '/'))
+  );
 
   React.useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -144,7 +150,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             return (
               <div key={category} className="space-y-1">
                 {sidebarOpen && (
-                  <div className="px-4 py-1 text-[9px] font-black uppercase text-slate-400 dark:text-slate-600 tracking-[0.2em] select-none">
+                  <div className="px-4 py-2 text-[10px] font-bold uppercase text-slate-400/80 dark:text-slate-500/80 tracking-widest select-none mt-2">
                     {category}
                   </div>
                 )}
@@ -155,8 +161,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     className={({ isActive }) => cn(
                       "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group relative duration-200",
                       isActive 
-                        ? "bg-blue-50/50 dark:bg-cyan-500/10 border border-blue-100 dark:border-cyan-500/20 text-blue-700 dark:text-cyan-400 font-extrabold shadow-sm" 
-                        : "text-slate-500 hover:text-slate-950 dark:hover:text-slate-200 hover:bg-slate-100/40 dark:hover:bg-slate-900/25 border border-transparent"
+                        ? "bg-blue-50/40 dark:bg-cyan-500/[0.06] border border-blue-100/40 dark:border-cyan-500/10 text-blue-600 dark:text-cyan-400 font-bold shadow-sm" 
+                        : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100/40 dark:hover:bg-slate-900/20 border border-transparent"
                     )}
                   >
                     {({ isActive }) => (
@@ -164,17 +170,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         {isActive && (
                           <motion.div 
                             layoutId="sidebar-active-indicator"
-                            className="absolute left-0 w-1 h-5 bg-gradient-to-b from-blue-600 to-indigo-600 dark:from-cyan-400 dark:to-blue-500 rounded-r-md shadow-md"
+                            className="absolute left-0 w-[3px] h-5 bg-gradient-to-b from-blue-500 to-indigo-500 dark:from-cyan-400 dark:to-blue-500 rounded-r-md shadow-sm shadow-blue-500/20 dark:shadow-cyan-400/20"
                           />
                         )}
                         <item.icon className={cn(
-                          "w-4 h-4 transition-all duration-300", 
-                          isActive ? "text-blue-600 dark:text-cyan-400 scale-110" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                          "w-4.5 h-4.5 transition-all duration-300", 
+                          isActive ? "text-blue-600 dark:text-cyan-400 scale-105" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                         )} />
                         {sidebarOpen && (
                           <span className={cn(
-                            "text-[11px] font-semibold uppercase tracking-wider transition-all duration-300", 
-                            isActive ? "translate-x-0.5" : ""
+                            "text-[12px] font-medium tracking-wide transition-all duration-300", 
+                            isActive ? "text-slate-900 dark:text-white font-semibold" : "text-slate-500 dark:text-slate-400"
                           )}>
                             {item.label}
                           </span>
@@ -195,18 +201,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <div className="mt-auto p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-100/10 dark:bg-slate-950/40">
           {sidebarOpen ? (
-            <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/40 dark:bg-[#070b17]/90 border border-slate-200/50 dark:border-[#b38728]/25 shadow-md group hover:border-[#b38728]/80 transition-all duration-300">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-amber-500 to-[#b38728] p-0.5 shadow-md shrink-0">
-                <div className="w-full h-full rounded-[10px] bg-slate-900 flex items-center justify-center font-black text-[#d4af37] uppercase tracking-tighter text-sm italic overflow-hidden relative">
-                  <div className="absolute inset-0 bg-amber-500/10 mix-blend-overlay" />
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/50 dark:bg-[#070b17]/40 border border-slate-200/40 dark:border-slate-800/60 shadow-sm transition-all duration-300">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-cyan-500 p-0.5 shadow-sm shrink-0">
+                <div className="w-full h-full rounded-[9px] bg-slate-900 flex items-center justify-center font-bold text-white uppercase text-xs overflow-hidden relative">
                   <span className="relative z-10">{profile?.displayName?.slice(0, 2) || 'AD'}</span>
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-black uppercase text-slate-900 dark:text-amber-100 truncate tracking-tight">{profile?.displayName || 'Administrator'}</p>
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate tracking-tight">{profile?.displayName || 'Administrator'}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                   <div className="w-1.5 h-1.5 bg-[#d4af37] rounded-full animate-pulse shadow-[0_0_8px_rgba(212,175,55,0.6)]" />
-                   <p className="text-[9px] font-bold text-[#b38728] uppercase tracking-widest truncate">{getFormattedRole(profile?.role)}</p>
+                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
+                   <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wide truncate">{getFormattedRole(profile?.role)}</p>
                 </div>
               </div>
               <button 
@@ -248,9 +253,34 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               <Menu className="w-4 h-4" />
             </button>
-            <div className="h-6 w-px bg-slate-200 hidden md:block" />
-            <div className="cursor-pointer flex items-center" onClick={() => navigate('/dashboard')}>
-              <Logo className="h-8 text-slate-900 dark:text-white" />
+            <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden md:block" />
+            
+            {/* Desktop Dynamic Page Title Breadcrumb */}
+            {activeNavItem ? (
+              <div className="hidden md:flex items-center gap-2 select-none">
+                <span className="text-[10px] font-medium tracking-wide uppercase text-slate-400 dark:text-slate-500 font-sans">
+                  {activeNavItem.category}
+                </span>
+                <ChevronRight className="w-3 h-3 text-slate-300 dark:text-slate-700 shrink-0" />
+                <span className="text-xs font-semibold tracking-wide text-blue-600 dark:text-cyan-400 font-sans">
+                  {activeNavItem.label}
+                </span>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center gap-2 select-none">
+                <span className="text-[10px] font-medium tracking-wide uppercase text-slate-400 dark:text-slate-500 font-sans">
+                  SISTEM
+                </span>
+                <ChevronRight className="w-3 h-3 text-slate-300 dark:text-slate-700 shrink-0" />
+                <span className="text-xs font-semibold tracking-wide text-blue-600 dark:text-cyan-400 font-sans">
+                  SPEKTRUM
+                </span>
+              </div>
+            )}
+
+            {/* Mobile Elegant Center Logo */}
+            <div className="cursor-pointer flex items-center md:hidden" onClick={() => navigate('/dashboard')}>
+              <Logo iconOnly className="h-8 w-8 text-slate-900 dark:text-white" />
             </div>
           </div>
 
@@ -366,16 +396,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 )}
               </AnimatePresence>
 
-              <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
+              <div className="flex items-center gap-3 pl-6 border-l border-slate-200 dark:border-slate-800">
                 <div className="text-right hidden xl:block">
-                  <p className="text-[10px] font-black text-slate-900 leading-none uppercase tracking-tight">{profile?.displayName || 'Admin'}</p>
-                  <p className="text-[9px] text-blue-600 leading-none mt-1 font-bold uppercase tracking-wider opacity-70">{getFormattedRole(profile?.role)}</p>
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-none truncate max-w-[140px]" title={profile?.displayName}>
+                    {profile?.displayName || 'Admin'}
+                  </p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wide mt-1.5 leading-none">
+                    {getFormattedRole(profile?.role)}
+                  </p>
                 </div>
                 <button 
                   onClick={() => navigate('/settings')}
-                  className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 p-0.5 shadow-sm transition-all hover:scale-105 active:scale-95 group overflow-hidden"
+                  className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500/10 via-indigo-500/10 to-cyan-500/10 dark:from-blue-500/5 dark:via-indigo-500/5 dark:to-cyan-500/5 border border-slate-200 dark:border-slate-800 p-0.5 shadow-sm hover:scale-[1.03] transition-all duration-300 group overflow-hidden"
                 >
-                   <div className="w-full h-full rounded-[9px] bg-white flex items-center justify-center text-xs font-black text-slate-900 group-hover:text-blue-600 transition-colors italic">
+                   <div className="w-full h-full rounded-[9px] bg-white dark:bg-slate-950 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors italic">
                     {profile?.displayName?.[0] || 'U'}
                   </div>
                 </button>
@@ -454,21 +488,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       )}
                     >
                       <item.icon className="w-4.5 h-4.5 shrink-0" />
-                      <span className="text-[9px] font-black uppercase tracking-widest leading-none mt-0.5">{item.label}</span>
+                      <span className="text-xs font-medium tracking-wide text-slate-700 dark:text-slate-200 leading-normal">{item.label}</span>
                     </NavLink>
                   ))}
                 </nav>
 
                 <div className="border-t border-slate-200 dark:border-slate-800 pt-6 flex items-center gap-3 mt-auto bg-white/55 dark:bg-transparent">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-700 p-0.5 shadow-lg shrink-0">
-                    <div className="w-full h-full rounded-[10px] bg-white dark:bg-slate-900 flex items-center justify-center font-black text-blue-600 dark:text-blue-400 uppercase tracking-tighter text-sm italic overflow-hidden relative">
-                      <div className="absolute inset-0 bg-blue-50 opacity-50" />
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-cyan-500 p-0.5 shadow-sm shrink-0">
+                    <div className="w-full h-full rounded-[9px] bg-slate-900 flex items-center justify-center font-bold text-white uppercase text-xs overflow-hidden relative">
                       <span className="relative z-10">{profile?.displayName?.slice(0, 2) || 'AD'}</span>
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-black uppercase text-slate-900 dark:text-white truncate tracking-tight">{profile?.displayName || 'Operator'}</p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate">{getFormattedRole(profile?.role)}</p>
+                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate tracking-tight">{profile?.displayName || 'Operator'}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wide truncate">{getFormattedRole(profile?.role)}</p>
                   </div>
                   <button
                     onClick={handleLogout}
@@ -488,54 +521,54 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <NavLink
             to="/dashboard"
             className={({ isActive }) => cn(
-              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11",
+              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11 min-w-0",
               isActive ? "text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
             )}
           >
             <LayoutDashboard className="w-4.5 h-4.5" />
-            <span className="text-[8px] font-bold uppercase tracking-wider">Dashboard</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider whitespace-nowrap truncate max-w-full px-0.5">Dashboard</span>
           </NavLink>
 
           <NavLink
             to="/worksheets"
             className={({ isActive }) => cn(
-              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11",
+              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11 min-w-0",
               isActive ? "text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
             )}
           >
             <FileText className="w-4.5 h-4.5" />
-            <span className="text-[8px] font-bold uppercase tracking-wider">Lembar Kerja</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider whitespace-nowrap truncate max-w-full px-0.5">Lembar Kerja</span>
           </NavLink>
 
           <NavLink
             to="/ik-assistant"
             className={({ isActive }) => cn(
-              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11",
+              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11 min-w-0",
               isActive ? "text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
             )}
           >
             <Wand2 className="w-4.5 h-4.5" />
-            <span className="text-[8px] font-bold uppercase tracking-wider">Asisten MK</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider whitespace-nowrap truncate max-w-full px-0.5">Asisten MK</span>
           </NavLink>
 
           <NavLink
             to="/extractor"
             className={({ isActive }) => cn(
-              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11",
+              "flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11 min-w-0",
               isActive ? "text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
             )}
           >
             <BrainCircuit className="w-4.5 h-4.5" />
-            <span className="text-[8px] font-bold uppercase tracking-wider">Ekstraktor</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider whitespace-nowrap truncate max-w-full px-0.5">Ekstraktor</span>
           </NavLink>
 
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(true)}
-            className="flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 cursor-pointer"
+            className="flex flex-col items-center justify-center gap-1 flex-1 relative rounded-xl h-11 min-w-0 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 cursor-pointer"
           >
             <Menu className="w-4.5 h-4.5" />
-            <span className="text-[8px] font-bold uppercase tracking-wider">Menu</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider whitespace-nowrap truncate max-w-full px-0.5">Menu</span>
           </button>
         </nav>
       </div>

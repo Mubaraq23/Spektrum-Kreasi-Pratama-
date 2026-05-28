@@ -6,11 +6,12 @@ interface LogoProps {
 }
 
 export function Logo({ className = '', iconOnly = false }: LogoProps) {
+  const viewBox = iconOnly ? "0 0 160 140" : "0 0 680 140";
   return (
-    <div className={`flex items-center gap-3 select-none ${className}`}>
+    <div className={`flex items-center select-none ${className}`}>
       {/* Dynamic Corporate SVG Logo: PT. Spektrum Kreasi Pratama */}
       <svg
-        viewBox="0 0 450 140"
+        viewBox={viewBox}
         className="w-full h-full"
         style={{ minWidth: iconOnly ? '36px' : '150px' }}
         xmlns="http://www.w3.org/2000/svg"
@@ -75,8 +76,8 @@ export function Logo({ className = '', iconOnly = false }: LogoProps) {
               x="165"
               y="74"
               fontFamily="system-ui, -apple-system, sans-serif"
-              fontWeight="900"
-              fontSize="24"
+              fontWeight="800"
+              fontSize="21"
               fill="currentColor"
               className="text-slate-900 dark:text-white"
               letterSpacing="0.05em"
@@ -87,10 +88,10 @@ export function Logo({ className = '', iconOnly = false }: LogoProps) {
             {/* Sub-label explaining specialized core industry */}
             <text
               x="167"
-              y="98"
+              y="96"
               fontFamily="system-ui, -apple-system, sans-serif"
-              fontWeight="800"
-              fontSize="11.5"
+              fontWeight="700"
+              fontSize="10"
               fill="#2563eb"
               className="text-blue-600 dark:text-cyan-400 font-mono"
               letterSpacing="0.45em"

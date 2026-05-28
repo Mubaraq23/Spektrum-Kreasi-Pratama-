@@ -690,7 +690,7 @@ export function Dashboard() {
                 <div className="bg-indigo-500/5 dark:bg-cyan-500/5 border border-indigo-500/15 dark:border-cyan-500/15 p-5.5 rounded-2xl flex items-center gap-3 text-indigo-700 dark:text-cyan-400 font-mono text-[9px] leading-relaxed">
                   <Award className="w-6 h-6 shrink-0 text-indigo-600 dark:text-cyan-400" />
                   <div>
-                    <span className="font-black uppercase block text-slate-400 leading-none mb-1">SERTIFIKAT DIGITAL TER-ARSIP</span>
+                    <span className="font-black uppercase block text-slate-400 leading-normal mb-1">SERTIFIKAT DIGITAL TER-ARSIP</span>
                     <span className="font-semibold">Semua berkas sertifikat kalibrasi KAN yang selesai diuji dapat diakses 24/7 di tab menu *Arsip Sertifikat* di sidebar navigasi.</span>
                   </div>
                 </div>
@@ -698,7 +698,7 @@ export function Dashboard() {
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-400 text-center font-mono text-[8px] leading-none uppercase">
+            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-slate-400 text-center font-mono text-[8px] leading-normal uppercase">
               RELIABILITY PROTOCOLS VERIFIED SECURELY
             </div>
           </div>
@@ -756,7 +756,7 @@ export function Dashboard() {
              <div className="w-6 h-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full" />
              <p className="text-[10px] text-blue-600 dark:text-cyan-400 font-extrabold uppercase tracking-[0.35em] font-mono">Pusat Kendali Utama</p>
           </div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-none uppercase">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-tight uppercase">
             Selamat Datang, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-700 dark:from-white dark:via-cyan-300 dark:to-blue-400 italic font-black">{profile?.displayName?.split(' ')[0] || 'Operator'}</span> 🛰️
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs mt-2 font-semibold">Terminal pengujian presisi tinggi & peninjauan kepatuhan KAN PT Spektrum Kreasi Pratama.</p>
