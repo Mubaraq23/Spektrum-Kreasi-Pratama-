@@ -198,6 +198,8 @@ export function AuditLogs() {
               value={selectedSeverity}
               onChange={(e) => setSelectedSeverity(e.target.value)}
               className="bg-transparent text-xs text-slate-900 font-bold uppercase tracking-wider focus:outline-none cursor-pointer p-2"
+              title="Pilih Keparahan"
+              aria-label="Pilih Keparahan"
             >
               <option value="all">Semua Keparahan</option>
               <option value="info">Info</option>
@@ -213,6 +215,8 @@ export function AuditLogs() {
               value={selectedModule}
               onChange={(e) => setSelectedModule(e.target.value)}
               className="bg-transparent text-xs text-slate-900 font-bold uppercase tracking-wider focus:outline-none cursor-pointer p-2"
+              title="Pilih Modul"
+              aria-label="Pilih Modul"
             >
               <option value="all">Semua Modul</option>
               <option value="calibrators">Calibrator</option>

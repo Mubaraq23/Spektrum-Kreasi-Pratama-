@@ -250,6 +250,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 }
               }}
               className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-800"
+              title="Buka/Tutup Sidebar"
+              aria-label="Buka/Tutup Sidebar"
             >
               <Menu className="w-4 h-4" />
             </button>
@@ -468,6 +470,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all cursor-pointer"
+                    title="Tutup Menu"
+                    aria-label="Tutup Menu"
                   >
                     <X className="w-5 h-5" />
                   </button>

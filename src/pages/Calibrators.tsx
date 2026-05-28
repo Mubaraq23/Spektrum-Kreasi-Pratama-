@@ -622,6 +622,8 @@ export function Calibrators() {
                       <button 
                         onClick={(e) => { e.stopPropagation(); openPreview(item); }} 
                         className="p-2.5 bg-slate-50 dark:bg-[#070d19] hover:bg-[#06B6D4] text-slate-400 dark:text-cyan-400/60 hover:text-slate-950 dark:hover:text-[#070d19] rounded-xl transition-all border border-slate-100 dark:border-cyan-500/15 shadow-sm cursor-pointer"
+                        title="Preview Sertifikat"
+                        aria-label="Preview Sertifikat"
                       >
                          <Eye className="w-4 h-4" />
                       </button>
@@ -681,6 +683,8 @@ export function Calibrators() {
                      setExtractedData(null);
                    }} 
                    className="p-3 bg-white hover:bg-slate-100 rounded-2xl text-slate-400 transition-colors shadow-sm border border-slate-100"
+                   title="Tutup"
+                   aria-label="Tutup"
                  >
                     <X className="w-5 h-5" />
                  </button>
@@ -789,6 +793,8 @@ export function Calibrators() {
                       accept=".pdf"
                       multiple
                       onChange={handleFileUploads}
+                      title="Unggah File"
+                      aria-label="Unggah File"
                     />
                     <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-all shadow-xl group-hover:shadow-blue-500/20">
                        {isExtracting ? (
@@ -808,8 +814,9 @@ export function Calibrators() {
                   <div className="space-y-8">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Nama Standar / Alat</label>
+                        <label htmlFor="extractedName" className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Nama Standar / Alat</label>
                         <input 
+                          id="extractedName"
                           type="text" 
                           value={extractedData.name || ''} 
                           onChange={(e) => setExtractedData({ ...extractedData, name: e.target.value })}
@@ -818,8 +825,9 @@ export function Calibrators() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Merek / Pabrikan</label>
+                        <label htmlFor="extractedBrand" className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Merek / Pabrikan</label>
                         <input 
+                          id="extractedBrand"
                           type="text" 
                           value={extractedData.brand || ''} 
                           onChange={(e) => setExtractedData({ ...extractedData, brand: e.target.value })}
@@ -828,8 +836,9 @@ export function Calibrators() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Tipe / Model</label>
+                        <label htmlFor="extractedModel" className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Tipe / Model</label>
                         <input 
+                          id="extractedModel"
                           type="text" 
                           value={extractedData.model || ''} 
                           onChange={(e) => setExtractedData({ ...extractedData, model: e.target.value })}
@@ -838,8 +847,9 @@ export function Calibrators() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Nomor Seri (S/N)</label>
+                        <label htmlFor="extractedSerialNumber" className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Nomor Seri (S/N)</label>
                         <input 
+                          id="extractedSerialNumber"
                           type="text" 
                           value={extractedData.serialNumber || ''} 
                           onChange={(e) => setExtractedData({ ...extractedData, serialNumber: e.target.value })}
@@ -848,8 +858,9 @@ export function Calibrators() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Nomor Sertifikat</label>
+                        <label htmlFor="extractedCertificateNumber" className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Nomor Sertifikat</label>
                         <input 
+                          id="extractedCertificateNumber"
                           type="text" 
                           value={extractedData.certificateNumber || ''} 
                           onChange={(e) => setExtractedData({ ...extractedData, certificateNumber: e.target.value })}
@@ -858,8 +869,9 @@ export function Calibrators() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Tanggal Sertifikasi</label>
+                        <label htmlFor="extractedCalibrationDate" className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Tanggal Sertifikasi</label>
                         <input 
+                          id="extractedCalibrationDate"
                           type="date" 
                           value={extractedData.calibrationDate || ''} 
                           onChange={(e) => setExtractedData({ ...extractedData, calibrationDate: e.target.value })}
@@ -867,8 +879,9 @@ export function Calibrators() {
                         />
                       </div>
                       <div className="space-y-1.5 sm:col-span-2 lg:col-span-3">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Tanggal Kadaluarsa</label>
+                        <label htmlFor="extractedExpiryDate" className="text-[9px] font-black text-slate-400 uppercase tracking-widest font-mono">Tanggal Kadaluarsa</label>
                         <input 
+                          id="extractedExpiryDate"
                           type="date" 
                           value={extractedData.expiryDate || ''} 
                           onChange={(e) => setExtractedData({ ...extractedData, expiryDate: e.target.value })}

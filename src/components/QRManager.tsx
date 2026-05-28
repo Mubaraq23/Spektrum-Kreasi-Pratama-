@@ -222,6 +222,8 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
           <button 
             onClick={onClose}
             className="p-2.5 rounded-xl bg-slate-100 dark:bg-[#141b2c] text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            title="Tutup"
+            aria-label="Tutup"
           >
             <X className="w-5 h-5" />
           </button>
@@ -495,6 +497,8 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
           <button 
             onClick={onClose}
             className="p-2.5 rounded-xl bg-slate-100 dark:bg-[#141b2c] text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            title="Tutup"
+            aria-label="Tutup"
           >
             <X className="w-5 h-5" />
           </button>

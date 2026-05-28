@@ -339,6 +339,8 @@ export function LKLabelModal({ lk, onClose }: LKLabelProps) {
           <button 
             onClick={onClose}
             className="p-3 bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-900 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-2xl transition-colors cursor-pointer"
+            title="Tutup"
+            aria-label="Tutup"
           >
             <X className="w-5 h-5" />
           </button>
@@ -423,8 +425,7 @@ export function LKLabelModal({ lk, onClose }: LKLabelProps) {
             <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-4 font-mono">PREVIEW FISIK STICKER LABEL</span>
             
             <div 
-              style={{ maxWidth: '380px' }}
-              className={`w-full bg-white border-4 ${isLaik ? 'border-emerald-600' : 'border-red-600'} rounded-[1.2rem] p-4 text-slate-950 relative shadow-xl transition-all duration-300`}
+              className={`w-full max-w-[380px] bg-white border-4 ${isLaik ? 'border-emerald-600' : 'border-red-600'} rounded-[1.2rem] p-4 text-slate-950 relative shadow-xl transition-all duration-300`}
             >
               {/* Header block with laik status */}
               <div className={`w-full ${isLaik ? 'bg-emerald-600' : 'bg-red-600'} text-white text-center font-black italic tracking-widest rounded-lg py-1.5 text-[15px] sm:text-[18px] uppercase mb-3 transition-colors`}>

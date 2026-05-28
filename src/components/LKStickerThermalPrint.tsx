@@ -374,36 +374,38 @@ export function LKStickerThermalPrint({ lk, qrCodeUrl, isLaik, onPrintSuccess }:
           </div>
 
           {/* QR Size Slider */}
-          <div>
             <div className="flex justify-between text-[9px] text-slate-400 font-extrabold mb-1">
-              <span>RASIO QR CODE</span>
+              <label htmlFor="qrSizeRange">RASIO QR CODE</label>
               <span className="font-mono text-indigo-500">{qrSizePercent}%</span>
             </div>
             <input 
+              id="qrSizeRange"
               type="range" 
               min="20" 
               max="45" 
               value={qrSizePercent}
               onChange={(e) => setQrSizePercent(Number(e.target.value))}
               className="w-full accent-indigo-600 cursor-pointer"
+              title="Rasio QR Code"
+              aria-label="Rasio QR Code"
             />
-          </div>
 
           {/* FontSize Scale Slider */}
-          <div>
             <div className="flex justify-between text-[9px] text-slate-400 font-extrabold mb-1">
-              <span>UKURAN HURUF (EQUAL PROPORTION)</span>
+              <label htmlFor="fontSizeRange">UKURAN HURUF (EQUAL PROPORTION)</label>
               <span className="font-mono text-indigo-500">{fontSizeOffset >= 0 ? `+${fontSizeOffset}` : fontSizeOffset}px</span>
             </div>
             <input 
+              id="fontSizeRange"
               type="range" 
               min="-3" 
               max="4" 
               value={fontSizeOffset}
               onChange={(e) => setFontSizeOffset(Number(e.target.value))}
               className="w-full accent-indigo-600 cursor-pointer"
+              title="Ukuran Huruf"
+              aria-label="Ukuran Huruf"
             />
-          </div>
 
           {/* Density selection */}
           <div className="flex justify-between items-center">
