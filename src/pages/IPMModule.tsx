@@ -110,23 +110,7 @@ const CHECKLIST_TEMPLATES: Record<string, { visual: string[]; functional: string
 const INITIAL_IPM_TASKS: any[] = [];
 
 export function IPMModule() {
-  // Refs for dynamic gauge bars to avoid inline style warnings
-  const groundResistanceGaugeRef = useRef<HTMLDivElement>(null);
-  const leakageCurrentGaugeRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (groundResistanceGaugeRef.current) {
-      const pct = Math.min((measGroundResistance / 1.0) * 100, 100);
-      groundResistanceGaugeRef.current.style.width = `${pct}%`;
-    }
-  }, [measGroundResistance]);
-
-  useEffect(() => {
-    if (leakageCurrentGaugeRef.current) {
-      const pct = Math.min((measLeakageCurrent / 600) * 100, 100);
-      leakageCurrentGaugeRef.current.style.width = `${pct}%`;
-    }
-  }, [measLeakageCurrent]);
 
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -186,6 +170,24 @@ export function IPMModule() {
 
   const [measGroundResistance, setMeasGroundResistance] = useState<number>(0);
   const [measLeakageCurrent, setMeasLeakageCurrent] = useState<number>(0);
+
+  // Refs for dynamic gauge bars to avoid inline style warnings
+  const groundResistanceGaugeRef = useRef<HTMLDivElement>(null);
+  const leakageCurrentGaugeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (groundResistanceGaugeRef.current) {
+      const pct = Math.min((measGroundResistance / 1.0) * 100, 100);
+      groundResistanceGaugeRef.current.style.width = `${pct}%`;
+    }
+  }, [measGroundResistance]);
+
+  useEffect(() => {
+    if (leakageCurrentGaugeRef.current) {
+      const pct = Math.min((measLeakageCurrent / 600) * 100, 100);
+      leakageCurrentGaugeRef.current.style.width = `${pct}%`;
+    }
+  }, [measLeakageCurrent]);
 
   const [saving, setSaving] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
