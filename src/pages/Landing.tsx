@@ -228,9 +228,9 @@ export function Landing() {
 
           {/* Desktop Nav Links */}
           <nav className="hidden lg:flex items-center gap-8">
-            {[['#services', 'Layanan'], ['#workflow', 'Alur Kerja'], ['#calculator', 'Playground U95'], ['#faq', 'FAQ']].map(([href, label]) => (
+            {[['#services', 'Layanan'], ['#workflow', 'Alur Kerja'], ['#request-form', 'Pengajuan'], ['#faq', 'FAQ']].map(([href, label]) => (
               <a key={href} href={href} className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all font-mono hover:text-blue-600 dark:hover:text-cyan-400 ${
-                label === 'Playground U95' ? 'text-amber-500 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400'
+                label === 'Pengajuan' ? 'text-blue-600 dark:text-cyan-400' : 'text-slate-500 dark:text-slate-400'
               }`}>{label}</a>
             ))}
           </nav>
@@ -263,7 +263,7 @@ export function Landing() {
         {mobileMenuOpen && (
           <div className="lg:hidden bg-white/98 dark:bg-[#040a18]/98 border-t border-slate-200 dark:border-slate-800 overflow-hidden">
             <nav className="px-4 py-5 space-y-2">
-              {[['#services', 'Layanan'], ['#workflow', 'Alur Kerja'], ['#calculator', 'Playground U95'], ['#faq', 'FAQ']].map(([href, label]) => (
+              {[['#services', 'Layanan'], ['#workflow', 'Alur Kerja'], ['#request-form', 'Pengajuan'], ['#faq', 'FAQ']].map(([href, label]) => (
                 <a key={href} href={href} onClick={() => setMobileMenuOpen(false)}
                   className="block px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 rounded-xl transition-all font-mono">
                   {label}
