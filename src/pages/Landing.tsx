@@ -4,6 +4,8 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import { useAuth } from '../lib/AuthContext';
 import { useTheme } from '../lib/ThemeContext';
 import { Logo } from '../components/Logo';
+import { Interactive3DCanvas } from '../components/Interactive3DCanvas';
+import { Tilt3D } from '../components/Tilt3D';
 import {
   Zap,
   Shield,
@@ -58,6 +60,13 @@ export function Landing() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+
+  // Framer Motion Parallax Transforms
+  const { scrollY } = useScroll();
+  const parallaxBgY = useTransform(scrollY, [0, 600], [0, 180]);
+  const parallaxTextY = useTransform(scrollY, [0, 600], [0, 80]);
+  const parallaxCardY = useTransform(scrollY, [0, 600], [0, -40]);
+  const heroFadeOpacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   // Calibration Simulator state
   const [simType, setSimType] = useState<'suhu' | 'timbangan' | 'tekanan'>('suhu');
@@ -114,6 +123,7 @@ export function Landing() {
       
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <Interactive3DCanvas density="high" opacity={0.65} interactive={true} />
         <div className="absolute top-[-200px] right-[-200px] w-[800px] h-[800px] bg-blue-500/8 dark:bg-blue-500/10 rounded-full blur-[150px] animate-pulse" />
         <div className="absolute bottom-[-200px] left-[-200px] w-[600px] h-[600px] bg-indigo-500/8 dark:bg-cyan-500/8 rounded-full blur-[130px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-[100px]" />
@@ -195,9 +205,8 @@ export function Landing() {
       {/* ===== HERO SECTION ===== */}
       <section ref={heroRef} className="relative pt-28 sm:pt-36 pb-20 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          
-          {/* Left: Text */}
-          <div className="space-y-8">
+                  {/* Left: Text */}
+          <motion.div className="space-y-8" style={{ y: parallaxTextY, opacity: heroFadeOpacity }}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-blue-600 dark:text-cyan-400 text-[9px] font-black tracking-[0.3em] uppercase mb-6">
                 <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-ping" />
@@ -243,85 +252,89 @@ export function Landing() {
                 </div>
               ))}
             </motion.div>
-          </div>
-
-          {/* Right: Dashboard Preview Card */}
-          <motion.div initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15 }}
-            className="relative hidden lg:block">
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.96, y: 20 }} 
+            animate={{ opacity: 1, scale: 1, y: 0 }} 
+            transition={{ duration: 0.8, delay: 0.15 }}
+            style={{ y: parallaxCardY, opacity: heroFadeOpacity }}
+            className="relative hidden lg:block"
+          >
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-cyan-500/10 rounded-[3rem] blur-3xl -z-10 animate-pulse" />
             
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-cyan-500/10 rounded-[3rem] blur-3xl -z-10" />
-            
-            <div className="bg-white dark:bg-[#060d1f] border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
-              {/* Card Top Bar */}
-              <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                <div className="ml-auto flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                  <span className="text-[9px] font-black font-mono text-emerald-500 uppercase tracking-widest">Live Sync</span>
-                </div>
-              </div>
-
-              {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-px bg-slate-100 dark:bg-slate-800">
-                {[
-                  { label: 'Alat Aktif', value: '284', color: 'text-blue-600 dark:text-cyan-400' },
-                  { label: 'Laik Pakai', value: '97.2%', color: 'text-emerald-500' },
-                  { label: 'Pending LK', value: '12', color: 'text-amber-500' },
-                ].map(item => (
-                  <div key={item.label} className="bg-white dark:bg-[#060d1f] p-4 text-center">
-                    <p className={`text-xl font-black font-mono ${item.color}`}>{item.value}</p>
-                    <p className="text-[8px] font-bold uppercase text-slate-400 tracking-wider mt-1">{item.label}</p>
+            <Tilt3D intensity={8}>
+              <div className="bg-white dark:bg-[#060d1f] border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+                {/* Card Top Bar */}
+                <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  <div className="ml-auto flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                    <span className="text-[9px] font-black font-mono text-emerald-500 uppercase tracking-widest">Live Sync</span>
                   </div>
-                ))}
-              </div>
+                </div>
 
-              {/* Sticker Preview */}
-              <div className="p-5 space-y-4">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 font-mono">Demo Stiker Thermal QR</p>
-                
-                <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-900/40">
-                  <div className="flex gap-4 items-center">
-                    <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl p-2 shrink-0 flex items-center justify-center">
-                      <QrCode className="w-full h-full text-slate-800 dark:text-slate-200" />
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-px bg-slate-100 dark:bg-slate-800">
+                  {[
+                    { label: 'Alat Aktif', value: '284', color: 'text-blue-600 dark:text-cyan-400' },
+                    { label: 'Laik Pakai', value: '97.2%', color: 'text-emerald-500' },
+                    { label: 'Pending LK', value: '12', color: 'text-amber-500' },
+                  ].map(item => (
+                    <div key={item.label} className="bg-white dark:bg-[#060d1f] p-4 text-center">
+                      <p className={`text-xl font-black font-mono ${item.color}`}>{item.value}</p>
+                      <p className="text-[8px] font-bold uppercase text-slate-400 tracking-wider mt-1">{item.label}</p>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase truncate">Syringe Pump Presisi</p>
-                      <p className="text-[9px] font-mono text-slate-400">S/N: SP-982701X</p>
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <Check className="w-3 h-3 text-emerald-500" />
-                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-wide">LAIK PAKAI — KAN Certified</span>
+                  ))}
+                </div>
+
+                {/* Sticker Preview */}
+                <div className="p-5 space-y-4">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 font-mono">Demo Stiker Thermal QR</p>
+                  
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-900/40">
+                    <div className="flex gap-4 items-center">
+                      <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl p-2 shrink-0 flex items-center justify-center">
+                        <QrCode className="w-full h-full text-slate-800 dark:text-slate-200" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase truncate">Syringe Pump Presisi</p>
+                        <p className="text-[9px] font-mono text-slate-400">S/N: SP-982701X</p>
+                        <div className="flex items-center gap-1.5 mt-2">
+                          <Check className="w-3 h-3 text-emerald-500" />
+                          <span className="text-[8px] font-black text-emerald-500 uppercase tracking-wide">LAIK PAKAI — KAN Certified</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 grid grid-cols-2 gap-2 text-[8px] font-mono">
+                      <div>
+                        <span className="text-slate-400">KALIBRASI:</span>
+                        <span className="text-slate-700 dark:text-slate-300 font-bold ml-1">14 MEI 2026</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400">BERLAKU:</span>
+                        <span className="text-emerald-500 font-bold ml-1">14 MEI 2027</span>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 grid grid-cols-2 gap-2 text-[8px] font-mono">
-                    <div>
-                      <span className="text-slate-400">KALIBRASI:</span>
-                      <span className="text-slate-700 dark:text-slate-300 font-bold ml-1">14 MEI 2026</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">BERLAKU:</span>
-                      <span className="text-emerald-500 font-bold ml-1">14 MEI 2027</span>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-                  <div className="flex items-center gap-2">
-                    <Database className="w-4 h-4 text-indigo-500" />
-                    <div>
-                      <p className="text-[7px] font-black text-indigo-400 uppercase tracking-wider">Status Inventaris</p>
-                      <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">TERUPDATE INSTAN</p>
+                  <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+                    <div className="flex items-center gap-2">
+                      <Database className="w-4 h-4 text-indigo-500" />
+                      <div>
+                        <p className="text-[7px] font-black text-indigo-400 uppercase tracking-wider">Status Inventaris</p>
+                        <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">TERUPDATE INSTAN</p>
+                      </div>
                     </div>
+                    <span className="text-[8px] font-mono font-black text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700">SYNC OK ✓</span>
                   </div>
-                  <span className="text-[8px] font-mono font-black text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700">SYNC OK ✓</span>
                 </div>
               </div>
-            </div>
+            </Tilt3D>
 
             {/* Floating Badge */}
-            <div className="absolute -top-4 -right-4 bg-gradient-to-br from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-2xl shadow-xl shadow-blue-500/30 text-[8px] font-black uppercase tracking-widest">
+            <div className="absolute -top-4 -right-4 bg-gradient-to-br from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-2xl shadow-xl shadow-blue-500/30 text-[8px] font-black uppercase tracking-widest z-20">
               ⚡ ISO 17025
             </div>
           </motion.div>
@@ -388,13 +401,18 @@ export function Landing() {
               return (
                 <motion.div key={idx}
                   initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }}
-                  className="group relative bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-7 h-7" />
-                  </div>
-                  <span className="text-[10px] font-black font-mono text-slate-300 dark:text-slate-600 absolute top-6 right-6">0{idx + 1}</span>
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase mb-3 tracking-tight">{step.title}</h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{step.desc}</p>
+                  className="h-full"
+                >
+                  <Tilt3D intensity={10} className="h-full">
+                    <div className="group relative bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 h-full">
+                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <span className="text-[10px] font-black font-mono text-slate-300 dark:text-slate-600 absolute top-6 right-6">0{idx + 1}</span>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase mb-3 tracking-tight">{step.title}</h3>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{step.desc}</p>
+                    </div>
+                  </Tilt3D>
                 </motion.div>
               );
             })}
@@ -421,14 +439,19 @@ export function Landing() {
               return (
                 <motion.div key={idx}
                   initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.08 }}
-                  className="group flex gap-6 items-start p-7 sm:p-9 rounded-[2.5rem] bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-2xl transition-all duration-300 cursor-pointer">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} text-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors">{cat.name}</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{cat.desc}</p>
-                  </div>
+                  className="h-full"
+                >
+                  <Tilt3D intensity={8} className="h-full">
+                    <div className="group flex gap-6 items-start p-7 sm:p-9 rounded-[2.5rem] bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
+                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} text-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform`}>
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors">{cat.name}</h3>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{cat.desc}</p>
+                      </div>
+                    </div>
+                  </Tilt3D>
                 </motion.div>
               );
             })}

@@ -234,6 +234,49 @@
   .border-gradient {
     border-image: linear-gradient(to right, #2563eb, #06b6d4) 1;
   }
+
+  /* 3D Perspective and Tilt Utilities */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .translate-z-10 {
+    transform: translateZ(10px);
+  }
+  
+  .translate-z-20 {
+    transform: translateZ(20px);
+  }
+  
+  .translate-z-30 {
+    transform: translateZ(30px);
+  }
+  
+  .translate-z-50 {
+    transform: translateZ(50px);
+  }
+
+  .luxury-aurora-glow-gold {
+    box-shadow: 0 0 60px 5px rgba(212, 175, 55, 0.08);
+  }
+  .dark .luxury-aurora-glow-gold {
+    box-shadow: 0 0 80px 10px rgba(212, 175, 55, 0.12);
+  }
+
+  .luxury-aurora-glow-cyan {
+    box-shadow: 0 0 60px 5px rgba(6, 182, 212, 0.08);
+  }
+  .dark .luxury-aurora-glow-cyan {
+    box-shadow: 0 0 80px 10px rgba(6, 182, 212, 0.15);
+  }
 }
 
 /* Animations */

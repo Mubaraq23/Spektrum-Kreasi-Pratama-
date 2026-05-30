@@ -50,6 +50,7 @@ import {
 } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { Tilt3D } from '../components/Tilt3D';
 import Markdown from 'react-markdown';
 import { useAuth } from '../lib/AuthContext';
 import { collection, query, getDocs, onSnapshot, orderBy, where } from 'firebase/firestore';
@@ -1156,75 +1157,79 @@ export function Dashboard() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Link to="/worksheets" className="group">
-            <motion.div 
-              whileHover={{ y: -3, scale: 1.01 }}
-              className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 h-full flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <FileText className="w-5 h-5" />
+            <Tilt3D intensity={8} className="h-full">
+              <div 
+                className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-blue-500/50 dark:hover:border-blue-500/30 transition-all duration-300 h-full flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                <div>
+                  <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Lembar Kerja</h5>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight">Input Data & Deviasi</p>
+                </div>
               </div>
-              <div>
-                <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Lembar Kerja</h5>
-                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight">Input Data & Deviasi</p>
-              </div>
-            </motion.div>
+            </Tilt3D>
           </Link>
 
           <Link to="/ik-assistant" className="group">
-            <motion.div 
-              whileHover={{ y: -3, scale: 1.01 }}
-              className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-violet-500/50 dark:hover:border-violet-500/30 transition-all duration-300 h-full flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <BrainCircuit className="w-5 h-5" />
+            <Tilt3D intensity={8} className="h-full">
+              <div 
+                className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-violet-500/50 dark:hover:border-violet-500/30 transition-all duration-300 h-full flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <BrainCircuit className="w-5 h-5" />
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-all" />
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-all" />
+                <div>
+                  <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Copilot AI MK</h5>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight">Asisten Konsultasi Metode</p>
+                </div>
               </div>
-              <div>
-                <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Copilot AI MK</h5>
-                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight">Asisten Konsultasi Metode</p>
-              </div>
-            </motion.div>
+            </Tilt3D>
           </Link>
 
           <Link to="/extractor" className="group">
-            <motion.div 
-              whileHover={{ y: -3, scale: 1.01 }}
-              className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-emerald-500/50 dark:hover:border-emerald-500/30 transition-all duration-300 h-full flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Sparkles className="w-5 h-5" />
+            <Tilt3D intensity={8} className="h-full">
+              <div 
+                className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-emerald-500/50 dark:hover:border-emerald-500/30 transition-all duration-300 h-full flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
+                <div>
+                  <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Ekstraktor AI</h5>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight">Baca PDF Otomatis Gemini</p>
+                </div>
               </div>
-              <div>
-                <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Ekstraktor AI</h5>
-                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight">Baca PDF Otomatis Gemini</p>
-              </div>
-            </motion.div>
+            </Tilt3D>
           </Link>
 
           <Link to="/certificates" className="group">
-            <motion.div 
-              whileHover={{ y: -3, scale: 1.01 }}
-              className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-amber-500/50 dark:hover:border-amber-500/30 transition-all duration-300 h-full flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Award className="w-5 h-5" />
+            <Tilt3D intensity={8} className="h-full">
+              <div 
+                className="p-5 rounded-[2rem] bg-white dark:bg-[#10192d] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg hover:shadow-xl dark:shadow-none hover:border-amber-500/50 dark:hover:border-amber-500/30 transition-all duration-300 h-full flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-amber-500 group-hover:translate-x-1 transition-all" />
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-amber-500 group-hover:translate-x-1 transition-all" />
+                <div>
+                  <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Arsip Sertifikat</h5>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight font-black">Sertifikat Sah & Approved</p>
+                </div>
               </div>
-              <div>
-                <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900 dark:text-white mb-1">Arsip Sertifikat</h5>
-                <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono tracking-tight font-black">Sertifikat Sah & Approved</p>
-              </div>
-            </motion.div>
+            </Tilt3D>
           </Link>
         </div>
       </div>
@@ -2000,54 +2005,55 @@ function StatCard({ label, value, footer, icon: Icon, color, progress, badge, lo
   }, [progress]);
 
   return (
-    <motion.div 
-      whileHover={{ y: -4, scale: 1.01 }}
-      className={cn(
-        "bg-white dark:bg-[#070c1b] border border-slate-200/50 dark:border-slate-800 rounded-[24px] p-6 relative overflow-hidden group transition-all duration-300",
-        borderHover[color] || "hover:border-blue-200",
-        "shadow-lg shadow-slate-100/40 dark:shadow-none hover:shadow-2xl hover:shadow-[#b38728]/10"
-      )}
-    >
-      {/* Background elegant radial glow for that luxurious 'mewah' visual weight */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br from-[#b38728]/5 via-[#fcf6ba]/0 to-transparent rounded-full filter blur-xl pointer-events-none group-hover:scale-150 transition-all duration-700" />
-      
-      <div className={cn("absolute top-5 right-5 opacity-[0.03] dark:opacity-[0.06] transition-transform group-hover:scale-125 group-hover:rotate-12 duration-1000", accentColor[color])}>
-        <Icon className="w-16 h-16" />
-      </div>
-      
-      <div className="flex items-center justify-between mb-5.5">
-        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-all group-hover:scale-105 border border-slate-200/40 dark:border-[#b38728]/20 bg-slate-50 dark:bg-[#10192d]/50", bgLight[color])}>
-           <Icon className={cn("w-5 h-5", accentColor[color])} />
+    <Tilt3D intensity={5} className="h-full">
+      <div 
+        className={cn(
+          "bg-white dark:bg-[#070c1b] border border-slate-200/50 dark:border-slate-800 rounded-[24px] p-6 relative overflow-hidden group transition-all duration-300 h-full",
+          borderHover[color] || "hover:border-blue-200",
+          "shadow-lg shadow-slate-100/40 dark:shadow-none hover:shadow-2xl hover:shadow-[#b38728]/10"
+        )}
+      >
+        {/* Background elegant radial glow for that luxurious 'mewah' visual weight */}
+        <div className="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br from-[#b38728]/5 via-[#fcf6ba]/0 to-transparent rounded-full filter blur-xl pointer-events-none group-hover:scale-150 transition-all duration-700" />
+        
+        <div className={cn("absolute top-5 right-5 opacity-[0.03] dark:opacity-[0.06] transition-transform group-hover:scale-125 group-hover:rotate-12 duration-1000", accentColor[color])}>
+          <Icon className="w-16 h-16" />
         </div>
-        {badge && (
-          <span className="text-[8px] font-mono font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-xl border border-amber-550/30">
-            {badge}
-          </span>
+        
+        <div className="flex items-center justify-between mb-5.5">
+          <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-all group-hover:scale-105 border border-slate-200/40 dark:border-[#b38728]/20 bg-slate-50 dark:bg-[#10192d]/50", bgLight[color])}>
+             <Icon className={cn("w-5 h-5", accentColor[color])} />
+          </div>
+          {badge && (
+            <span className="text-[8px] font-mono font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-xl border border-amber-550/30">
+              {badge}
+            </span>
+          )}
+        </div>
+   
+        <p className="text-[10px] text-slate-400 dark:text-slate-400 mb-2 font-black uppercase tracking-[0.2em] font-mono leading-none">{label}</p>
+        
+        {loading ? (
+          <div className="h-9 w-24 bg-slate-50 dark:bg-slate-900 rounded-lg animate-pulse" />
+        ) : (
+          <h3 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white select-all">{value}</h3>
+        )}
+        
+        {progress !== undefined && !loading && (
+          <div className="flex gap-1 mt-5">
+            <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200/50 dark:border-white/[0.04]">
+              <div ref={progressBarRef} className={cn("h-full transition-all duration-1000 ease-out", color === 'emerald' ? 'bg-[#d4af37]' : 'bg-gradient-to-r from-blue-600 to-cyan-400')} />
+            </div>
+          </div>
+        )}
+        
+        {!loading && (
+          <p className={cn("text-[9px] mt-5.5 font-black uppercase tracking-[0.15em] opacity-90 font-mono flex items-center gap-1.5", accentColor[color])}>
+            <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
+            {footer}
+          </p>
         )}
       </div>
- 
-      <p className="text-[10px] text-slate-400 dark:text-slate-400 mb-2 font-black uppercase tracking-[0.2em] font-mono leading-none">{label}</p>
-      
-      {loading ? (
-        <div className="h-9 w-24 bg-slate-50 dark:bg-slate-900 rounded-lg animate-pulse" />
-      ) : (
-        <h3 className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white select-all">{value}</h3>
-      )}
-      
-      {progress !== undefined && !loading && (
-        <div className="flex gap-1 mt-5">
-          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200/50 dark:border-white/[0.04]">
-            <div ref={progressBarRef} className={cn("h-full transition-all duration-1000 ease-out", color === 'emerald' ? 'bg-[#d4af37]' : 'bg-gradient-to-r from-blue-600 to-cyan-400')} />
-          </div>
-        </div>
-      )}
-      
-      {!loading && (
-        <p className={cn("text-[9px] mt-5.5 font-black uppercase tracking-[0.15em] opacity-90 font-mono flex items-center gap-1.5", accentColor[color])}>
-          <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
-          {footer}
-        </p>
-      )}
-    </motion.div>
+    </Tilt3D>
   );
 }

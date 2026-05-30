@@ -31,6 +31,7 @@ import { logAction, pushNotification } from '../lib/auditLogger';
 import { translateToIndonesian, getDeviceNameFromMethodTitle } from './WorksheetEditor';
 import { QRScannerModal } from '../components/QRManager';
 import { LKLabelModal } from '../components/LKLabelModal';
+import { Tilt3D } from '../components/Tilt3D';
 
 export function Worksheets() {
   const [worksheets, setWorksheets] = useState<any[]>([]);
@@ -772,12 +773,10 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.98 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -6, boxShadow: '0 25px 40px -15px rgba(6,182,212,0.12)' }}
-      className="bg-white dark:bg-[#10192d] p-8 rounded-[2.5rem] transition-all group relative overflow-hidden border border-slate-200 dark:border-cyan-500/15 shadow-xl dark:shadow-none flex flex-col justify-between min-h-[300px]"
-    >
+    <Tilt3D intensity={5} className="h-full">
+      <div 
+        className="bg-white dark:bg-[#10192d] p-8 rounded-[2.5rem] transition-all group relative overflow-hidden border border-slate-200 dark:border-cyan-500/15 shadow-xl dark:shadow-none flex flex-col justify-between min-h-[300px] h-full"
+      >
       <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:scale-110 group-hover:opacity-[0.05] transition-all duration-1000">
          <FileText className="w-48 h-48 text-[#06B6D4] dark:text-cyan-400" />
       </div>
@@ -901,6 +900,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
           />
         )}
       </AnimatePresence>
-    </motion.div>
+      </div>
+    </Tilt3D>
   );
 }

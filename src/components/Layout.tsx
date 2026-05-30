@@ -9,6 +9,7 @@ import { cn } from '../lib/utils';
 import { Chat } from './Chat';
 import { AIAssistant } from './AIAssistant';
 import { Logo } from './Logo';
+import { Interactive3DCanvas } from './Interactive3DCanvas';
 import { collection, query, onSnapshot, where, orderBy, doc, updateDoc } from 'firebase/firestore';
 
 const navItems = [
@@ -422,6 +423,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Content Area */}
         <main className="flex-1 overflow-auto bg-slate-50/65 dark:bg-[#040816] p-6 md:p-10 pb-24 md:pb-10 relative custom-scrollbar text-slate-900 dark:text-slate-100 grid-bg">
+          <Interactive3DCanvas density="low" opacity={0.16} interactive={true} />
           {/* Enhanced Background Decorative Glows - Luxurious Golden Flare and Turquoise Aura */}
           <div className="fixed top-0 right-10 w-[700px] h-[700px] bg-gradient-to-b from-[#b38728]/10 via-amber-500/[0.01] to-transparent rounded-full blur-[160px] pointer-events-none -z-10 animate-pulse duration-[12s]"></div>
           <div className="fixed bottom-0 left-10 w-[600px] h-[600px] bg-gradient-to-t from-cyan-500/[0.08] via-blue-600/[0.01] to-transparent rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse duration-[8s]"></div>

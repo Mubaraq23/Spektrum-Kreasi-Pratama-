@@ -28,6 +28,7 @@ import { format } from 'date-fns';
 import { handleFirestoreError, OperationType, safeDate } from '../lib/firestoreUtils';
 import { translateToIndonesian } from './WorksheetEditor';
 import { QRGeneratorModal, QRScannerModal } from '../components/QRManager';
+import { Tilt3D } from '../components/Tilt3D';
 
 export default function EquipmentInventory() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -273,8 +274,12 @@ export default function EquipmentInventory() {
             key={item.id}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/25 rounded-[3rem] p-8 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all group relative overflow-hidden shadow-xl dark:shadow-none"
+            className="h-full"
           >
+            <Tilt3D intensity={5} className="h-full">
+              <div 
+                className="bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/25 rounded-[3rem] p-8 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all group relative overflow-hidden shadow-xl dark:shadow-none h-full"
+              >
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-1000">
               <Stethoscope className="w-32 h-32 text-cyan-500" />
             </div>
@@ -373,7 +378,9 @@ export default function EquipmentInventory() {
                   </button>
                 </div>
               </div>
-            </div>
+              </div>
+              </div>
+            </Tilt3D>
           </motion.div>
         ))}
       </div>
