@@ -11,7 +11,6 @@ import {
   Zap,
   Shield,
   ShieldCheck,
-  Activity,
   FileCheck,
   ChevronRight,
   ArrowRight,
@@ -29,8 +28,6 @@ import {
   Check,
   AlertTriangle,
   ChevronDown,
-  Info,
-  Scale,
   Settings,
   QrCode,
   FileSpreadsheet,
@@ -175,45 +172,11 @@ export function Landing() {
 
 
 
-  // Calibration Simulator state
-  const [simType, setSimType] = useState<'suhu' | 'timbangan' | 'tekanan'>('suhu');
-  const [simRef, setSimRef] = useState<number>(37.0);
-  const [simRead, setSimRead] = useState<number>(37.12);
-  const [simRes, setSimRes] = useState<number>(0.01);
-  const [simTolerance, setSimTolerance] = useState<number>(0.2);
-
-  // AI OCR Scanner Demonstration State
-  const [activeScanIndex, setActiveScanIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveScanIndex((prev) => (prev + 1) % 5);
-    }, 2800);
-    return () => clearInterval(timer);
-  }, []);
-
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handler);
     return () => window.removeEventListener('scroll', handler);
   }, []);
-
-
-  useEffect(() => {
-    if (simType === 'suhu') { setSimRef(37.0); setSimRead(37.12); setSimRes(0.01); setSimTolerance(0.2); }
-    else if (simType === 'timbangan') { setSimRef(100.0); setSimRead(100.015); setSimRes(0.001); setSimTolerance(0.05); }
-    else { setSimRef(5.0); setSimRead(4.91); setSimRes(0.05); setSimTolerance(0.15); }
-  }, [simType]);
-
-  const simDeviation = Number((simRead - simRef).toFixed(4));
-  const u_res = simRes / Math.sqrt(12);
-  const u_master = simType === 'suhu' ? 0.02 : simType === 'timbangan' ? 0.002 : 0.03;
-  const u_repeatability = Math.abs(simDeviation) * 0.15;
-  const u_combined = Math.sqrt(u_res * u_res + u_master * u_master + u_repeatability * u_repeatability);
-  const simUnc = Number((2 * u_combined).toFixed(4));
-  const passStrict = Math.abs(simDeviation) + simUnc <= simTolerance;
-  const passSimple = Math.abs(simDeviation) <= simTolerance;
-  const unit = simType === 'suhu' ? '°C' : simType === 'timbangan' ? 'g' : 'bar';
 
   const categories = [
     { name: 'Elektromedik & Defibrilator', icon: HeartPulse, color: 'from-rose-500 to-pink-600', desc: 'Defibrilator, simulator ECG/NIBP, syringe pump, patient monitor dengan ketidakpastian ultra-rendah.' },
@@ -318,141 +281,49 @@ export function Landing() {
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section ref={heroRef} className="relative pt-28 sm:pt-36 pb-20 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text */}
-          <div className="space-y-8">
-            <div>
-              {/* Premium KAN Accreditation Badge */}
-              <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-yellow-500/10 dark:from-amber-500/5 dark:to-yellow-500/5 border border-amber-500/30 dark:border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)] mb-6">
-                <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black text-xs shrink-0 shadow-lg shadow-amber-500/25">
-                  KAN
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-[8px] font-black font-mono tracking-widest text-slate-400 dark:text-slate-500 uppercase leading-none">PT Spektrum Kreasi Pratama</span>
-                  <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 leading-tight uppercase font-mono mt-0.5">
-                    {settings.accreditationKan}
-                  </span>
-                </div>
-              </div>
-              
-              <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.0] text-slate-900 dark:text-white uppercase">
-                {settings.heroTitle}
-              </h1>
+      <section ref={heroRef} className="relative pt-28 sm:pt-36 pb-20 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
+        <div className="space-y-8 flex flex-col items-center">
+          {/* Premium KAN Accreditation Badge */}
+          <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-yellow-500/10 dark:from-amber-500/5 dark:to-yellow-500/5 border border-amber-500/30 dark:border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)] mb-2">
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black text-xs shrink-0 shadow-lg shadow-amber-500/25">
+              KAN
             </div>
-
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-medium max-w-xl">
-              {settings.heroSubtitle}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to={user ? '/dashboard' : '/login'}
-                className="group flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40">
-                {user ? 'Buka Dashboard' : 'Masuk Terminal Operasi'}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <a href="#workflow"
-                className="flex items-center justify-center gap-2 px-8 py-4 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-slate-800/80 transition-all">
-                Pelajari Alur Kerja
-              </a>
-            </div>
-
-            <div className="flex flex-wrap gap-x-6 gap-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
-              {[
-                { icon: ShieldCheck, text: 'ISO 17025 Compliant', color: 'text-emerald-500' },
-                { icon: Award, text: 'KAN Accredited', color: 'text-amber-500' },
-                { icon: Database, text: 'Auto Sync DB', color: 'text-blue-500' },
-              ].map(({ icon: Icon, text, color }) => (
-                <div key={text} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono">
-                  <Icon className={`w-3.5 h-3.5 ${color} shrink-0`} /> {text}
-                </div>
-              ))}
+            <div className="flex flex-col text-left">
+              <span className="text-[8px] font-black font-mono tracking-widest text-slate-400 dark:text-slate-500 uppercase leading-none">PT Spektrum Kreasi Pratama</span>
+              <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 leading-tight uppercase font-mono mt-0.5">
+                {settings.accreditationKan}
+              </span>
             </div>
           </div>
-          <div className="relative hidden lg:block">
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-cyan-500/10 rounded-[3rem] blur-3xl -z-10" />
-            
-            <div className="bg-white dark:bg-[#060d1f] border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
-              {/* Card Top Bar */}
-              <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                <div className="ml-auto flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-                  <span className="text-[9px] font-black font-mono text-emerald-500 uppercase tracking-widest">Live Sync</span>
-                </div>
-              </div>
+          
+          <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.0] text-slate-900 dark:text-white uppercase max-w-3xl mx-auto">
+            {settings.heroTitle}
+          </h1>
 
-              {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-px bg-slate-100 dark:bg-slate-800">
-                {[
-                  { label: 'Alat Aktif', value: '284', color: 'text-blue-600 dark:text-cyan-400' },
-                  { label: 'Laik Pakai', value: '97.2%', color: 'text-emerald-500' },
-                  { label: 'Pending LK', value: '12', color: 'text-amber-500' },
-                ].map(item => (
-                  <div key={item.label} className="bg-white dark:bg-[#060d1f] p-4 text-center">
-                    <p className={`text-xl font-black font-mono ${item.color}`}>{item.value}</p>
-                    <p className="text-[8px] font-bold uppercase text-slate-400 tracking-wider mt-1">{item.label}</p>
-                  </div>
-                ))}
-              </div>
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-medium max-w-2xl mx-auto">
+            {settings.heroSubtitle}
+          </p>
 
-              {/* Sticker Preview */}
-              <div className="p-5 space-y-4">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 font-mono">Demo Stiker Thermal QR</p>
-                
-                <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-900/40">
-                  <div className="flex gap-4 items-center">
-                    <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl p-2 shrink-0 flex items-center justify-center">
-                      <QrCode className="w-full h-full text-slate-800 dark:text-slate-200" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase truncate">Syringe Pump Presisi</p>
-                      <p className="text-[9px] font-mono text-slate-400">S/N: SP-982701X</p>
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <Check className="w-3 h-3 text-emerald-500" />
-                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-wide">LAIK PAKAI — KAN Certified</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 grid grid-cols-2 gap-2 text-[8px] font-mono">
-                    <div>
-                      <span className="text-slate-400">KALIBRASI:</span>
-                      <span className="text-slate-700 dark:text-slate-300 font-bold ml-1">14 MEI 2026</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">BERLAKU:</span>
-                      <span className="text-emerald-500 font-bold ml-1">14 MEI 2027</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-                  <div className="flex items-center gap-2">
-                    <Database className="w-4 h-4 text-indigo-500" />
-                    <div>
-                      <p className="text-[7px] font-black text-indigo-400 uppercase tracking-wider">Status Inventaris</p>
-                      <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">TERUPDATE INSTAN</p>
-                    </div>
-                  </div>
-                  <span className="text-[8px] font-mono font-black text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700">SYNC OK ✓</span>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to={user ? '/dashboard' : '/login'}
+              className="group flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40">
+              {user ? 'Buka Dashboard' : 'Masuk Terminal Operasi'}
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <a href="#workflow"
+              className="flex items-center justify-center gap-2 px-8 py-4 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-slate-800/80 transition-all">
+              Pelajari Alur Kerja
+            </a>
           </div>
-        </div>
-      </section>
 
-      {/* ===== STATS STRIP ===== */}
-      <section className="py-12 border-y border-slate-100 dark:border-slate-800/60 bg-slate-50/60 dark:bg-slate-950/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {STATS.map((stat, i) => (
-              <div key={i} className="text-center">
-                <p className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 font-mono">{stat.value}</p>
-                <p className="text-xs font-black text-slate-700 dark:text-white uppercase tracking-wider mt-1">{stat.label}</p>
-                <p className="text-[9px] text-slate-400 font-medium mt-0.5">{stat.sub}</p>
+          <div className="flex flex-wrap gap-x-6 gap-y-3 pt-4 border-t border-slate-250 dark:border-slate-800 justify-center w-full max-w-md">
+            {[
+              { icon: ShieldCheck, text: 'ISO 17025 Compliant', color: 'text-emerald-500' },
+              { icon: Award, text: 'KAN Accredited', color: 'text-amber-500' },
+              { icon: Database, text: 'Auto Sync DB', color: 'text-blue-500' },
+            ].map(({ icon: Icon, text, color }) => (
+              <div key={text} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono">
+                <Icon className={`w-3.5 h-3.5 ${color} shrink-0`} /> {text}
               </div>
             ))}
           </div>
@@ -551,380 +422,6 @@ export function Landing() {
         </div>
       </section>
 
-
-      {/* ===== SPEKTRUM GEMINI AI OCR EXTRACTOR SHOWCASE ===== */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50/40 dark:bg-[#030713]/30 border-t border-slate-100 dark:border-slate-800/80">
-        <div className="max-w-7xl mx-auto space-y-16">
-          <div className="text-center space-y-3">
-            <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.35em] text-blue-600 dark:text-cyan-400 font-mono">
-              <Cpu className="w-4 h-4 text-blue-600 dark:text-cyan-400" /> Cognitive Vision Intelligence
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
-              Spektrum <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Gemini AI</span> OCR
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base font-medium max-w-2xl mx-auto">
-              Sistem ekstraksi data metrologi tercanggih. Unggah sertifikat kalibrasi vendor eksternal Anda, dan biarkan AI menyusun lembar kerja secara instan dan bebas kesalahan.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left: Interactive Scanning Document */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">1. Berkas Sertifikat Fisik (Sumber Scan)</h3>
-                <span className="text-[10px] font-black text-blue-600 dark:text-cyan-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950/20 px-3 py-1 rounded-md border border-blue-100 dark:border-blue-900/30 font-mono">Menjalankan Ekstraksi...</span>
-              </div>
-
-              <div className="relative overflow-hidden rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1f] shadow-2xl transition-all duration-500 max-w-md mx-auto aspect-[1/1.414] w-full text-slate-800 dark:text-slate-200">
-                {/* Center Watermark */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.02]">
-                  <Cpu className="w-80 h-80 rotate-12" />
-                </div>
-
-                <div className="relative z-10 h-full flex flex-col justify-between font-sans">
-                  {/* Certificate Top Header */}
-                  <div className="text-center space-y-2 border-b border-slate-100 dark:border-slate-850 pb-4">
-                    <h4 className="text-[11px] font-black text-blue-600 uppercase tracking-widest leading-none font-mono">Balai Pengujian Fasilitas Kesehatan</h4>
-                    <h3 className="text-sm font-bold uppercase tracking-tight leading-none italic text-slate-900 dark:text-white">Sertifikat Kalibrasi Alkes</h3>
-                    <p className="text-[8px] font-mono text-slate-400">No. Registrasi: BPFK-5928/2026</p>
-                  </div>
-
-                  {/* Fields lists */}
-                  <div className="flex-1 py-8 space-y-5 text-[11px]">
-                    {/* Field 0: Certificate ID */}
-                    <div className={cn(
-                      "p-3 rounded-xl border transition-all duration-300",
-                      activeScanIndex === 0 
-                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
-                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
-                    )}>
-                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">A. Nomor Sertifikat</span>
-                      <p className="font-bold font-mono text-slate-900 dark:text-white mt-0.5">BPFK-CERT/2026/04128</p>
-                    </div>
-
-                    {/* Field 1: Device Name */}
-                    <div className={cn(
-                      "p-3 rounded-xl border transition-all duration-300",
-                      activeScanIndex === 1
-                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
-                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
-                    )}>
-                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">B. Nama Instrumen Medis</span>
-                      <p className="font-black text-slate-900 dark:text-white mt-0.5 uppercase italic">Defibrillator Monitor</p>
-                    </div>
-
-                    {/* Field 2: Brand/Model */}
-                    <div className={cn(
-                      "p-3 rounded-xl border transition-all duration-300",
-                      activeScanIndex === 2
-                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
-                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
-                    )}>
-                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">C. Merk & Tipe</span>
-                      <p className="font-bold text-slate-900 dark:text-white mt-0.5">PHILIPS / HeartStart XL</p>
-                    </div>
-
-                    {/* Field 3: Serial Number */}
-                    <div className={cn(
-                      "p-3 rounded-xl border transition-all duration-300",
-                      activeScanIndex === 3
-                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
-                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
-                    )}>
-                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">D. Nomor Seri (S/N)</span>
-                      <p className="font-bold font-mono text-slate-900 dark:text-white mt-0.5">SN: PH-40129X</p>
-                    </div>
-
-                    {/* Field 4: Calib Date */}
-                    <div className={cn(
-                      "p-3 rounded-xl border transition-all duration-300",
-                      activeScanIndex === 4
-                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
-                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
-                    )}>
-                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">E. Tanggal Kalibrasi</span>
-                      <p className="font-bold text-slate-900 dark:text-white mt-0.5">12 MEI 2026</p>
-                    </div>
-                  </div>
-
-                  {/* Footers */}
-                  <div className="border-t border-slate-100 dark:border-slate-850 pt-3 text-center text-[7px] text-slate-400 leading-tight font-serif italic">
-                    Laporan ini sah dan diterbitkan oleh laboratorium penguji terakreditasi KAN secara legal.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Dynamic Extracted Output Terminal */}
-            <div className="lg:col-span-6 space-y-6">
-              <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">2. Spektrum Cerdas Coret-Verify (JSON Output)</h3>
-
-              <div className="bg-[#050915] border border-slate-850 rounded-[2.5rem] p-8 sm:p-10 shadow-2xl relative overflow-hidden font-mono min-h-[460px] flex flex-col justify-between">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 blur-[50px] rounded-full" />
-                
-                {/* Terminal Header */}
-                <div className="flex items-center gap-2 pb-6 border-b border-slate-850/80">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <span className="ml-4 text-[9px] text-slate-500 uppercase tracking-widest">spektrum-ocr-v4.0:~ gemini-extractor</span>
-                </div>
-
-                {/* Structured Fields */}
-                <div className="flex-1 py-8 space-y-5 text-xs text-slate-400">
-                  {/* Field 0: Cert ID */}
-                  <div className={cn(
-                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
-                    activeScanIndex === 0 
-                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
-                      : "border-transparent bg-slate-900/10"
-                  )}>
-                    <div>
-                      <span className="text-[8px] text-slate-550 font-black uppercase">"certificate_id":</span>
-                      <p className="font-bold text-slate-200 mt-0.5">"BPFK-CERT/2026/04128"</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
-                    </div>
-                  </div>
-
-                  {/* Field 1: Device Name */}
-                  <div className={cn(
-                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
-                    activeScanIndex === 1
-                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
-                      : "border-transparent bg-slate-900/10"
-                  )}>
-                    <div>
-                      <span className="text-[8px] text-slate-550 font-black uppercase">"device_name":</span>
-                      <p className="font-bold text-slate-200 mt-0.5">"Defibrillator Monitor"</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
-                    </div>
-                  </div>
-
-                  {/* Field 2: Brand/Model */}
-                  <div className={cn(
-                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
-                    activeScanIndex === 2
-                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
-                      : "border-transparent bg-slate-900/10"
-                  )}>
-                    <div>
-                      <span className="text-[8px] text-slate-550 font-black uppercase">"brand_and_model":</span>
-                      <p className="font-bold text-slate-200 mt-0.5">"PHILIPS / HeartStart XL"</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
-                    </div>
-                  </div>
-
-                  {/* Field 3: SN */}
-                  <div className={cn(
-                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
-                    activeScanIndex === 3
-                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
-                      : "border-transparent bg-slate-900/10"
-                  )}>
-                    <div>
-                      <span className="text-[8px] text-slate-550 font-black uppercase">"serial_number":</span>
-                      <p className="font-bold text-slate-200 mt-0.5">"SN-PH40129X"</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
-                    </div>
-                  </div>
-
-                  {/* Field 4: Calib Date */}
-                  <div className={cn(
-                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
-                    activeScanIndex === 4
-                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
-                      : "border-transparent bg-slate-900/10"
-                  )}>
-                    <div>
-                      <span className="text-[8px] text-slate-550 font-black uppercase">"calibration_date":</span>
-                      <p className="font-bold text-slate-200 mt-0.5">"2026-05-12"</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer status */}
-                <div className="pt-4 border-t border-slate-850/80 flex items-center justify-between text-[8px] text-slate-550">
-                  <span>STABILIZER: ACTIVE</span>
-                  <span>SPEED: 184.2 ms / sheet</span>
-                  <span className="text-cyan-400 font-black">SINKRONISASI DATABASE OK</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== METROLOGY PLAYGROUND ===== */}
-      <section id="calculator" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50/60 dark:bg-[#040812]/60 border-y border-slate-200 dark:border-slate-800/60">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16 space-y-3">
-            <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.35em] text-cyan-600 dark:text-cyan-400 font-mono">
-              <Activity className="w-4 h-4 text-cyan-600 dark:text-cyan-400" /> Live Metrology Engine
-            </span>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
-              U95 Calculator <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">Playground</span>
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium max-w-xl mx-auto">
-              Simulasikan kalkulasi deviasi & ketidakpastian U95 (k=2) sesuai kaidah ISO 17025 secara langsung.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Control Panel */}
-            <div className="lg:col-span-7 bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 shadow-xl">
-              <h3 className="text-sm font-black uppercase tracking-widest font-mono text-slate-700 dark:text-white mb-6 flex items-center gap-2">
-                <span className="w-2.5 h-2.5 bg-blue-600 dark:bg-cyan-500 rounded-full" />
-                Konfigurasi Parameter
-              </h3>
-
-              {/* Type Selector */}
-              <div className="grid grid-cols-3 gap-2 mb-7">
-                {([['suhu', Thermometer, 'PM / Suhu'], ['timbangan', Scale, 'Timbangan'], ['tekanan', Gauge, 'Manometer']] as const).map(([type, Icon, label]) => (
-                  <button key={type} onClick={() => setSimType(type as any)}
-                    className={`py-4 px-2 rounded-2xl text-[9px] font-black uppercase tracking-wider font-mono transition-all flex flex-col items-center gap-2 border cursor-pointer ${
-                      simType === type
-                        ? 'bg-blue-600 dark:bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20'
-                        : 'bg-slate-50 dark:bg-slate-900/40 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
-                    }`}>
-                    <Icon className="w-5 h-5" /> {label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="space-y-6">
-                {/* Reference */}
-                <div>
-                  <div className="flex justify-between items-center text-xs mb-2">
-                    <span className="font-semibold text-slate-600 dark:text-slate-400">Nilai Acuan Standar (y<sub>ref</sub>)</span>
-                    <span className="font-mono font-black text-blue-600 dark:text-cyan-400 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1 rounded-lg text-[11px]">{simRef} {unit}</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min={simType === 'suhu' ? 20 : simType === 'timbangan' ? 1 : 0.1} 
-                    max={simType === 'suhu' ? 120 : simType === 'timbangan' ? 500 : 20} 
-                    step={simType === 'suhu' ? 0.5 : simType === 'timbangan' ? 1 : 0.1} 
-                    value={simRef} 
-                    onChange={e => setSimRef(Number(e.target.value))} 
-                    className="w-full accent-blue-600 cursor-pointer" 
-                    title="Nilai Acuan Standar"
-                    placeholder="Nilai Acuan Standar"
-                  />
-                </div>
-
-                {/* Observed */}
-                <div>
-                  <div className="flex justify-between items-center text-xs mb-2">
-                    <span className="font-semibold text-slate-600 dark:text-slate-400">Pembacaan Alat DUT (y<sub>read</sub>)</span>
-                    <span className="font-mono font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2.5 py-1 rounded-lg text-[11px]">{simRead} {unit}</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min={(simRef - (simType === 'suhu' ? 1.5 : simType === 'timbangan' ? 0.3 : 0.8)).toFixed(3)} 
-                    max={(simRef + (simType === 'suhu' ? 1.5 : simType === 'timbangan' ? 0.3 : 0.8)).toFixed(3)} 
-                    step={simRes} 
-                    value={simRead} 
-                    onChange={e => setSimRead(Number(e.target.value))} 
-                    className="w-full accent-indigo-600 cursor-pointer" 
-                    title="Pembacaan Alat DUT"
-                    placeholder="Pembacaan Alat DUT"
-                  />
-                </div>
-
-                {/* Resolution & Tolerance */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2 font-mono">Resolusi Alat</label>
-                    <select 
-                      value={simRes} 
-                      onChange={e => setSimRes(Number(e.target.value))} 
-                      className="w-full bg-slate-50 dark:bg-slate-900 text-xs font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                      title="Resolusi Alat"
-                    >
-                      <option value={0.1}>0.1 (Kasar)</option>
-                      <option value={0.01}>0.01 (Sedang)</option>
-                      <option value={0.001}>0.001 (Presisi)</option>
-                      <option value={0.0001}>0.0001 (Mikro)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2 font-mono">Toleransi (MPE)</label>
-                    <select 
-                      value={simTolerance} 
-                      onChange={e => setSimTolerance(Number(e.target.value))} 
-                      className="w-full bg-slate-50 dark:bg-slate-900 text-xs font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                      title="Toleransi (MPE)"
-                    >
-                      {simType === 'suhu' && (<><option value={0.10}>±0.10 °C</option><option value={0.20}>±0.20 °C</option><option value={0.50}>±0.50 °C</option></>)}
-                      {simType === 'timbangan' && (<><option value={0.01}>±0.010 g</option><option value={0.05}>±0.050 g</option><option value={0.15}>±0.150 g</option></>)}
-                      {simType === 'tekanan' && (<><option value={0.05}>±0.05 bar</option><option value={0.15}>±0.15 bar</option><option value={0.40}>±0.40 bar</option></>)}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <p className="flex items-start gap-2 text-[10px] text-slate-400 font-medium mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 leading-relaxed">
-                <Info className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
-                u_c = √[u_master² + (Res/√12)² + u_rep²] × k=2
-              </p>
-            </div>
-
-            {/* Results */}
-            <div className="lg:col-span-5">
-              <div className="bg-gradient-to-br from-[#071030] to-[#040816] text-white rounded-[2rem] p-6 sm:p-8 shadow-2xl border border-blue-900/40 h-full flex flex-col">
-                <div className="mb-6">
-                  <p className="text-[9px] font-black tracking-widest text-cyan-400 uppercase font-mono">CALIBRA-SIM ENGINE</p>
-                  <h4 className="text-xl font-black mt-1 uppercase tracking-tight">Hasil Penilaian Fisis</h4>
-                </div>
-
-                <div className="space-y-4 flex-1">
-                  {[
-                    { label: 'Besar Penyimpangan', value: `${simDeviation > 0 ? `+${simDeviation}` : simDeviation} ${unit}`, color: 'text-white bg-white/10' },
-                    { label: 'Ketidakpastian U95 (k=2)', value: `±${simUnc} ${unit}`, color: 'text-cyan-400 bg-cyan-500/15' },
-                    { label: 'Toleransi Pabrikan (MPE)', value: `±${simTolerance} ${unit}`, color: 'text-amber-400 bg-amber-500/10' },
-                  ].map(({ label, value, color }) => (
-                    <div key={label} className="flex justify-between items-center py-3 border-b border-white/5">
-                      <span className="text-xs text-slate-400 font-medium">{label}</span>
-                      <span className={`text-sm font-mono font-black px-3 py-1 rounded-lg ${color}`}>{value}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 pt-6 border-t border-white/10">
-                  <div className={`p-5 rounded-2xl border flex items-start gap-3 ${
-                    passStrict ? 'bg-emerald-500/15 border-emerald-500/30' : 'bg-rose-500/15 border-rose-500/30'
-                  }`}>
-                    {passStrict
-                      ? <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-                      : <AlertTriangle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
-                    }
-                    <div>
-                      <p className={`text-xs font-black uppercase tracking-wider ${passStrict ? 'text-emerald-300' : 'text-rose-300'}`}>
-                        {passStrict ? '✓ LAIK PAKAI — Guard-Band Compliant' : '✗ TIDAK LAIK — Melewati Batas Regulasi'}
-                      </p>
-                      <p className="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">
-                        {passStrict
-                          ? 'Alat berada di zona aman metrologi. Kesalahan fisis tidak melompati guard band pabrikan.'
-                          : 'Alat melanggar batas regulasi! Deviasi + U95 melebihi toleransi MPE yang ditetapkan.'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ===== FAQ ===== */}
       <section id="faq" className="py-24 px-4 sm:px-6 lg:px-8">
@@ -1198,25 +695,7 @@ export function Landing() {
         </svg>
       </a>
 
-      {/* ===== CTA SECTION ===== */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 mx-4 sm:mx-8 lg:mx-16 mb-16 rounded-[3rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-3xl mx-auto text-center space-y-6 relative z-10">
-          <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight">
-            Siap Digitalisasi<br />Kalibrasi Anda?
-          </h2>
-          <p className="text-blue-100 text-sm sm:text-base font-medium max-w-xl mx-auto">
-            Bergabunglah dengan 150+ fasyankes yang sudah mempercayakan manajemen kalibrasi kepada CalibraPro.
-          </p>
-          <Link to={user ? '/dashboard' : '/login'}
-            className="inline-flex items-center gap-3 px-10 py-4 bg-white text-blue-700 font-black rounded-2xl text-sm uppercase tracking-wider hover:bg-blue-50 transition-all shadow-2xl shadow-black/20">
-            {user ? 'Buka Dashboard Saya' : 'Mulai Gratis Sekarang'}
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-        </div>
-      </section>
+
 
       {/* ===== FOOTER ===== */}
       <footer className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-950 text-white">
