@@ -200,7 +200,7 @@ export function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#030612] text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-500">
+    <div className="min-h-screen bg-white dark:bg-[#030612] text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-500 grid-bg">
       
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -316,7 +316,7 @@ export function Landing() {
             </a>
           </div>
 
-          <div className="flex flex-wrap gap-x-6 gap-y-3 pt-4 border-t border-slate-250 dark:border-slate-800 justify-center w-full max-w-md">
+          <div className="flex flex-wrap gap-x-6 gap-y-3 pt-4 border-t border-slate-200 dark:border-slate-800 justify-center w-full max-w-md">
             {[
               { icon: ShieldCheck, text: 'ISO 17025 Compliant', color: 'text-emerald-500' },
               { icon: Award, text: 'KAN Accredited', color: 'text-amber-500' },
