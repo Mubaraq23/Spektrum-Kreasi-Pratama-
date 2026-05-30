@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../lib/AuthContext';
 import { db } from '../lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { motion } from 'motion/react';
 import { 
   User, 
@@ -25,6 +25,17 @@ export function Settings() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
+  // Landing Page Settings States
+  const [activeTab, setActiveTab] = useState<'profile' | 'landing_page'>('profile');
+  const [heroTitle, setHeroTitle] = useState('');
+  const [heroSubtitle, setHeroSubtitle] = useState('');
+  const [supportWhatsapp, setSupportWhatsapp] = useState('');
+  const [companyAddress, setCompanyAddress] = useState('');
+  const [companyEmail, setCompanyEmail] = useState('');
+  const [accreditationKan, setAccreditationKan] = useState('');
+  const [loadingSettings, setLoadingSettings] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!displayName || !user) return;
@@ -47,6 +58,60 @@ export function Settings() {
       setError('Gagal memperbarui profil: ' + err.message);
     } finally {
       setUpdating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (profile?.role === 'admin') {
+      const fetchSettings = async () => {
+        setLoadingSettings(true);
+        try {
+          const docRef = doc(db, 'settings', 'landing_page');
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setHeroTitle(data.heroTitle || '');
+            setHeroSubtitle(data.heroSubtitle || '');
+            setSupportWhatsapp(data.supportWhatsapp || '');
+            setCompanyAddress(data.companyAddress || '');
+            setCompanyEmail(data.companyEmail || '');
+            setAccreditationKan(data.accreditationKan || '');
+          }
+        } catch (err) {
+          console.error('Gagal mengambil pengaturan landing page:', err);
+        } finally {
+          setLoadingSettings(false);
+        }
+      };
+      fetchSettings();
+    }
+  }, [profile]);
+
+  const handleUpdateSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    setSuccess('');
+    setError('');
+
+    try {
+      const docRef = doc(db, 'settings', 'landing_page');
+      await setDoc(docRef, {
+        heroTitle,
+        heroSubtitle,
+        supportWhatsapp,
+        companyAddress,
+        companyEmail,
+        accreditationKan,
+        updatedAt: new Date()
+      }, { merge: true });
+
+      await logAction('Pengaturan Landing Page', 'Sistem', 'Memperbarui konfigurasi landing page publik dinamis', 'info');
+      setSuccess('Pengaturan landing page berhasil disimpan dan langsung aktif di publik!');
+    } catch (err: any) {
+      console.error(err);
+      setError('Gagal menyimpan pengaturan: ' + err.message);
+    } finally {
+      setSavingSettings(false);
     }
   };
 
@@ -128,93 +193,252 @@ export function Settings() {
           </div>
         </div>
 
-        {/* Right Column: Update Credentials Forms */}
+        {/* Right Column: Update Credentials Forms & Admin Landing Page Customizer */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-[#080d22] border border-slate-200/60 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] shadow-lg shadow-slate-100/40 dark:shadow-none">
-            <div className="flex items-center gap-3 mb-8">
-              <Settings2 className="w-5 h-5 text-blue-600 dark:text-cyan-400" />
-              <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight font-mono">Informasi Identitas Operator</h2>
+          {profile?.role === 'admin' && (
+            <div className="flex gap-4 p-1.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl">
+              <button
+                type="button"
+                onClick={() => setActiveTab('profile')}
+                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${
+                  activeTab === 'profile'
+                    ? 'bg-white dark:bg-[#080d22] text-blue-600 dark:text-cyan-400 shadow-sm border border-slate-200/50 dark:border-slate-800'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                }`}
+              >
+                Profil Saya
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('landing_page')}
+                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${
+                  activeTab === 'landing_page'
+                    ? 'bg-white dark:bg-[#080d22] text-blue-600 dark:text-cyan-400 shadow-sm border border-slate-200/50 dark:border-slate-800'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                }`}
+              >
+                ⚙️ Landing Page & KAN
+              </button>
             </div>
+          )}
 
-            <form onSubmit={handleUpdateProfile} className="space-y-6">
-              {error && (
-                <div className="p-4 bg-red-955/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {success && (
-                <div className="p-4 bg-emerald-950/20 border border-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
-                  <Check className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{success}</span>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">E-mail Akses (Permanen)</label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      type="text" 
-                      value={user?.email || ''} 
-                      disabled 
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 text-xs text-slate-400 cursor-not-allowed font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Otorisasi Hak Akses (Role)</label>
-                  <div className="relative">
-                    <Shield className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      type="text" 
-                      value={currentRoleName()} 
-                      disabled 
-                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 text-xs text-slate-400 cursor-not-allowed font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2.5 md:col-span-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nama Lengkap Auditor / Laboran</label>
-                  <div className="relative group/input">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within/input:text-cyan-400 transition-colors" />
-                    <input 
-                      type="text" 
-                      required
-                      placeholder="Masukkan nama lengkap Anda..."
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-black uppercase tracking-widest"
-                    />
-                  </div>
-                </div>
+          {activeTab === 'landing_page' && profile?.role === 'admin' ? (
+            <div className="bg-white dark:bg-[#080d22] border border-slate-200/60 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] shadow-lg shadow-slate-100/40 dark:shadow-none animate-in fade-in duration-300">
+              <div className="flex items-center gap-3 mb-8">
+                <Settings2 className="w-5 h-5 text-blue-600 dark:text-cyan-400" />
+                <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight font-mono">Pengaturan Landing Page Publik</h2>
               </div>
 
-              <div className="pt-4 flex justify-end">
-                <button
-                  type="submit"
-                  disabled={updating}
-                  className="px-8 h-14 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-black text-[10px] uppercase tracking-[0.25em] rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-98 shadow-md shadow-blue-500/10"
-                >
-                  {updating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Mencatat Perubahan...
-                    </>
-                  ) : (
-                    <>
-                      <FileCheck className="w-4 h-4" />
-                      Simpan Profil
-                    </>
+              {loadingSettings ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Loader2 className="w-8 h-8 text-blue-600 dark:text-cyan-400 animate-spin" />
+                  <span className="text-xs text-slate-500 font-bold">Mengambil pengaturan terbaru...</span>
+                </div>
+              ) : (
+                <form onSubmit={handleUpdateSettings} className="space-y-6">
+                  {error && (
+                    <div className="p-4 bg-red-955/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </div>
                   )}
-                </button>
+
+                  {success && (
+                    <div className="p-4 bg-emerald-950/20 border border-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
+                      <Check className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{success}</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-6">
+                    <div className="space-y-2.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Judul Utama Hero (Hero Title)</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Masukkan judul utama landing page..."
+                        value={heroTitle}
+                        onChange={(e) => setHeroTitle(e.target.value)}
+                        className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl px-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-bold"
+                      />
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Sub-Judul Hero (Hero Subtitle)</label>
+                      <textarea 
+                        required
+                        rows={3}
+                        placeholder="Masukkan deskripsi/sub-judul hero..."
+                        value={heroSubtitle}
+                        onChange={(e) => setHeroSubtitle(e.target.value)}
+                        className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl px-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nomor WhatsApp Dukungan (62xxx)</label>
+                        <input 
+                          type="text" 
+                          required
+                          placeholder="Contoh: 6281290008888"
+                          value={supportWhatsapp}
+                          onChange={(e) => setSupportWhatsapp(e.target.value)}
+                          className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl px-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-mono font-bold"
+                        />
+                      </div>
+
+                      <div className="space-y-2.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nomor Akreditasi KAN (LK / LP)</label>
+                        <input 
+                          type="text" 
+                          required
+                          placeholder="Contoh: LK-291-IDN & LP-1849-IDN"
+                          value={accreditationKan}
+                          onChange={(e) => setAccreditationKan(e.target.value)}
+                          className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl px-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-bold"
+                        />
+                      </div>
+
+                      <div className="space-y-2.5 md:col-span-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Email Informasi Lembaga</label>
+                        <input 
+                          type="email" 
+                          required
+                          placeholder="Contoh: info@spektrumkreasi.co.id"
+                          value={companyEmail}
+                          onChange={(e) => setCompanyEmail(e.target.value)}
+                          className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl px-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                        />
+                      </div>
+
+                      <div className="space-y-2.5 md:col-span-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Alamat Kantor Pusat (PT Spektrum Kreasi Pratama)</label>
+                        <textarea 
+                          required
+                          rows={2}
+                          placeholder="Masukkan alamat kantor pusat lengkap..."
+                          value={companyAddress}
+                          onChange={(e) => setCompanyAddress(e.target.value)}
+                          className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl px-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex justify-end">
+                      <button
+                        type="submit"
+                        disabled={savingSettings}
+                        className="px-8 h-14 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-black text-[10px] uppercase tracking-[0.25em] rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-98 shadow-md shadow-blue-500/10"
+                      >
+                        {savingSettings ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Menyimpan Pengaturan...
+                          </>
+                        ) : (
+                          <>
+                            <FileCheck className="w-4 h-4" />
+                            Simpan Landing Page
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-[#080d22] border border-slate-200/60 dark:border-slate-800 p-8 md:p-10 rounded-[2.5rem] shadow-lg shadow-slate-100/40 dark:shadow-none animate-in fade-in duration-300">
+              <div className="flex items-center gap-3 mb-8">
+                <Settings2 className="w-5 h-5 text-blue-600 dark:text-cyan-400" />
+                <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight font-mono">Informasi Identitas Operator</h2>
               </div>
-            </form>
-          </div>
+
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
+                {error && (
+                  <div className="p-4 bg-red-955/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {success && (
+                  <div className="p-4 bg-emerald-950/20 border border-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
+                    <Check className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{success}</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">E-mail Akses (Permanen)</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input 
+                        type="text" 
+                        value={user?.email || ''} 
+                        disabled 
+                        title="E-mail Akses"
+                        placeholder="Email akses"
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 text-xs text-slate-400 cursor-not-allowed font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Otorisasi Hak Akses (Role)</label>
+                    <div className="relative">
+                      <Shield className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input 
+                        type="text" 
+                        value={currentRoleName()} 
+                        disabled 
+                        title="Otorisasi Hak Akses"
+                        placeholder="Otorisasi hak akses"
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 text-xs text-slate-400 cursor-not-allowed font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5 md:col-span-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nama Lengkap Auditor / Laboran</label>
+                    <div className="relative group/input">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within/input:text-cyan-400 transition-colors" />
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Masukkan nama lengkap Anda..."
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        className="w-full bg-slate-950/10 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-black uppercase tracking-widest"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={updating}
+                    className="px-8 h-14 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-black text-[10px] uppercase tracking-[0.25em] rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-98 shadow-md shadow-blue-500/10"
+                  >
+                    {updating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Mencatat Perubahan...
+                      </>
+                    ) : (
+                      <>
+                        <FileCheck className="w-4 h-4" />
+                        Simpan Profil
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
 
       </div>

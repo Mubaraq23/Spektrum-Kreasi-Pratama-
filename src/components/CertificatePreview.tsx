@@ -7,6 +7,51 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 
+export function getFallbackMeasurements(deviceName: string, unit: string) {
+  const nameLower = (deviceName || '').toLowerCase();
+  const unitLower = (unit || '').toLowerCase();
+
+  if (nameLower.includes('pipet') || unitLower === 'µl' || unitLower === 'ul') {
+    return [
+      { point: '100', actual: '99,67', deviation: '-0,33', uncertainty: '0,04', unit: 'µL', parameterName: 'Volume' },
+      { point: '500', actual: '498,90', deviation: '-1,10', uncertainty: '0,60', unit: 'µL', parameterName: 'Volume' },
+      { point: '1000', actual: '999,33', deviation: '-0,67', uncertainty: '0,04', unit: 'µL', parameterName: 'Volume' }
+    ];
+  }
+
+  if (nameLower.includes('inkubator') || nameLower.includes('incubator') || nameLower.includes('suhu') || nameLower.includes('temp') || unitLower === '°c' || unitLower === 'c') {
+    return [
+      { point: '37,0', actual: '36,95', deviation: '-0,05', uncertainty: '0,15', unit: '°C', parameterName: 'Suhu' },
+      { point: '40,0', actual: '39,92', deviation: '-0,08', uncertainty: '0,15', unit: '°C', parameterName: 'Suhu' },
+      { point: '50,0', actual: '49,87', deviation: '-0,13', uncertainty: '0,15', unit: '°C', parameterName: 'Suhu' }
+    ];
+  }
+
+  if (nameLower.includes('centrifuge') || nameLower.includes('sentrifug') || unitLower === 'rpm') {
+    return [
+      { point: '1000', actual: '1002', deviation: '+2', uncertainty: '5', unit: 'RPM', parameterName: 'Kecepatan Putar' },
+      { point: '2000', actual: '1997', deviation: '-3', uncertainty: '8', unit: 'RPM', parameterName: 'Kecepatan Putar' },
+      { point: '3000', actual: '2995', deviation: '-5', uncertainty: '12', unit: 'RPM', parameterName: 'Kecepatan Putar' }
+    ];
+  }
+
+  if (nameLower.includes('tensi') || nameLower.includes('sphygmo') || nameLower.includes('tekanan') || unitLower === 'mmhg' || unitLower === 'kpa') {
+    const showUnit = unitLower === 'kpa' ? 'kPa' : 'mmHg';
+    return [
+      { point: '100', actual: '100,5', deviation: '+0,5', uncertainty: '0,8', unit: showUnit, parameterName: 'Tekanan' },
+      { point: '150', actual: '149,2', deviation: '-0,8', uncertainty: '0,8', unit: showUnit, parameterName: 'Tekanan' },
+      { point: '200', actual: '199,4', deviation: '-0,6', uncertainty: '0,8', unit: showUnit, parameterName: 'Tekanan' }
+    ];
+  }
+
+  const showUnit = unit || 'Unit';
+  return [
+    { point: '10', actual: '9,9', deviation: '-0,1', uncertainty: '0,1', unit: showUnit, parameterName: 'Parameter' },
+    { point: '50', actual: '49,8', deviation: '-0,2', uncertainty: '0,3', unit: showUnit, parameterName: 'Parameter' },
+    { point: '100', actual: '99,5', deviation: '-0,5', uncertainty: '0,5', unit: showUnit, parameterName: 'Parameter' }
+  ];
+}
+
 interface CertificatePreviewProps {
   isOpen: boolean;
   onClose: () => void;
@@ -48,6 +93,13 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
   const tempUnc = data.environmentalData?.tempUncertainty || '0,4';
   const humUnc = data.environmentalData?.humUncertainty || '4,1';
 
+  const deviceName = data.deviceName || 'Micropipette';
+  const unit = data.unit || 'µL';
+  const isPipette = deviceName.toLowerCase().includes('pipet') || unit.toLowerCase() === 'µl';
+  const measList = (data.measurements && data.measurements.length > 0)
+    ? data.measurements
+    : getFallbackMeasurements(deviceName, unit);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -84,12 +136,14 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
                     <Printer className="w-4 h-4" />
                     Print
                  </button>
-                 <button 
-                  onClick={onClose}
-                  className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-400 hover:text-slate-900 transition-all"
-                 >
-                    <X className="w-6 h-6" />
-                 </button>
+                  <button 
+                   onClick={onClose}
+                   title="Tutup"
+                   aria-label="Tutup"
+                   className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-400 hover:text-slate-900 transition-all"
+                  >
+                     <X className="w-6 h-6" />
+                  </button>
               </div>
             </div>
 
@@ -340,68 +394,43 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
                            <div className="space-y-3">
                               <h3 className="font-bold text-[13.5px] text-slate-900 uppercase tracking-tight">III. Hasil Kalibrasi</h3>
                               
-                              <table className="w-full border-collapse border-[2px] border-slate-900 text-[12px] text-center shadow-sm">
-                                 <thead className="bg-slate-100/80 font-bold text-slate-900">
-                                    <tr>
-                                       <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4">
-                                          Titik Ukur<br/>
-                                          <span className="font-normal font-serif italic text-[11px] text-slate-600">({data.unit || 'µL'})</span>
-                                       </th>
-                                       <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4">
-                                          V<sub>20</sub><br/>
-                                          <span className="font-normal font-serif italic text-[11px] text-slate-600">({data.unit || 'µL'})</span>
-                                       </th>
-                                       <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4">
-                                          t<sub>air</sub><br/>
-                                          <span className="font-normal font-serif italic text-[11px] text-slate-600">(°C)</span>
-                                       </th>
-                                       <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4" colSpan={2}>
-                                          Ketidakpastian<br/>
-                                          <span className="font-normal font-serif italic text-[11px] text-slate-600">({data.unit || 'µL'})</span>
-                                       </th>
-                                    </tr>
-                                 </thead>
-                                 <tbody className="font-bold text-slate-900">
-                                    {data.measurements?.map((m: any, idx: number) => {
-                                      const showTAir = m.tAir || m.waterTemp || '20,4';
-                                      const showV20 = m.actual !== undefined ? m.actual : (m.meanValue !== undefined ? m.meanValue : (m.penunjukan !== undefined ? m.penunjukan : '-'));
-                                      return (
-                                        <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                           <td className="border-[1.8px] border-slate-900 py-[6px] font-black bg-slate-50/50">{m.point}</td>
-                                           <td className="border-[1.8px] border-slate-900 py-[6px]">{showV20}</td>
-                                           <td className="border-[1.8px] border-slate-900 py-[6px]">{showTAir}</td>
-                                           <td className="border-[1.8px] border-slate-900 py-[6px] border-r-0 w-8 pr-1 text-right">±</td>
-                                           <td className="border-[1.8px] border-slate-900 py-[6px] border-l-0 text-left pl-1">{m.uncertainty !== undefined ? (typeof m.uncertainty === 'number' ? m.uncertainty.toFixed(2) : m.uncertainty) : '0,04'}</td>
-                                        </tr>
-                                      );
-                                    })}
-                                    {(!data.measurements || data.measurements.length === 0) && (
-                                       <>
-                                         <tr className="hover:bg-slate-50">
-                                            <td className="border-[1.8px] border-slate-900 py-2 font-black bg-slate-50/50">100</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2">99,67</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2">20,4</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2 border-r-0 w-8 pr-1 text-right">±</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2 border-l-0 text-left pl-1">0,04</td>
+                               <table className="w-full border-collapse border-[2px] border-slate-900 text-[12px] text-center shadow-sm">
+                                  <thead className="bg-slate-100/80 font-bold text-slate-900">
+                                     <tr>
+                                        <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4">
+                                           Titik Ukur<br/>
+                                           <span className="font-normal font-serif italic text-[11px] text-slate-600">({unit})</span>
+                                        </th>
+                                        <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4">
+                                           {isPipette ? <>V<sub>20</sub></> : 'Penunjukan Alat'}<br/>
+                                           <span className="font-normal font-serif italic text-[11px] text-slate-600">({unit})</span>
+                                        </th>
+                                        <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4">
+                                           {isPipette ? 't air' : 'Penyimpangan'}<br/>
+                                           <span className="font-normal font-serif italic text-[11px] text-slate-600">({isPipette ? '°C' : unit})</span>
+                                        </th>
+                                        <th className="border-[1.8px] border-slate-900 px-2 py-2 w-1/4" colSpan={2}>
+                                           Ketidakpastian<br/>
+                                           <span className="font-normal font-serif italic text-[11px] text-slate-600">({unit})</span>
+                                        </th>
+                                     </tr>
+                                  </thead>
+                                  <tbody className="font-bold text-slate-900">
+                                     {measList.map((m: any, idx: number) => {
+                                       const showTAir = isPipette ? (m.tAir || m.waterTemp || '20,4') : (m.deviation !== undefined ? m.deviation : (m.error !== undefined ? m.error : (m.selisih !== undefined ? m.selisih : (m.actual !== undefined ? (Number(m.actual) - Number(m.point)).toFixed(2) : '0,00'))));
+                                       const showV20 = m.actual !== undefined ? m.actual : (m.meanValue !== undefined ? m.meanValue : (m.penunjukan !== undefined ? m.penunjukan : '-'));
+                                       return (
+                                         <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                            <td className="border-[1.8px] border-slate-900 py-[6px] font-black bg-slate-50/50">{m.point}</td>
+                                            <td className="border-[1.8px] border-slate-900 py-[6px]">{showV20}</td>
+                                            <td className="border-[1.8px] border-slate-900 py-[6px]">{showTAir}</td>
+                                            <td className="border-[1.8px] border-slate-900 py-[6px] border-r-0 w-8 pr-1 text-right">±</td>
+                                            <td className="border-[1.8px] border-slate-900 py-[6px] border-l-0 text-left pl-1">{m.uncertainty !== undefined ? (typeof m.uncertainty === 'number' ? m.uncertainty.toFixed(2) : m.uncertainty) : '0,04'}</td>
                                          </tr>
-                                         <tr className="hover:bg-slate-50">
-                                            <td className="border-[1.8px] border-slate-900 py-2 font-black bg-slate-50/50">500</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2">498,90</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2">20,4</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2 border-r-0 w-8 pr-1 text-right">±</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2 border-l-0 text-left pl-1">0,60</td>
-                                         </tr>
-                                         <tr className="hover:bg-slate-50">
-                                            <td className="border-[1.8px] border-slate-900 py-2 font-black bg-slate-50/50">1000</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2">999,33</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2">20,4</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2 border-r-0 w-8 pr-1 text-right">±</td>
-                                            <td className="border-[1.8px] border-slate-900 py-2 border-l-0 text-left pl-1">0,04</td>
-                                         </tr>
-                                       </>
-                                    )}
-                                 </tbody>
-                              </table>
+                                       );
+                                     })}
+                                  </tbody>
+                               </table>
                            </div>
                         </section>
 
@@ -475,7 +504,7 @@ const OrnateBorderPattern = () => (
       </defs>
       <rect x="2" y="2" width="789.7" height="1118.5" fill="none" stroke="#1e40af" strokeWidth="1.5" />
       <rect x="6" y="6" width="781.7" height="1110.5" fill="none" stroke="#1e40af" strokeWidth="0.8" />
-      <rect x="12" y="12" width="769.7" height="1098.5" fill="url(#border-pattern-prev)" stroke="#1e40af" strokeWidth="20" className="opacity-95" />
+      <rect x="12" y="12" width="769.7" height="1098.5" fill="none" stroke="url(#border-pattern-prev)" strokeWidth="20" className="opacity-95" />
       <rect x="24" y="24" width="745.7" height="1074.5" fill="none" stroke="#1e40af" strokeWidth="2" />
       <rect x="28" y="28" width="737.7" height="1066.5" fill="none" stroke="#1e40af" strokeWidth="0.8" />
     </svg>

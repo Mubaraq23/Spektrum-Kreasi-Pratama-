@@ -4439,8 +4439,8 @@ export function WorksheetEditor() {
                                   </p>
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-3">
-                                  <div className="flex flex-col gap-1 col-span-2 sm:col-span-2">
+                                <div className="flex flex-wrap lg:flex-nowrap items-stretch gap-2 mt-3 w-full">
+                                  <div className="flex flex-col gap-1 w-full lg:w-auto lg:flex-[2.2] min-w-[90px]">
                                     <label htmlFor="seq-parameter" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider">Parameter</label>
                                     <input
                                       type="text"
@@ -4449,46 +4449,49 @@ export function WorksheetEditor() {
                                       onChange={(e) => setSeqName(e.target.value)}
                                       placeholder="Tegangan"
                                       title="Parameter"
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] sm:text-xs !py-[6px] !px-2 !h-8 min-h-[32px] font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
-                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                                  <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[1] min-w-[40px]">
                                     <label htmlFor="seq-start" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Dari</label>
                                     <input
-                                      type="number"
+                                      type="text"
+                                      inputMode="decimal"
                                       id="seq-start"
                                       value={seqStart}
                                       onChange={(e) => setSeqStart(e.target.value)}
                                       title="Titik Mulai"
                                       placeholder="Titik Mulai"
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] sm:text-xs !py-[6px] !px-1 !h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
-                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                                  <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[1] min-w-[40px]">
                                     <label htmlFor="seq-end" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Sampai</label>
                                     <input
-                                      type="number"
+                                      type="text"
+                                      inputMode="decimal"
                                       id="seq-end"
                                       value={seqEnd}
                                       onChange={(e) => setSeqEnd(e.target.value)}
                                       title="Titik Selesai"
                                       placeholder="Titik Selesai"
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] sm:text-xs !py-[6px] !px-1 !h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
-                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
-                                    <label htmlFor="seq-steps" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah Titik</label>
+                                  <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[1.2] min-w-[60px]">
+                                    <label htmlFor="seq-steps" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah</label>
                                     <input
-                                      type="number"
+                                      type="text"
+                                      inputMode="numeric"
                                       id="seq-steps"
                                       value={seqSteps}
                                       onChange={(e) => setSeqSteps(e.target.value)}
                                       title="Jumlah Titik"
-                                      placeholder="Jumlah Titik"
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      placeholder="Jumlah"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] sm:text-xs !py-[6px] !px-1 !h-8 min-h-[32px] font-mono font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
-                                  <div className="flex flex-col gap-1 col-span-1 sm:col-span-1">
+                                  <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[0.8] min-w-[35px]">
                                     <label htmlFor="seq-unit" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Satuan</label>
                                     <input
                                       type="text"
@@ -4497,7 +4500,7 @@ export function WorksheetEditor() {
                                       onChange={(e) => setSeqUnit(e.target.value)}
                                       placeholder="V"
                                       title="Satuan"
-                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] py-[6px] px-2 h-8 min-h-[32px] font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
+                                      className="bg-slate-50 border border-slate-200 dark:bg-[#070d19]/80 dark:border-slate-800 text-[11px] sm:text-xs !py-[6px] !px-1 !h-8 min-h-[32px] font-extrabold rounded-xl outline-none focus:border-[#b38728] text-center w-full"
                                     />
                                   </div>
                                 </div>
@@ -5683,18 +5686,18 @@ export function WorksheetEditor() {
                           ⚙️
                         </th>
                       </tr>
-                      <tr>
-                        <th className="px-3 py-2.5 min-w-[150px] font-bold text-left border-r border-slate-200/50 dark:border-slate-800/40">
+                      <tr className="border-b border-slate-200/60 dark:border-slate-800/60 text-slate-700 dark:text-[#b38728] text-[10.5px]">
+                        <th className="px-2 py-2 w-[130px] min-w-[130px] max-w-[130px] font-bold text-left border-r border-slate-200/50 dark:border-slate-800/40">
                           Parameter
                         </th>
-                        <th className="px-3 py-2.5 w-32 font-bold text-center border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Titik Ukur & Unit</th>
+                        <th className="px-1 py-2 w-24 font-bold text-center border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Titik Ukur &amp; Unit</th>
                         {editMetrologyMode && (
                           <>
-                            <th className="px-2 py-2.5 w-24 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Res (u₁)</th>
-                            <th className="px-2 py-2.5 w-24 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 font-mono">
-                              Unc Master (u₂)
+                            <th className="px-0.5 py-2 w-14 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Res (u₁)</th>
+                            <th className="px-0.5 py-2 w-14 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 font-mono">
+                              M.Unc (u₂)
                             </th>
-                            <th className="px-2 py-2.5 w-24 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 font-mono">
+                            <th className="px-0.5 py-2 w-14 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 font-mono">
                               Drift (u₄)
                             </th>
                             {identityData.uncMethod === "timbangan" && (
@@ -5902,10 +5905,10 @@ export function WorksheetEditor() {
                             )}
                           </>
                         )}
-                        <th className="px-2 py-2 text-right w-24">Nilai Terukur</th>
-                        <th className="px-2 py-2 w-20 text-center">Penyimpangan</th>
-                        <th className="px-2 py-2 w-20 text-center">MPE / Tol.</th>
-                        <th className="px-2 py-2 w-24 text-center">
+                        <th className="px-2 py-2 text-center w-20">Nilai Terukur</th>
+                        <th className="px-2 py-2 w-18 text-center">Penyimpangan</th>
+                        <th className="px-2 py-2 w-16 text-center">MPE / Tol.</th>
+                        <th className="px-2 py-2 w-20 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <span>U95 (k=2)</span>
                             <button
@@ -5920,15 +5923,15 @@ export function WorksheetEditor() {
                         </th>
                         {editMetrologyMode && (
                           <>
-                            <th className="px-2 py-2 w-20 text-center text-indigo-600 font-bold">
+                            <th className="px-2 py-2 w-18 text-center text-indigo-600 font-bold">
                               CMC Lab
                             </th>
-                            <th className="px-2 py-2 w-20 text-center text-indigo-600 font-bold">
+                            <th className="px-2 py-2 w-18 text-center text-indigo-600 font-bold">
                               TUR/TAR
                             </th>
                           </>
                         )}
-                        <th className="px-4 py-3 text-right">Aksi</th>
+                        <th className="px-3 py-2 text-center w-12">Aksi</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white/50 dark:bg-[#070c1d]/40">
@@ -5950,7 +5953,7 @@ export function WorksheetEditor() {
                           >
 
                             {/* parameterName: always inline-editable – double-click/focus to rename */}
-                            <td className="px-2 py-1.5 border-r border-b border-slate-200/40 dark:border-slate-850/45 bg-slate-50/[0.05] dark:bg-slate-900/[0.02] group/pname">
+                            <td className="px-2 py-1 w-[130px] min-w-[130px] max-w-[130px] border-r border-b border-slate-200/40 dark:border-slate-850/45 bg-slate-50/[0.05] dark:bg-slate-900/[0.02] group/pname">
                               <input
                                 type="text"
                                 id={`input-parameterName-${idx}`}
@@ -5965,137 +5968,132 @@ export function WorksheetEditor() {
                                   autoFillFromCalibrator(newM, idx, newM[idx].point, e.target.value);
                                   setMeasurements(newM);
                                 }}
-                                className="w-full bg-transparent border border-transparent hover:border-slate-300 dark:hover:border-slate-700 focus:border-[#b38728] dark:focus:border-[#b38728] focus:bg-white dark:focus:bg-[#040816] rounded-md px-2 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none transition-all placeholder:text-slate-400 font-sans cursor-pointer focus:cursor-text"
+                                className="w-full !bg-transparent focus:!bg-white dark:focus:!bg-[#040816] !border-transparent hover:!border-slate-200 focus:!border-[#b38728] dark:focus:!border-[#b38728] !rounded-lg !px-2 !py-0.5 !text-xs !font-semibold !text-slate-800 dark:!text-slate-200 !outline-none !transition-all placeholder:text-slate-400 !font-sans !text-left !shadow-none cursor-pointer focus:cursor-text"
                               />
                             </td>
 
-                            {editMetrologyMode ? (
-                              <td className="px-2 py-1.5 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
-                                <div className="flex items-center gap-1 justify-center">
-                                  <input
-                                    type="number"
-                                    id={`input-point-${idx}`}
-                                    aria-label={`Titik Ukur Baris ${idx + 1}`}
-                                    onKeyDown={(e) => handleTableKeyDown(e, idx, 'point')}
-                                    step="any"
-                                    value={m.point}
-                                    title={`Titik Ukur Baris ${idx + 1}`}
-                                    placeholder="Titik"
-                                    onChange={(e) => {
-                                      const newM = [...measurements];
-                                      const pt = Number(e.target.value);
-                                      newM[idx].point = pt;
-                                      autoFillFromCalibrator(newM, idx, pt, newM[idx].parameterName);
-                                      setMeasurements(newM);
-                                    }}
-                                    className="w-20 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-2 py-1 text-xs font-bold text-slate-900 dark:text-slate-100 outline-none transition-all font-mono text-center"
-                                  />
-                                  <input
-                                    type="text"
-                                    id={`input-unit-${idx}`}
-                                    aria-label={`Satuan Baris ${idx + 1}`}
-                                    onKeyDown={(e) => handleTableKeyDown(e, idx, 'unit')}
-                                    value={m.unit ? (m.unit.toLowerCase() === 'mmhg' ? 'mmHg' : m.unit) : ""}
-                                    placeholder="Unit"
-                                    title={`Satuan Baris ${idx + 1}`}
-                                    onChange={(e) => {
-                                      const newM = [...measurements];
-                                      newM[idx].unit = e.target.value;
-                                      setMeasurements(newM);
-                                    }}
-                                    className="w-14 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-2 py-1 text-xs text-slate-650 dark:text-[#b38728]/90 font-black outline-none transition-all font-mono text-center"
-                                  />
-                                </div>
-                              </td>
-                            ) : (
-                              <td className="px-3 py-2 border-r border-b border-slate-200/40 dark:border-slate-850/45 bg-slate-50/[0.08] dark:bg-slate-900/[0.02] text-center">
-                                <div className="inline-flex items-center gap-1.5 bg-slate-100/50 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/50 px-2.5 py-1 rounded-xl shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]">
-                                  <span className="text-slate-900 dark:text-slate-100 font-mono font-black text-xs">{m.point}</span>
-                                  <span className="text-[#b38728] dark:text-[#b38728] font-bold text-[9.5px] uppercase tracking-wider">{m.unit ? (m.unit.toLowerCase() === 'mmhg' ? 'mmHg' : m.unit) : "—"}</span>
-                                </div>
-                              </td>
-                            )}
+                            <td className="px-1 py-1 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
+                              <div className="flex items-center gap-1 justify-center">
+                                <input
+                                  type="text"
+                                  inputMode="decimal"
+                                  id={`input-point-${idx}`}
+                                  aria-label={`Titik Ukur Baris ${idx + 1}`}
+                                  onKeyDown={(e) => handleTableKeyDown(e, idx, 'point')}
+                                  value={m.point !== undefined ? m.point : ""}
+                                  title={`Titik Ukur Baris ${idx + 1}`}
+                                  placeholder="Titik"
+                                  onChange={(e) => {
+                                    const newM = [...measurements];
+                                    const rawVal = e.target.value;
+                                    newM[idx].point = rawVal;
+                                    const pt = Number(rawVal);
+                                    autoFillFromCalibrator(newM, idx, isNaN(pt) ? 0 : pt, newM[idx].parameterName);
+                                    setMeasurements(newM);
+                                  }}
+                                  className="w-14 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-1 py-0.5 text-xs font-bold text-slate-900 dark:text-slate-100 outline-none transition-all font-mono text-center"
+                                />
+                                <input
+                                  type="text"
+                                  id={`input-unit-${idx}`}
+                                  aria-label={`Satuan Baris ${idx + 1}`}
+                                  onKeyDown={(e) => handleTableKeyDown(e, idx, 'unit')}
+                                  value={m.unit ? (m.unit.toLowerCase() === 'mmhg' ? 'mmHg' : m.unit) : ""}
+                                  placeholder="Unit"
+                                  title={`Satuan Baris ${idx + 1}`}
+                                  onChange={(e) => {
+                                    const newM = [...measurements];
+                                    newM[idx].unit = e.target.value;
+                                    setMeasurements(newM);
+                                  }}
+                                  className="w-10 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs text-slate-650 dark:text-[#b38728]/90 font-black outline-none transition-all font-mono text-center"
+                                />
+                              </div>
+                            </td>
 
                             {editMetrologyMode && (
-                              <td className="px-2 py-1.5 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
+                              <td className="px-0.5 py-1 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
                                 <input
-                                  type="number"
+                                  type="text"
+                                  inputMode="decimal"
                                   id={`input-resolution-${idx}`}
                                   aria-label={`Resolusi Baris ${idx + 1}`}
                                   onKeyDown={(e) => handleTableKeyDown(e, idx, 'resolution')}
-                                  step="0.001"
-                                  value={m.resolution || 0.01}
+                                  value={m.resolution !== undefined ? m.resolution : 0.01}
                                   title={`Resolusi Baris ${idx + 1}`}
                                   placeholder="Resolusi"
                                   onChange={(e) => {
                                     const newM = [...measurements];
-                                    const res = Number(e.target.value);
-                                    newM[idx].resolution = res;
+                                    const rawVal = e.target.value;
+                                    newM[idx].resolution = rawVal;
+                                    const res = Number(rawVal) || 0;
                                     newM[idx].uncertainty = calculateUncertainty(
                                       res,
-                                      newM[idx].masterUnc || 0.001,
-                                      newM[idx].drift || 0,
+                                      Number(newM[idx].masterUnc) || 0.001,
+                                      Number(newM[idx].drift) || 0,
                                       newM[idx],
                                     );
                                     setMeasurements(newM);
                                   }}
-                                  className="w-18 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-1.5 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none transition-all font-mono text-center"
+                                  className="w-12 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs font-semibold text-slate-800 dark:text-slate-250 outline-none transition-all font-mono text-center"
                                 />
                               </td>
                             )}
 
                             {editMetrologyMode && (
-                              <td className="px-2 py-1.5 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
+                              <td className="px-0.5 py-1 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
                                 <input
-                                  type="number"
+                                  type="text"
+                                  inputMode="decimal"
                                   id={`input-masterUnc-${idx}`}
                                   aria-label={`Uncertainty Master Baris ${idx + 1}`}
                                   onKeyDown={(e) => handleTableKeyDown(e, idx, 'masterUnc')}
-                                  step="0.0001"
-                                  value={m.masterUnc || 0.001}
+                                  value={m.masterUnc !== undefined ? m.masterUnc : 0.001}
                                   title={`Master Uncertainty Baris ${idx + 1}`}
                                   placeholder="M.Unc"
                                   onChange={(e) => {
                                     const newM = [...measurements];
-                                    const mUnc = Number(e.target.value);
-                                    newM[idx].masterUnc = mUnc;
+                                    const rawVal = e.target.value;
+                                    newM[idx].masterUnc = rawVal;
+                                    const mUnc = Number(rawVal) || 0;
                                     newM[idx].uncertainty = calculateUncertainty(
-                                      newM[idx].resolution || 0.01,
+                                      Number(newM[idx].resolution) || 0.01,
                                       mUnc,
-                                      newM[idx].drift || 0,
+                                      Number(newM[idx].drift) || 0,
                                       newM[idx],
                                     );
                                     setMeasurements(newM);
                                   }}
-                                  className="w-18 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-1.5 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none transition-all font-mono text-center"
+                                  className="w-12 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs font-semibold text-slate-800 dark:text-slate-250 outline-none transition-all font-mono text-center"
                                 />
                               </td>
                             )}
 
                             {editMetrologyMode && (
-                              <td className="px-2 py-1.5 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
+                              <td className="px-0.5 py-1 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
                                 <input
-                                  type="number"
+                                  type="text"
+                                  inputMode="decimal"
                                   id={`input-drift-${idx}`}
                                   aria-label={`Drift Baris ${idx + 1}`}
                                   onKeyDown={(e) => handleTableKeyDown(e, idx, 'drift')}
-                                  step="0.0001"
-                                  value={m.drift || 0}
+                                  value={m.drift !== undefined ? m.drift : 0}
                                   title={`Drift Baris ${idx + 1}`}
                                   placeholder="Drift"
                                   onChange={(e) => {
                                     const newM = [...measurements];
-                                    const drift = Number(e.target.value);
-                                    newM[idx].drift = drift;
+                                    const rawVal = e.target.value;
+                                    newM[idx].drift = rawVal;
+                                    const drift = Number(rawVal) || 0;
                                     newM[idx].uncertainty = calculateUncertainty(
-                                      newM[idx].resolution || 0.01,
-                                      newM[idx].masterUnc || 0.001,
+                                      Number(newM[idx].resolution) || 0.01,
+                                      Number(newM[idx].masterUnc) || 0.001,
                                       drift,
                                       newM[idx],
                                     );
                                     setMeasurements(newM);
                                   }}
-                                  className="w-18 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-1.5 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none transition-all font-mono text-center"
+                                  className="w-12 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs font-semibold text-slate-800 dark:text-slate-250 outline-none transition-all font-mono text-center"
                                 />
                               </td>
                             )}
@@ -7212,26 +7210,28 @@ export function WorksheetEditor() {
                             "bg-white/40 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/55"
                           )}>
                             <input
-                              type="number"
+                              type="text"
+                              inputMode="decimal"
                               id={`input-actual-${idx}`}
                               onKeyDown={(e) => handleTableKeyDown(e, idx, 'actual')}
-                              value={m.actual}
+                              value={m.actual !== undefined ? m.actual : ""}
                               onChange={(e) => {
                                 const newM = [...measurements];
-                                const act = Number(e.target.value);
-                                newM[idx].actual = act;
-                                newM[idx].deviation =
-                                  act - (newM[idx].point || 0);
+                                const rawVal = e.target.value;
+                                newM[idx].actual = rawVal;
+                                const actNum = Number(rawVal);
+                                const ptNum = Number(newM[idx].point) || 0;
+                                newM[idx].deviation = isNaN(actNum) ? 0 : actNum - ptNum;
                                 newM[idx].uncertainty = calculateUncertainty(
-                                  newM[idx].resolution || 0.01,
-                                  newM[idx].masterUnc || 0.001,
-                                  newM[idx].drift || 0,
+                                  Number(newM[idx].resolution) || 0.01,
+                                  Number(newM[idx].masterUnc) || 0.001,
+                                  Number(newM[idx].drift) || 0,
                                   newM[idx],
                                 );
                                 setMeasurements(newM);
                               }}
                               className={cn(
-                                "border px-2 py-1 text-xs w-20 rounded-md text-right font-bold outline-none focus:ring-1 transition-all duration-300 font-mono",
+                                "border px-1 py-0.5 text-xs w-16 rounded-md text-center font-bold outline-none focus:ring-1 transition-all duration-300 font-mono",
                                 isOut
                                   ? "text-red-700 bg-red-50/50 border-red-300 focus:border-red-500 focus:ring-red-500/15 dark:text-red-400 dark:bg-red-950/30 dark:border-red-900/50 dark:focus:border-red-500/50 dark:focus:ring-red-500/10"
                                   : isValid
@@ -7267,38 +7267,31 @@ export function WorksheetEditor() {
                             isValid ? "bg-emerald-50/50 border-emerald-250/50 dark:bg-emerald-950/15 dark:border-emerald-900/40" :
                             "bg-white/40 dark:bg-slate-900/30 border-slate-200/60 dark:border-slate-800/55"
                           )}>
-                            {editMetrologyMode ? (
-                              <div className="flex items-center justify-center gap-1.5">
-                                <span className="text-xs text-slate-400 dark:text-slate-500 font-bold font-mono">±</span>
-                                <input
-                                  type="number"
-                                  id={`input-tolerance-${idx}`}
-                                  onKeyDown={(e) => handleTableKeyDown(e, idx, 'tolerance')}
-                                  step="any"
-                                  value={m.tolerance ?? ""}
-                                  placeholder="--"
-                                  onChange={(e) => {
-                                    const newM = [...measurements];
-                                    const val = e.target.value === "" ? undefined : Number(e.target.value);
-                                    newM[idx].tolerance = val;
-                                    setMeasurements(newM);
-                                  }}
-                                  className={cn(
-                                    "w-16 bg-transparent text-slate-900 dark:text-slate-100 font-bold font-mono text-center border rounded-md px-1.5 py-1 text-xs outline-none transition-all placeholder:text-slate-400",
-                                    isOut
-                                      ? "border-red-300 focus:border-red-500 hover:bg-rose-50/30 dark:border-rose-900/50 dark:focus:border-red-500"
-                                      : isValid
-                                      ? "border-emerald-300 focus:border-emerald-500 hover:bg-emerald-50/30 dark:border-emerald-900/45 dark:focus:border-emerald-500"
-                                      : "border-slate-200 hover:border-slate-350 dark:border-slate-800/80 dark:hover:border-slate-700 focus:border-[#b38728] hover:bg-slate-50 focus:bg-white"
-                                  )}
-                                />
-                              </div>
-                            ) : (
-                              <div className="flex items-center justify-center gap-1 font-mono text-center">
-                                <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">±</span>
-                                <span className="text-xs font-black text-slate-800 dark:text-slate-200">{m.tolerance ?? "—"}</span>
-                              </div>
-                            )}
+                            <div className="flex items-center justify-center gap-1.5">
+                              <span className="text-xs text-slate-400 dark:text-slate-500 font-bold font-mono">±</span>
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                id={`input-tolerance-${idx}`}
+                                onKeyDown={(e) => handleTableKeyDown(e, idx, 'tolerance')}
+                                value={m.tolerance ?? ""}
+                                placeholder="--"
+                                onChange={(e) => {
+                                  const newM = [...measurements];
+                                  const rawVal = e.target.value;
+                                  newM[idx].tolerance = rawVal === "" ? undefined : rawVal;
+                                  setMeasurements(newM);
+                                }}
+                                className={cn(
+                                  "w-12 bg-transparent text-slate-900 dark:text-slate-100 font-bold font-mono text-center border rounded-md px-1 py-0.5 text-xs outline-none transition-all placeholder:text-slate-400",
+                                  isOut
+                                    ? "border-red-300 focus:border-red-500 hover:bg-rose-50/30 dark:border-rose-900/50 dark:focus:border-red-500"
+                                    : isValid
+                                    ? "border-emerald-300 focus:border-emerald-500 hover:bg-emerald-50/30 dark:border-emerald-900/45 dark:focus:border-emerald-500"
+                                    : "border-slate-200 hover:border-slate-350 dark:border-slate-800/80 dark:hover:border-slate-700 focus:border-[#b38728] hover:bg-slate-50 focus:bg-white"
+                                )}
+                              />
+                            </div>
                           </td>
 
                           <td className="px-2 py-1.5 bg-white/40 dark:bg-slate-900/30 border-r border-b border-slate-200/60 dark:border-slate-800/55 font-mono text-center">

@@ -44,11 +44,49 @@ try {
 } catch (error) {
   console.error("Firebase Admin initialization failed:", error);
 }
+function formatGeminiError(error) {
+  const errMsg = String(error?.message || error || "");
+  console.debug("Raw Gemini API error:", errMsg);
+  if (errMsg.includes("429") || errMsg.includes("Quota exceeded") || errMsg.includes("RESOURCE_EXHAUSTED") || errMsg.includes("quota")) {
+    return "\u2715 Batas Kuota Harian Gemini AI Gratis (20 request/hari) Telah Terlampaui. Silakan gunakan API Key Google AI Studio berbayar (Pay-As-You-Go) atau coba lagi setelah kuota direset oleh Google.";
+  }
+  if (errMsg.includes("503") || errMsg.includes("overloaded") || errMsg.includes("busy")) {
+    return "\u2715 Server Gemini AI sedang sibuk atau mengalami kelebihan beban (overloaded). Silakan coba lagi dalam beberapa detik.";
+  }
+  if (errMsg.includes("API_KEY_INVALID") || errMsg.includes("key is invalid") || errMsg.includes("Key not found")) {
+    return "\u2715 API Key Gemini tidak valid. Silakan periksa kembali konfigurasi GEMINI_API_KEY di file .env Anda.";
+  }
+  return error.message || "Terjadi kesalahan tidak dikenal saat memproses kecerdasan buatan.";
+}
 async function startServer() {
   const app = (0, import_express.default)();
-  const PORT = 3e3;
+  let PORT = Number(process.env.PORT) || 3e3;
   app.use(import_express.default.json({ limit: "50mb" }));
   app.use(import_express.default.urlencoded({ limit: "50mb", extended: true }));
+  function sanitizeInput(data) {
+    if (typeof data === "string") {
+      return data.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "").replace(/on\w+="[^"]*"/gi, "").replace(/on\w+='[^']*'/gi, "").replace(/javascript:[^"']*/gi, "");
+    }
+    if (Array.isArray(data)) {
+      return data.map((item) => sanitizeInput(item));
+    }
+    if (typeof data === "object" && data !== null) {
+      const clean = {};
+      for (const key2 in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key2)) {
+          clean[key2] = sanitizeInput(data[key2]);
+        }
+      }
+      return clean;
+    }
+    return data;
+  }
+  app.use((req, res, next) => {
+    if (req.body) req.body = sanitizeInput(req.body);
+    if (req.query) req.query = sanitizeInput(req.query);
+    if (req.params) req.params = sanitizeInput(req.params);
+    next();
+  });
   app.use((req, res, next) => {
     console.log(`${(/* @__PURE__ */ new Date()).toISOString()} - ${req.method} ${req.url}`);
     next();
@@ -152,7 +190,7 @@ async function startServer() {
       res.json(JSON.parse(response.text));
     } catch (error) {
       console.error("Recommend Method Error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: formatGeminiError(error) });
     }
   });
   app.post("/api/metrology-assistant", async (req, res) => {
@@ -186,7 +224,7 @@ async function startServer() {
       res.json({ result: response.text });
     } catch (error) {
       console.error("Assistant Error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: formatGeminiError(error) });
     }
   });
   app.post("/api/analyze-worksheet", async (req, res) => {
@@ -227,7 +265,7 @@ async function startServer() {
       res.json(JSON.parse(response.text));
     } catch (error) {
       console.error("Analyze Worksheet Error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: formatGeminiError(error) });
     }
   });
   app.post("/api/metrology-insights", async (req, res) => {
@@ -359,7 +397,7 @@ async function startServer() {
       res.json(JSON.parse(response.text));
     } catch (error) {
       console.error("Metrology Insights API Error:", error);
-      res.status(500).json({ error: error.message || "Gagal memproses analisis metrologi." });
+      res.status(500).json({ error: formatGeminiError(error) });
     }
   });
   app.post("/api/extract-certificate", async (req, res) => {
@@ -480,7 +518,7 @@ async function startServer() {
       res.json(JSON.parse(response.text));
     } catch (error) {
       console.error("Extract Certificate Error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: formatGeminiError(error) });
     }
   });
   app.post("/api/generate-certificate-narrative", async (req, res) => {
@@ -500,7 +538,188 @@ async function startServer() {
       res.json({ result: response.text });
     } catch (error) {
       console.error("Generate Narrative Error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: formatGeminiError(error) });
+    }
+  });
+  app.post("/api/admin/seed-demo", async (req, res) => {
+    try {
+      if (!db_admin) {
+        return res.status(500).json({ error: "Database Firebase Admin tidak terinisialisasi." });
+      }
+      const force = req.query.force === "true";
+      const usersRef = db_admin.collection("users");
+      const usersSnap = await usersRef.limit(1).get();
+      if (!usersSnap.empty && !force) {
+        return res.json({
+          success: true,
+          message: "Database sudah terisi data sebelumnya. Gunakan ?force=true untuk memaksa seeding ulang."
+        });
+      }
+      console.log("Seeding demo database for PT Spektrum Kreasi Pratama...");
+      const users = [
+        {
+          uid: "user_admin_demo",
+          email: "abdurrahman.muh23@gmail.com",
+          password: "admin123",
+          displayName: "ABDURRAHMAN (ADMIN)",
+          role: "admin",
+          createdAt: import_firestore.FieldValue.serverTimestamp(),
+          updatedAt: import_firestore.FieldValue.serverTimestamp()
+        },
+        {
+          uid: "user_tech_demo",
+          email: "teguh@spektrumkreasi.co.id",
+          password: "tech123",
+          displayName: "TEGUH PRATAMA (TEKNISI)",
+          role: "technician",
+          createdAt: import_firestore.FieldValue.serverTimestamp(),
+          updatedAt: import_firestore.FieldValue.serverTimestamp()
+        },
+        {
+          uid: "user_client_demo",
+          email: "hospital_pondok_indah@client.com",
+          password: "client123",
+          displayName: "RS PONDOK INDAH (CLIENT)",
+          role: "client",
+          createdAt: import_firestore.FieldValue.serverTimestamp(),
+          updatedAt: import_firestore.FieldValue.serverTimestamp()
+        }
+      ];
+      for (const u of users) {
+        await usersRef.doc(u.uid).set(u);
+      }
+      const settingsRef = db_admin.collection("settings");
+      await settingsRef.doc("landing_page").set({
+        heroTitle: "Sistem Informasi & Kalibrasi Alat Kesehatan Premium",
+        heroSubtitle: "PT Spektrum Kreasi Pratama - Menjamin Akurasi, Keselamatan, dan Kepatuhan Regulasi Medis di Seluruh Indonesia dengan KAN LK-291-IDN & LP-1849-IDN.",
+        supportWhatsapp: "6281290008888",
+        companyAddress: "Graha Spektrum, Kav. 45, Jl. Tebet Barat Raya, Jakarta Selatan, DKI Jakarta 12810",
+        companyEmail: "info@spektrumkreasi.co.id",
+        accreditationKan: "LK-291-IDN & LP-1849-IDN",
+        updatedAt: import_firestore.FieldValue.serverTimestamp()
+      });
+      const calibratorsRef = db_admin.collection("calibrators");
+      const calibrators = [
+        {
+          id: "cal_1",
+          name: "Fluke ESA612 Electrical Safety Analyzer",
+          brand: "Fluke Biomedical",
+          model: "ESA612",
+          serialNumber: "ESA-90812",
+          lastCalibration: "2025-10-15",
+          nextCalibration: "2026-10-15",
+          status: "Aktif",
+          createdAt: import_firestore.FieldValue.serverTimestamp()
+        },
+        {
+          id: "cal_2",
+          name: "Fluke IDA-1S Infusion Device Analyzer",
+          brand: "Fluke Biomedical",
+          model: "IDA-1S",
+          serialNumber: "IDA-44321",
+          lastCalibration: "2025-08-20",
+          nextCalibration: "2026-08-20",
+          status: "Aktif",
+          createdAt: import_firestore.FieldValue.serverTimestamp()
+        },
+        {
+          id: "cal_3",
+          name: "Fluke ProSim 8 Vital Signs Simulator",
+          brand: "Fluke Biomedical",
+          model: "ProSim 8",
+          serialNumber: "PS8-77652",
+          lastCalibration: "2025-12-05",
+          nextCalibration: "2026-12-05",
+          status: "Aktif",
+          createdAt: import_firestore.FieldValue.serverTimestamp()
+        }
+      ];
+      for (const c of calibrators) {
+        await calibratorsRef.doc(c.id).set(c);
+      }
+      const woRef = db_admin.collection("work_orders");
+      const workOrders = [
+        {
+          id: "wo_1",
+          customerName: "RS Pondok Indah",
+          deviceName: "Infusion Pump",
+          brand: "Terumo",
+          model: "TE-331",
+          serialNumber: "TP-99281",
+          requestDate: "2026-05-28",
+          status: "Dalam Proses",
+          priority: "Tinggi",
+          description: "Aliran cairan kadang tersendat",
+          clientEmail: "hospital_pondok_indah@client.com",
+          createdAt: import_firestore.FieldValue.serverTimestamp()
+        },
+        {
+          id: "wo_2",
+          customerName: "RS Hermina Kemayoran",
+          deviceName: "Defibrillator",
+          brand: "Zoll",
+          model: "M Series",
+          serialNumber: "ZL-88716",
+          requestDate: "2026-05-29",
+          status: "Menunggu",
+          priority: "Sangat Tinggi",
+          description: "Pemeriksaan rutin tahunan",
+          clientEmail: "hermina.kemayoran@client.com",
+          createdAt: import_firestore.FieldValue.serverTimestamp()
+        },
+        {
+          id: "wo_3",
+          customerName: "Klinik Pratama Sehat",
+          deviceName: "Tensimeter Digital",
+          brand: "Omron",
+          model: "HEM-7156",
+          serialNumber: "OM-44312",
+          requestDate: "2026-05-25",
+          status: "Selesai",
+          priority: "Rendah",
+          description: "Kalibrasi ulang akurasi tekanan",
+          clientEmail: "pratama.sehat@client.com",
+          createdAt: import_firestore.FieldValue.serverTimestamp()
+        }
+      ];
+      for (const wo of workOrders) {
+        await woRef.doc(wo.id).set(wo);
+      }
+      const wsRef = db_admin.collection("worksheets");
+      await wsRef.doc("ws_1").set({
+        id: "ws_1",
+        deviceName: "Infusion Pump",
+        brand: "Terumo",
+        model: "TE-331",
+        serialNumber: "TP-99281",
+        methodName: "Instruksi Kerja Kalibrasi Infusion Pump Kemenkes",
+        technicianName: "TEGUH PRATAMA (TEKNISI)",
+        status: "Selesai",
+        isPass: true,
+        createdAt: import_firestore.FieldValue.serverTimestamp(),
+        measurements: [
+          { parameterName: "Laju Aliran (Flow Rate)", point: 100, actual: 99.8, unit: "ml/h", deviation: -0.2, tolerance: 5, uncertainty: 0.15 },
+          { parameterName: "Laju Aliran (Flow Rate)", point: 50, actual: 49.9, unit: "ml/h", deviation: -0.1, tolerance: 2.5, uncertainty: 0.08 }
+        ],
+        correctionValue: 0.1,
+        errorMargin: 0.2,
+        uncertaintyU95: 0.15
+      });
+      const logsRef = db_admin.collection("audit_logs");
+      await logsRef.doc("log_1").set({
+        id: "log_1",
+        action: "Inisialisasi Sistem",
+        details: "Inisialisasi data contoh premium full-stack PT Spektrum Kreasi Pratama berhasil dilakukan oleh seeder.",
+        timestamp: import_firestore.FieldValue.serverTimestamp(),
+        userEmail: "system@spektrumkreasi.co.id"
+      });
+      res.json({
+        success: true,
+        message: "Inisialisasi database contoh berhasil dilakukan secara premium & terstruktur."
+      });
+    } catch (error) {
+      console.error("Seed Error:", error);
+      res.status(500).json({ error: "Gagal melakukan seeding database: " + error.message });
     }
   });
   app.post("/api/auth/login", async (req, res) => {
@@ -677,7 +896,7 @@ async function startServer() {
       res.json({ result: response.text });
     } catch (error) {
       console.error("Gemini API Error:", error);
-      res.status(500).json({ error: error.message || "Terjadi kesalahan saat generate IK." });
+      res.status(500).json({ error: formatGeminiError(error) });
     }
   });
   app.post("/api/parse-excel-import", async (req, res) => {
@@ -823,7 +1042,7 @@ async function startServer() {
       res.json(JSON.parse(response.text));
     } catch (error) {
       console.error("Excel Import Parse Error:", error);
-      res.status(500).json({ error: error.message || "Gagal memparsing data Excel dengan AI." });
+      res.status(500).json({ error: formatGeminiError(error) });
     }
   });
   if (process.env.NODE_ENV !== "production") {
@@ -842,9 +1061,20 @@ async function startServer() {
       res.sendFile(indexPath);
     });
   }
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
-  });
+  function listenOnPort(port) {
+    const server = app.listen(port, "0.0.0.0", () => {
+      console.log(`Server running on http://0.0.0.0:${port}`);
+    });
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        console.warn(`Port ${port} is in use. Retrying on port ${port + 1}...`);
+        listenOnPort(port + 1);
+      } else {
+        console.error("Server startup error:", err);
+      }
+    });
+  }
+  listenOnPort(PORT);
 }
 startServer().catch((err) => {
   console.error("Failed to start server:", err);

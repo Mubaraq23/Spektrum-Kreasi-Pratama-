@@ -780,13 +780,13 @@ export function Dashboard() {
       </div>
 
       {/* Neo-Metrology Spectrum Interactive Playable Panel */}
-      <div className="col-span-12 bg-white dark:bg-[#10192d] p-6 rounded-2xl border border-sky-500/15 dark:border-cyan-500/25 shadow-xl relative overflow-hidden">
+      <div className="col-span-12 immersive-card p-6 relative overflow-hidden">
         {/* Subtle neon glow backlights */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/5 rounded-full filter blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500 /5 rounded-full filter blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full filter blur-[120px] pointer-events-none" />
 
         {/* Panel Header */}
-        <div className="border-b border-sky-500/10 dark:border-cyan-500/10 pb-5 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="border-b border-slate-200/40 dark:border-cyan-500/10 pb-5 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="flex h-2 w-2 relative">
@@ -794,7 +794,7 @@ export function Dashboard() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
               </span>
               <span className="text-[10px] uppercase font-mono tracking-[0.3em] text-[#06B6D4] font-bold">SPEKTRUM MATRIX ARRAY PROBE V-90</span>
-              <span className="text-[9px] uppercase font-mono tracking-widest text-[#D4AF37] border border-[#D4AF37]/35 px-1.5 py-0.5 rounded">ISO 17025 VERIFIED</span>
+              <span className="text-[9px] uppercase font-mono tracking-widest text-[#D4AF37] border border-[#D4AF37]/25 px-1.5 py-0.5 rounded">ISO 17025 VERIFIED</span>
             </div>
             <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 font-sans">
               Interactive Spektrum Metrology Signal Dashboard
@@ -802,7 +802,7 @@ export function Dashboard() {
           </div>
 
           {/* Smart Link Connectivity Visual */}
-          <div className="flex items-center gap-2 bg-slate-50 dark:bg-[#070d19]/80 px-4 py-2 rounded-xl border border-sky-500/10 dark:border-cyan-500/20 shadow-inner">
+          <div className="flex items-center gap-2 bg-slate-50/50 dark:bg-[#070d19]/60 px-4 py-2 rounded-xl border border-slate-200/30 dark:border-cyan-500/15 shadow-inner">
             <div className="flex items-center gap-1.5 text-xs font-mono font-bold">
               <Zap className="w-3.5 h-3.5 text-[#06B6D4] animate-bounce" />
               <span className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-cyan-400 font-mono">SMART-LINK</span>
@@ -818,8 +818,8 @@ export function Dashboard() {
         {/* Bento Asymmetric Content Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
           {/* Left Column: Calibration Metrology Parameters Form (40%) */}
-          <div className="lg:col-span-5 space-y-5 bg-slate-100/10 dark:bg-[#070d19]/60 p-5 rounded-xl border border-sky-500/5 dark:border-cyan-500/15">
-            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-sky-500/5 dark:border-cyan-500/10">
+          <div className="lg:col-span-5 space-y-5 bg-slate-50/30 dark:bg-[#070d19]/40 p-5 rounded-[16px] border border-slate-200/20 dark:border-cyan-500/10">
+            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200/30 dark:border-cyan-500/10">
               <Terminal className="w-4 h-4 text-[#06B6D4]" />
               <h3 className="text-xs uppercase font-mono tracking-widest text-slate-400 dark:text-[#06B6D4] font-black">PROBE PARAMETERS</h3>
             </div>
@@ -1277,7 +1277,7 @@ export function Dashboard() {
       <div className="grid grid-cols-12 gap-6">
         
         {/* Graph 1: Calibration Activity (Real-time flow) */}
-        <div className="col-span-12 lg:col-span-8 bg-white dark:bg-[#10192d] p-6 rounded-[2.5rem] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg flex flex-col justify-between overflow-hidden relative group">
+        <div className="col-span-12 lg:col-span-8 immersive-card p-6 flex flex-col justify-between overflow-hidden relative group">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4 relative z-10">
             <div>
               <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Aktivitas Kalibrasi Harian</h3>
@@ -1345,7 +1345,7 @@ export function Dashboard() {
         </div>
 
         {/* Graph 2: Frequently Calibrated Equipment & Stats */}
-        <div className="col-span-12 lg:col-span-4 bg-white dark:bg-[#10192d] p-6 rounded-[2.5rem] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg flex flex-col justify-between">
+        <div className="col-span-12 lg:col-span-4 immersive-card p-6 flex flex-col justify-between">
           <div>
             <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Alat Terbanyak Dikalibrasi</h3>
             <p className="text-[8px] text-slate-400 dark:text-slate-500 uppercase tracking-[0.35em] font-black mt-2 font-mono">Daftar Paling Sering Diproses</p>
@@ -1395,7 +1395,7 @@ export function Dashboard() {
         </div>
 
         {/* Graph 3: Tech performance breakdown */}
-        <div className="col-span-12 lg:col-span-6 bg-[#ffffff] dark:bg-[#10192d] p-6 rounded-[2.5rem] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg">
+        <div className="col-span-12 lg:col-span-6 immersive-card p-6">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <div>
               <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Produktifitas & Kinerja Teknisi</h3>
@@ -1429,7 +1429,7 @@ export function Dashboard() {
         </div>
 
         {/* Graph 4: Calibration Pass/Fail Ratio over time */}
-        <div className="col-span-12 lg:col-span-6 bg-[#ffffff] dark:bg-[#10192d] p-6 rounded-[2.5rem] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg flex flex-col justify-between">
+        <div className="col-span-12 lg:col-span-6 immersive-card p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <div>
               <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Rasio Lolos vs Gagal Kalibrasi</h3>
@@ -1469,7 +1469,7 @@ export function Dashboard() {
         </div>
 
         {/* Technician Active Schedules & Due Date reminders */}
-        <div className="col-span-12 lg:col-span-6 bg-[#ffffff] dark:bg-[#10192d] p-6 rounded-[2.5rem] border border-sky-500/10 dark:border-cyan-500/25 shadow-lg flex flex-col justify-between">
+        <div className="col-span-12 lg:col-span-6 immersive-card p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Jadwal Kalibrasi & Agenda</h3>
@@ -1504,7 +1504,7 @@ export function Dashboard() {
         </div>
 
         {/* Module: AI Metrology Insights (Modul Analisis Deviasi & Tren Drift Historis) */}
-        <div id="ai_metrology_insights_panel" className="col-span-12 bg-white dark:bg-[#10192d] p-8 rounded-[2.5rem] border border-sky-500/10 dark:border-cyan-500/25 shadow-xl relative overflow-hidden flex flex-col justify-between group">
+        <div id="ai_metrology_insights_panel" className="col-span-12 luxury-card p-8 relative overflow-hidden flex flex-col justify-between group">
           {/* Decorative glowing gradient circle background */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 dark:bg-purple-500/10 rounded-full filter blur-[100px] pointer-events-none" />
           
@@ -1751,7 +1751,7 @@ export function Dashboard() {
         </div>
 
         {/* Graph 5: Detailed Metrology Measurement Accuracy & Deviation Trend */}
-        <div className="col-span-12 bg-white dark:bg-[#10192d] p-8 rounded-[2.5rem] border border-sky-500/10 dark:border-cyan-500/25 shadow-xl relative overflow-hidden flex flex-col justify-between group">
+        <div className="col-span-12 luxury-card p-8 relative overflow-hidden flex flex-col justify-between group">
           <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full filter blur-[120px] pointer-events-none" />
           
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100 dark:border-slate-800 relative z-10 select-none">
@@ -2008,9 +2008,9 @@ function StatCard({ label, value, footer, icon: Icon, color, progress, badge, lo
     <Tilt3D intensity={5} className="h-full">
       <div 
         className={cn(
-          "bg-white dark:bg-[#070c1b] border border-slate-200/50 dark:border-slate-800 rounded-[24px] p-6 relative overflow-hidden group transition-all duration-300 h-full",
+          "bg-white dark:bg-[#070c1b] border border-slate-200/40 dark:border-slate-850/60 rounded-[20px] p-6 relative overflow-hidden group transition-all duration-300 h-full",
           borderHover[color] || "hover:border-blue-200",
-          "shadow-lg shadow-slate-100/40 dark:shadow-none hover:shadow-2xl hover:shadow-[#b38728]/10"
+          "shadow-sm shadow-slate-200/20 dark:shadow-none hover:shadow-xl hover:shadow-[#b38728]/5"
         )}
       >
         {/* Background elegant radial glow for that luxurious 'mewah' visual weight */}

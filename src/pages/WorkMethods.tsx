@@ -46,6 +46,16 @@ export function WorkMethods() {
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [showUncBudgetRef, setShowUncBudgetRef] = useState(false);
 
+
+  // Real-time Uncertainty Budget Calculator State (ISO/IEC 17025 conformity)
+  const [calcResolution, setCalcResolution] = useState(0.01);
+  const [calcStdUnc, setCalcStdUnc] = useState(0.005);
+  const [calcStdK, setCalcStdK] = useState(2);
+  const [calcRepeatability, setCalcRepeatability] = useState(0.003);
+  const [calcRepeatN, setCalcRepeatN] = useState(10);
+  const [calcDrift, setCalcDrift] = useState(0.002);
+
+
   // Custom Toast state
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
 
@@ -75,6 +85,7 @@ export function WorkMethods() {
   const [isParamModalOpen, setIsParamModalOpen] = useState(false);
   const [editingParamIdx, setEditingParamIdx] = useState<number | null>(null);
   const [tempParam, setTempParam] = useState<any>(null);
+  const [tempPointsStr, setTempPointsStr] = useState('');
 
   const filteredMethods = methods.filter(m => 
     m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -87,19 +98,28 @@ export function WorkMethods() {
     if (idx !== null) {
       setEditingParamIdx(idx);
       setTempParam({ ...selectedMethod.parameters[idx] });
+      setTempPointsStr(selectedMethod.parameters[idx].points?.join(', ') || '');
     } else {
       setEditingParamIdx(null);
       setTempParam({ name: '', unit: '', points: [], tolerance: 0 });
+      setTempPointsStr('');
     }
     setIsParamModalOpen(true);
   };
 
   const saveParam = () => {
+    const parsedPoints = tempPointsStr
+      .split(',')
+      .map(p => p.trim())
+      .filter(p => p !== '' && !isNaN(Number(p)))
+      .map(Number);
+      
+    const updatedParam = { ...tempParam, points: parsedPoints };
     const newParams = [...(selectedMethod.parameters || [])];
     if (editingParamIdx !== null) {
-      newParams[editingParamIdx] = tempParam;
+      newParams[editingParamIdx] = updatedParam;
     } else {
-      newParams.push(tempParam);
+      newParams.push(updatedParam);
     }
     setSelectedMethod({ ...selectedMethod, parameters: newParams });
     setIsParamModalOpen(false);
@@ -646,10 +666,10 @@ export function WorkMethods() {
                     <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0" />
                     <h4 className="text-[11px] font-black uppercase tracking-widest font-mono">1. Ketidakpastian Baku Gabungan (u<sub>c</sub>)</h4>
                   </div>
-                  <div className="bg-white/80 p-4 border border-blue-200/60 rounded-xl font-mono text-xs font-bold text-slate-800 mb-3 flex items-center justify-center gap-2">
+                  <div className="bg-white/80 dark:bg-slate-900/80 p-4 border border-blue-200/60 dark:border-blue-900/30 rounded-xl font-mono text-xs font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center justify-center gap-2">
                     <span>u<sub>c</sub> = √[ (u₁)² + (u₂)² + (u₃)² + (u₄)² ]</span>
                   </div>
-                  <p className="text-[9px] text-slate-500 font-bold uppercase leading-relaxed font-mono">Prinsip dasar penggabungan kuadratik (root-sum-of-squares) untuk parameter yang tidak saling berkorelasi.</p>
+                  <p className="text-[9px] text-slate-550 dark:text-slate-400 font-bold uppercase leading-relaxed font-mono">Prinsip dasar penggabungan kuadratik (root-sum-of-squares) untuk parameter yang tidak saling berkorelasi.</p>
                 </div>
 
                 {/* Expanded */}
@@ -658,12 +678,197 @@ export function WorkMethods() {
                     <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                     <h4 className="text-[11px] font-black uppercase tracking-widest font-mono">2. Ketidakpastian Diperluas (U<sub>95</sub>)</h4>
                   </div>
-                  <div className="bg-white/80 p-4 border border-emerald-200/60 rounded-xl font-mono text-xs font-bold text-slate-800 mb-3 flex items-center justify-center gap-2">
+                  <div className="bg-white/80 dark:bg-slate-900/80 p-4 border border-emerald-200/60 dark:border-emerald-900/30 rounded-xl font-mono text-xs font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center justify-center gap-2">
                     <span>U<sub>95</sub> = k × u<sub>c</sub>  (k = 2)</span>
                   </div>
-                  <p className="text-[9px] text-slate-500 font-bold uppercase leading-relaxed font-mono">Dilaporkan pada tingkat kepercayaan sekitar 95% dengan faktor cakupan k=2 sesuai standar Komite Akreditasi Nasional (KAN).</p>
+                  <p className="text-[9px] text-slate-550 dark:text-slate-400 font-bold uppercase leading-relaxed font-mono">Dilaporkan pada tingkat kepercayaan sekitar 95% dengan faktor cakupan k=2 sesuai standar Komite Akreditasi Nasional (KAN).</p>
                 </div>
               </div>
+
+              {/* REAL-TIME METROLOGY PLAYGROUND */}
+              {(() => {
+                const u1 = calcResolution / (2 * Math.sqrt(3));
+                const u2 = calcStdUnc / calcStdK;
+                const u3 = calcRepeatability / Math.sqrt(calcRepeatN);
+                const u4 = calcDrift / Math.sqrt(3);
+                const uc = Math.sqrt(u1 * u1 + u2 * u2 + u3 * u3 + u4 * u4);
+                const u95 = uc * 2;
+
+                const sumSq = (u1 * u1) + (u2 * u2) + (u3 * u3) + (u4 * u4) || 1;
+                const u1Pct = ((u1 * u1) / sumSq) * 100;
+                const u2Pct = ((u2 * u2) / sumSq) * 100;
+                const u3Pct = ((u3 * u3) / sumSq) * 100;
+                const u4Pct = ((u4 * u4) / sumSq) * 100;
+
+                return (
+                  <div className="bg-white dark:bg-[#090e1d] border border-slate-200 dark:border-cyan-500/10 rounded-[3rem] p-8 sm:p-10 shadow-xl space-y-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-black text-blue-600 dark:text-cyan-400 uppercase tracking-widest font-mono italic">Playground Metrologi Cerdas</span>
+                        <h4 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none italic">Simulator Uncertainty Budget U95</h4>
+                      </div>
+                      <div className="flex items-center gap-2 bg-emerald-500/5 dark:bg-emerald-950/15 border border-emerald-500/20 px-4 py-2 rounded-xl text-[10px] text-emerald-700 dark:text-emerald-450 font-black uppercase tracking-wider font-mono">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        GUM ISO/IEC 17025 Compliant
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                      {/* Left: Playground Controls */}
+                      <div className="lg:col-span-7 space-y-6">
+                        <h5 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">A. Parameter Masukan (Input Values)</h5>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                          {/* Resolution */}
+                          <div className="space-y-2">
+                            <label htmlFor="calc-resolution" className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">1. Resolusi Alat Uji (UUT)</label>
+                            <input 
+                              id="calc-resolution"
+                              type="number"
+                              step="0.0001"
+                              placeholder="0.01"
+                              title="Resolusi UUT"
+                              value={calcResolution}
+                              onChange={(e) => setCalcResolution(Number(e.target.value))}
+                              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white font-mono"
+                            />
+                          </div>
+
+                          {/* Std Uncertainty */}
+                          <div className="space-y-2">
+                            <label htmlFor="calc-std-unc" className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">2. Ketidakpastian Master (Std)</label>
+                            <div className="grid grid-cols-3 gap-2">
+                              <input 
+                                id="calc-std-unc"
+                                type="number"
+                                step="0.0001"
+                                placeholder="0.005"
+                                title="Ketidakpastian Master"
+                                value={calcStdUnc}
+                                onChange={(e) => setCalcStdUnc(Number(e.target.value))}
+                                className="col-span-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white font-mono"
+                              />
+                              <input 
+                                type="number"
+                                step="0.5"
+                                value={calcStdK}
+                                placeholder="k=2"
+                                title="Faktor Cakupan Standard"
+                                onChange={(e) => setCalcStdK(Number(e.target.value))}
+                                className="bg-slate-55 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center py-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-mono"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Repeatability */}
+                          <div className="space-y-2">
+                            <label htmlFor="calc-repeatability" className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">3. Deviasi Daya Ulang (sₓ)</label>
+                            <div className="grid grid-cols-3 gap-2">
+                              <input 
+                                id="calc-repeatability"
+                                type="number"
+                                step="0.0001"
+                                placeholder="0.003"
+                                title="Daya Ulang"
+                                value={calcRepeatability}
+                                onChange={(e) => setCalcRepeatability(Number(e.target.value))}
+                                className="col-span-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white font-mono"
+                              />
+                              <input 
+                                type="number"
+                                step="1"
+                                value={calcRepeatN}
+                                placeholder="n=10"
+                                title="Jumlah Pengulangan"
+                                onChange={(e) => setCalcRepeatN(Math.max(1, Number(e.target.value)))}
+                                className="bg-slate-55 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center py-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-mono"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Drift */}
+                          <div className="space-y-2">
+                            <label htmlFor="calc-drift" className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">4. Drift Jangka Panjang Master</label>
+                            <input 
+                              id="calc-drift"
+                              type="number"
+                              step="0.0001"
+                              placeholder="0.002"
+                              title="Drift Jangka Panjang"
+                              value={calcDrift}
+                              onChange={(e) => setCalcDrift(Number(e.target.value))}
+                              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 dark:text-white font-mono"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Interactive Contribution Bar Chart */}
+                        <div className="space-y-3 pt-4">
+                          <style dangerouslySetInnerHTML={{ __html: `
+                            .unc-share-u1 { width: ${u1Pct}%; }
+                            .unc-share-u2 { width: ${u2Pct}%; }
+                            .unc-share-u3 { width: ${u3Pct}%; }
+                            .unc-share-u4 { width: ${u4Pct}%; }
+                          ` }} />
+                          <h6 className="text-[10px] font-black text-slate-450 dark:text-slate-550 uppercase tracking-wider font-mono">Persentase Kontribusi Ketidakpastian (Uncertainty Share)</h6>
+                          <div className="h-6 w-full rounded-full overflow-hidden flex bg-slate-100 dark:bg-slate-800">
+                            {u1Pct > 0 && <div className="bg-blue-500 h-full transition-all duration-300 unc-share-u1" title={`Resolusi: ${u1Pct.toFixed(1)}%`} />}
+                            {u2Pct > 0 && <div className="bg-indigo-500 h-full transition-all duration-300 unc-share-u2" title={`Sertifikat Master: ${u2Pct.toFixed(1)}%`} />}
+                            {u3Pct > 0 && <div className="bg-cyan-500 h-full transition-all duration-300 unc-share-u3" title={`Repeatability: ${u3Pct.toFixed(1)}%`} />}
+                            {u4Pct > 0 && <div className="bg-slate-400 h-full transition-all duration-300 unc-share-u4" title={`Drift: ${u4Pct.toFixed(1)}%`} />}
+                          </div>
+                          
+                          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[9px] font-mono font-bold text-slate-500">
+                            <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded bg-blue-500" /><span>Resolusi ({u1Pct.toFixed(1)}%)</span></div>
+                            <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded bg-indigo-500" /><span>Standard ({u2Pct.toFixed(1)}%)</span></div>
+                            <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded bg-cyan-500" /><span>Daya Ulang ({u3Pct.toFixed(1)}%)</span></div>
+                            <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded bg-slate-400" /><span>Drift ({u4Pct.toFixed(1)}%)</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Real-time Output Panel */}
+                      <div className="lg:col-span-5 space-y-6 bg-slate-50 dark:bg-[#070d19] border border-slate-100 dark:border-slate-800 rounded-3xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-36 h-36 bg-blue-600/5 dark:bg-cyan-500/5 blur-[40px] rounded-full" />
+                        <h5 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono relative z-10">B. Anggaran Ketidakpastian Baku (Budgets)</h5>
+                        
+                        <div className="space-y-3 relative z-10">
+                          <div className="flex justify-between items-center text-[11px] font-mono py-2 border-b border-slate-200/50 dark:border-slate-800/65">
+                            <span className="text-slate-400">u₁ (Resolusi, Rectangular)</span>
+                            <span className="font-black text-slate-700 dark:text-slate-300">{u1.toFixed(5)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-[11px] font-mono py-2 border-b border-slate-200/50 dark:border-slate-800/65">
+                            <span className="text-slate-400">u₂ (Standard Master, Normal)</span>
+                            <span className="font-black text-slate-700 dark:text-slate-300">{u2.toFixed(5)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-[11px] font-mono py-2 border-b border-slate-200/50 dark:border-slate-800/65">
+                            <span className="text-slate-400">u₃ (Repeatability, Type A)</span>
+                            <span className="font-black text-slate-700 dark:text-slate-300">{u3.toFixed(5)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-[11px] font-mono py-2 border-b border-slate-200/50 dark:border-slate-800/65">
+                            <span className="text-slate-400">u₄ (Drift Jangka Panjang)</span>
+                            <span className="font-black text-slate-700 dark:text-slate-300">{u4.toFixed(5)}</span>
+                          </div>
+                        </div>
+
+                        {/* Combined & Expanded Result Block */}
+                        <div className="p-5 bg-blue-600 dark:bg-[#0f1d3a] border border-blue-500/20 rounded-2xl text-white relative z-10 space-y-4 shadow-xl shadow-blue-600/10 dark:shadow-none">
+                          <div className="space-y-1">
+                            <span className="text-[9px] font-mono uppercase tracking-widest text-blue-200 dark:text-cyan-400">Combined Uncertainty (u_c)</span>
+                            <h4 className="text-2xl font-black font-mono italic leading-none">{uc.toFixed(5)}</h4>
+                          </div>
+
+                          <div className="pt-4 border-t border-white/10 dark:border-cyan-500/10 space-y-1">
+                            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-200 dark:text-emerald-450">Expanded Uncertainty (U95, k=2)</span>
+                            <h3 className="text-3xl font-black font-mono text-emerald-300 dark:text-emerald-400 italic leading-none">± {u95.toFixed(5)}</h3>
+                            <p className="text-[8px] text-white/50 dark:text-slate-400 font-bold uppercase tracking-wider font-mono">Tingkat Kepercayaan 95.45% (Coverage Factor k = 2)</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </motion.div>
           )}
         </AnimatePresence>
@@ -702,13 +907,20 @@ export function WorkMethods() {
                              >
                                Hapus
                              </button>
-                             <button onClick={() => setConfirmDeleteId(null)} className="p-2 bg-slate-50 dark:bg-slate-900 rounded-lg text-slate-400 hover:text-slate-200">
+                             <button 
+                               onClick={() => setConfirmDeleteId(null)} 
+                               title="Batal Hapus"
+                               aria-label="Batal Hapus"
+                               className="p-2 bg-slate-50 dark:bg-slate-900 rounded-lg text-slate-400 hover:text-slate-200"
+                             >
                                 <X className="w-4 h-4" />
                              </button>
                           </motion.div>
                         ) : (
                           <button 
                             onClick={() => setConfirmDeleteId(method.id)} 
+                            title="Hapus Metode Kerja"
+                            aria-label="Hapus Metode Kerja"
                             className="p-3 bg-red-500/5 hover:text-red-500 hover:bg-red-500/10 dark:hover:bg-red-500/20 border border-slate-200/40 dark:border-cyan-500/15 hover:border-red-500/25 transition-all rounded-xl text-slate-300 dark:text-slate-500 hover:shadow-lg hover:shadow-red-500/5 active:scale-95 cursor-pointer"
                           >
                             <Trash2 className="w-5 h-5" />
@@ -764,7 +976,7 @@ export function WorkMethods() {
                    </div>
                    <h3 className="text-2xl font-black text-slate-900 italic uppercase tracking-tight">Konfigurasi <span className="text-blue-600">Parameter</span></h3>
                 </div>
-                <button onClick={() => setIsParamModalOpen(false)} className="p-3 hover:bg-slate-50 rounded-xl text-slate-400">
+                <button onClick={() => setIsParamModalOpen(false)} className="p-3 hover:bg-slate-50 rounded-xl text-slate-400" title="Tutup Modal Parameter">
                   <X className="w-6 h-6" />
                 </button>
               </div>
@@ -790,11 +1002,14 @@ export function WorkMethods() {
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono italic">Toleransi (±)</label>
+                    <label htmlFor="param-tolerance" className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono italic">Toleransi (±)</label>
                     <input 
+                      id="param-tolerance"
                       type="number"
                       value={tempParam.tolerance}
                       onChange={(e) => setTempParam({...tempParam, tolerance: Number(e.target.value)})}
+                      placeholder="0"
+                      title="Toleransi Parameter"
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 transition-all font-mono"
                     />
                   </div>
@@ -843,6 +1058,7 @@ export function WorkMethods() {
                  <button 
                   onClick={() => setIsModalOpen(false)} 
                   className="p-5 bg-white border border-slate-100 hover:bg-slate-50 rounded-3xl text-slate-400 hover:text-slate-900 transition-all shadow-sm"
+                  title="Tutup Generator AI"
                  >
                     <X className="w-7 h-7" />
                  </button>
@@ -1009,7 +1225,7 @@ export function WorkMethods() {
                                >
                                  Confirm Delete
                                </button>
-                               <button onClick={() => setConfirmDeleteModal(false)} className="p-4 bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900">
+                               <button onClick={() => setConfirmDeleteModal(false)} className="p-4 bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900" title="Batalkan Hapus">
                                   <X className="w-5 h-5" />
                                </button>
                             </motion.div>
@@ -1069,20 +1285,26 @@ export function WorkMethods() {
                                 />
                              </div>
                              <div>
-                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase mb-3 block italic font-mono tracking-widest px-1">Standard Reference Protocol</label>
+                                <label htmlFor="standardReference" className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase mb-3 block italic font-mono tracking-widest px-1">Standard Reference Protocol</label>
                                 <input 
+                                  id="standardReference"
                                   value={selectedMethod.standardReference}
                                   onChange={(e) => setSelectedMethod({...selectedMethod, standardReference: e.target.value})}
+                                  placeholder="Contoh: IEC 60601-1"
+                                  title="Standard Reference Protocol"
                                   className="w-full bg-white dark:bg-[#10192d] border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all placeholder:text-slate-500 font-mono italic"
                                 />
                              </div>
                              <div>
-                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase mb-3 block italic font-mono tracking-widest px-1">Mission Objectives</label>
+                                <label htmlFor="objectives" className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase mb-3 block italic font-mono tracking-widest px-1">Mission Objectives</label>
                                 <textarea 
+                                  id="objectives"
                                   value={selectedMethod.objectives}
                                   onChange={(e) => setSelectedMethod({...selectedMethod, objectives: e.target.value})}
                                   rows={5}
-                                  className="w-full bg-white dark:bg-[#10192d] border border-slate-200 dark:border-slate-800 rounded-[2rem] px-6 py-6 text-sm font-medium text-slate-500 dark:text-slate-300 leading-relaxed focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all resize-none shadow-sm italic"
+                                  placeholder="Tuliskan tujuan misi kalibrasi..."
+                                  title="Mission Objectives"
+                                  className="w-full bg-white dark:bg-[#10192d] border border-slate-200 dark:border-slate-800 rounded-[2rem] px-6 py-6 text-sm font-medium text-slate-500 dark:text-slate-350 leading-relaxed focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all resize-none shadow-sm italic"
                                 />
                              </div>
                           </div>
@@ -1104,6 +1326,8 @@ export function WorkMethods() {
                                           newChecks[idx] = e.target.value;
                                           setSelectedMethod({...selectedMethod, physicalChecks: newChecks});
                                        }}
+                                       placeholder="Deskripsi pemeriksaan fisik"
+                                       title="Deskripsi Pemeriksaan Fisik"
                                        className="bg-transparent border-none focus:outline-none flex-1 text-xs font-bold text-slate-600 dark:text-slate-350 italic whitespace-normal break-words resize-none font-mono"
                                      />
                                      <button 
@@ -1112,6 +1336,7 @@ export function WorkMethods() {
                                          setSelectedMethod({...selectedMethod, physicalChecks: newChecks});
                                        }}
                                        className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all p-1 self-start cursor-pointer"
+                                       title="Hapus Pemeriksaan Fisik"
                                      >
                                         <X className="w-4 h-4" />
                                      </button>
@@ -1142,6 +1367,8 @@ export function WorkMethods() {
                                           newChecks[idx] = e.target.value;
                                           setSelectedMethod({...selectedMethod, functionalChecks: newChecks});
                                        }}
+                                       placeholder="Deskripsi pemeriksaan fungsi"
+                                       title="Deskripsi Pemeriksaan Fungsi"
                                        className="bg-transparent border-none focus:outline-none flex-1 text-xs font-bold text-slate-600 dark:text-slate-350 italic whitespace-normal break-words resize-none font-mono"
                                      />
                                      <button 
@@ -1150,6 +1377,7 @@ export function WorkMethods() {
                                          setSelectedMethod({...selectedMethod, functionalChecks: newChecks});
                                        }}
                                        className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all p-1 self-start cursor-pointer"
+                                       title="Hapus Pemeriksaan Fungsi"
                                      >
                                         <X className="w-4 h-4" />
                                      </button>
@@ -1180,6 +1408,8 @@ export function WorkMethods() {
                                         newProcs[idx] = e.target.value;
                                         setSelectedMethod({...selectedMethod, procedures: newProcs});
                                      }}
+                                     placeholder="Langkah kerja..."
+                                     title="Prosedur Langkah Kerja"
                                      className="bg-transparent border-none focus:outline-none flex-1 text-sm font-medium text-slate-500 dark:text-slate-300 leading-relaxed italic"
                                    />
                                    <button 
@@ -1188,6 +1418,7 @@ export function WorkMethods() {
                                        setSelectedMethod({...selectedMethod, procedures: newProcs});
                                      }}
                                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-2 bg-white dark:bg-[#10192d] border border-red-100 dark:border-[#ef4444]/20 text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 transition-all shadow-sm"
+                                     title="Hapus Prosedur"
                                    >
                                       <X className="w-4 h-4" />
                                    </button>
@@ -1227,12 +1458,14 @@ export function WorkMethods() {
                                    <button 
                                      onClick={() => openParamModal(idx)}
                                      className="p-3 bg-indigo-500/5 hover:text-indigo-600 hover:bg-indigo-500/10 dark:hover:bg-indigo-500/20 border border-slate-200/40 dark:border-cyan-500/15 hover:border-indigo-500/25 transition-all rounded-xl text-slate-400 dark:text-slate-500 hover:shadow-lg hover:shadow-indigo-500/5 active:scale-95 cursor-pointer"
+                                     title="Edit Parameter"
                                    >
                                       <PlusCircle className="w-4 h-4" />
                                    </button>
                                    <button 
                                      onClick={() => removeParameter(idx)}
                                      className="p-3 bg-red-500/5 hover:text-red-500 hover:bg-red-500/10 dark:hover:bg-red-500/20 border border-slate-200/40 dark:border-cyan-500/15 hover:border-red-500/25 transition-all rounded-xl text-slate-300 dark:text-slate-500 hover:shadow-lg hover:shadow-red-500/5 active:scale-95 cursor-pointer"
+                                     title="Hapus Parameter"
                                    >
                                       <Trash2 className="w-4 h-4" />
                                    </button>

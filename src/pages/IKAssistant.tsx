@@ -28,6 +28,7 @@ export function IKAssistant() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCopied, setShowCopied] = useState(false);
+  const [showPdfSuccess, setShowPdfSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,8 +219,8 @@ export function IKAssistant() {
 
       // Trigger automatic save direct download
       doc.save(`IK-${formData.name.replace(/\s+/g, "_")}.pdf`);
-      setShowCopied(true);
-      setTimeout(() => setShowCopied(false), 2500);
+      setShowPdfSuccess(true);
+      setTimeout(() => setShowPdfSuccess(false), 2500);
     } catch (e: any) {
       console.error("PDF generation failed:", e);
       alert("Gagal melakukan ekspor PDF: " + e.message);
@@ -390,6 +391,13 @@ export function IKAssistant() {
                   <div className="absolute top-4 right-4 z-50 bg-emerald-600 text-white text-[9px] font-black tracking-widest uppercase px-5 py-2.5 rounded-xl shadow-lg border border-emerald-500/30 flex items-center gap-2">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     Teks berhasil disalin ke clipboard
+                  </div>
+                )}
+
+                {showPdfSuccess && (
+                  <div className="absolute top-4 right-4 z-50 bg-indigo-650 text-white text-[9px] font-black tracking-widest uppercase px-5 py-2.5 rounded-xl shadow-lg border border-indigo-500/30 flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    PDF berhasil dibuat & diunduh!
                   </div>
                 )}
                 

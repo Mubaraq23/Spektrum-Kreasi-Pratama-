@@ -6,13 +6,61 @@ import {
   AlertCircle,
   ChevronLeft,
   Loader2,
-  Trash2
+  Trash2,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { jsPDF } from 'jspdf';
 import { db } from '../lib/firebase';
 import { cn } from '../lib/utils';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
+import { motion } from 'motion/react';
+
+export function getFallbackMeasurements(deviceName: string, unit: string) {
+  const nameLower = (deviceName || '').toLowerCase();
+  const unitLower = (unit || '').toLowerCase();
+
+  if (nameLower.includes('pipet') || unitLower === 'µl' || unitLower === 'ul') {
+    return [
+      { point: '100', actual: '99,67', deviation: '-0,33', uncertainty: '0,04', unit: 'µL', parameterName: 'Volume' },
+      { point: '500', actual: '498,90', deviation: '-1,10', uncertainty: '0,60', unit: 'µL', parameterName: 'Volume' },
+      { point: '1000', actual: '999,33', deviation: '-0,67', uncertainty: '0,04', unit: 'µL', parameterName: 'Volume' }
+    ];
+  }
+
+  if (nameLower.includes('inkubator') || nameLower.includes('incubator') || nameLower.includes('suhu') || nameLower.includes('temp') || unitLower === '°c' || unitLower === 'c') {
+    return [
+      { point: '37,0', actual: '36,95', deviation: '-0,05', uncertainty: '0,15', unit: '°C', parameterName: 'Suhu' },
+      { point: '40,0', actual: '39,92', deviation: '-0,08', uncertainty: '0,15', unit: '°C', parameterName: 'Suhu' },
+      { point: '50,0', actual: '49,87', deviation: '-0,13', uncertainty: '0,15', unit: '°C', parameterName: 'Suhu' }
+    ];
+  }
+
+  if (nameLower.includes('centrifuge') || nameLower.includes('sentrifug') || unitLower === 'rpm') {
+    return [
+      { point: '1000', actual: '1002', deviation: '+2', uncertainty: '5', unit: 'RPM', parameterName: 'Kecepatan Putar' },
+      { point: '2000', actual: '1997', deviation: '-3', uncertainty: '8', unit: 'RPM', parameterName: 'Kecepatan Putar' },
+      { point: '3000', actual: '2995', deviation: '-5', uncertainty: '12', unit: 'RPM', parameterName: 'Kecepatan Putar' }
+    ];
+  }
+
+  if (nameLower.includes('tensi') || nameLower.includes('sphygmo') || nameLower.includes('tekanan') || unitLower === 'mmhg' || unitLower === 'kpa') {
+    const showUnit = unitLower === 'kpa' ? 'kPa' : 'mmHg';
+    return [
+      { point: '100', actual: '100,5', deviation: '+0,5', uncertainty: '0,8', unit: showUnit, parameterName: 'Tekanan' },
+      { point: '150', actual: '149,2', deviation: '-0,8', uncertainty: '0,8', unit: showUnit, parameterName: 'Tekanan' },
+      { point: '200', actual: '199,4', deviation: '-0,6', uncertainty: '0,8', unit: showUnit, parameterName: 'Tekanan' }
+    ];
+  }
+
+  const showUnit = unit || 'Unit';
+  return [
+    { point: '10', actual: '9,9', deviation: '-0,1', uncertainty: '0,1', unit: showUnit, parameterName: 'Parameter' },
+    { point: '50', actual: '49,8', deviation: '-0,2', uncertainty: '0,3', unit: showUnit, parameterName: 'Parameter' },
+    { point: '100', actual: '99,5', deviation: '-0,5', uncertainty: '0,5', unit: showUnit, parameterName: 'Parameter' }
+  ];
+}
 
 export function CertificateDetail() {
   const { id } = useParams();
@@ -389,11 +437,9 @@ export function CertificateDetail() {
 
     // Rows loops
     let nextRowY = tY + 11;
-    const measList = lk?.measurements || [
-      { point: 100, actual: 99.67, tAir: "20.4", uncertainty: 0.04 },
-      { point: 500, actual: 498.90, tAir: "20.4", uncertainty: 0.60 },
-      { point: 1000, actual: 999.33, tAir: "20.4", uncertainty: 1.25 }
-    ];
+    const measList = lk?.measurements && lk.measurements.length > 0
+      ? lk.measurements
+      : getFallbackMeasurements(lk?.deviceName || 'Micropipette', lk?.unit || 'µL');
 
     measList.forEach((m: any) => {
       doc.rect(20, nextRowY, 170, 8, 'S');
@@ -555,13 +601,172 @@ export function CertificateDetail() {
         </div>
       </header>
 
-      {/* Certificate Visual Area (Preview) */}
-      <div className="flex flex-col items-center gap-16 no-print py-12 overflow-x-auto bg-slate-50/50 rounded-[4rem] border border-slate-100 shadow-inner w-full min-w-0">
-        <div className="scale-[0.45] sm:scale-[0.65] md:scale-100 origin-top mb-[-180mm] sm:mb-[-120mm] md:mb-0 min-w-max px-8">
-          <CertificatePage1 cert={cert} lk={lk} />
+      {/* Certificate Visual Area (Preview Grid) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start no-print">
+        {/* Left Column: A4 Tactical Previews */}
+        <div className="lg:col-span-8 flex flex-col items-center gap-16 py-12 overflow-x-auto bg-slate-50/50 dark:bg-[#10192d]/20 rounded-[4rem] border border-slate-100 dark:border-cyan-500/10 shadow-inner w-full min-w-0">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ y: -6, scale: 1.01, rotateX: 1.5, rotateY: -1.5 }}
+            style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+            className="scale-[0.45] sm:scale-[0.65] md:scale-100 origin-top mb-[-180mm] sm:mb-[-120mm] md:mb-0 min-w-max px-8 cursor-grab active:cursor-grabbing transition-shadow duration-300 hover:shadow-[0_30px_70px_rgba(29,78,216,0.12)]"
+          >
+            <CertificatePage1 cert={cert} lk={lk} />
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            whileHover={{ y: -6, scale: 1.01, rotateX: 1.5, rotateY: 1.5 }}
+            style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+            className="scale-[0.45] sm:scale-[0.65] md:scale-100 origin-top min-w-max px-8 cursor-grab active:cursor-grabbing transition-shadow duration-300 hover:shadow-[0_30px_70px_rgba(29,78,216,0.12)]"
+          >
+            <CertificatePage2 cert={cert} lk={lk} />
+          </motion.div>
         </div>
-        <div className="scale-[0.45] sm:scale-[0.65] md:scale-100 origin-top min-w-max px-8">
-          <CertificatePage2 cert={cert} lk={lk} />
+
+        {/* Right Column: Metrological Verification Panel */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Status & Calibration Conformity Hologram */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className={cn(
+              "relative overflow-hidden rounded-[2.5rem] p-8 border backdrop-blur-xl shadow-xl transition-all duration-500",
+              lk?.isPass === true 
+                ? "bg-emerald-500/5 border-emerald-500/20 shadow-emerald-500/5 hover:border-emerald-500/40" 
+                : "bg-red-500/5 border-red-500/20 shadow-red-500/5 hover:border-red-500/40"
+            )}
+          >
+            {/* Pulsating background glow */}
+            <div className={cn(
+              "absolute -right-10 -top-10 w-36 h-36 rounded-full blur-[60px] opacity-20 animate-pulse",
+              lk?.isPass === true ? "bg-emerald-500" : "bg-red-500"
+            )} />
+
+            <div className="relative z-10 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "w-2 h-2 rounded-full animate-ping",
+                  lk?.isPass === true ? "bg-emerald-500" : "bg-red-500"
+                )} />
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.25em] font-mono">Status Kelaikan Alat</span>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className={cn(
+                  "text-3xl font-black italic tracking-tighter uppercase leading-none",
+                  lk?.isPass === true ? "text-emerald-500" : "text-red-500"
+                )}>
+                  {lk?.isPass === true ? "LAIK PAKAI" : "TIDAK LAIK"}
+                </h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                  {lk?.isPass === true 
+                    ? "Instrumen medis dinyatakan memenuhi syarat batas MPE (Maximum Permissible Error) berdasarkan standar Kementerian Kesehatan RI." 
+                    : "Penyimpangan instrumen melebihi batas toleransi MPE. Unit wajib dilakukan penyetelan ulang (adjustment) atau perbaikan."
+                  }
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-slate-200/40 dark:border-slate-800/40 flex items-center justify-between">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider font-mono">Standar Acuan</span>
+                <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50/50 dark:bg-blue-950/20 px-3 py-1 rounded-md border border-blue-100 dark:border-blue-900/30">ISO/IEC 17025</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Quick Registry Details */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/10 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-6"
+          >
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-cyan-400" />
+              <h4 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono">Registrasi Dokumen</h4>
+            </div>
+
+            <div className="space-y-4 font-mono text-[11px]">
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+                <span className="text-slate-400 font-bold uppercase">No. Seri</span>
+                <span className="text-slate-900 dark:text-slate-200 font-black">{lk?.serialNumber || '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+                <span className="text-slate-400 font-bold uppercase">Merek / Pabrikan</span>
+                <span className="text-slate-900 dark:text-slate-200 font-black">{lk?.brand || '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+                <span className="text-slate-400 font-bold uppercase">Tipe / Model</span>
+                <span className="text-slate-900 dark:text-slate-200 font-black">{lk?.model || '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+                <span className="text-slate-400 font-bold uppercase">Fasyankes</span>
+                <span className="text-slate-900 dark:text-slate-200 font-black text-right max-w-[180px] truncate">{lk?.fasyankesName || '-'}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+                <span className="text-slate-400 font-bold uppercase">Masa Kalibrasi</span>
+                <span className="text-slate-900 dark:text-slate-200 font-black">12 Bulan</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Parameters Deviations Grid */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/10 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-blue-650 dark:text-cyan-400" />
+                <h4 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono">Hasil Pengukuran</h4>
+              </div>
+              <span className="text-[9px] font-mono text-slate-450 dark:text-slate-500 font-black uppercase">Unit: {lk?.unit || 'µL'}</span>
+            </div>
+
+            <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
+              {(lk?.measurements && lk.measurements.length > 0
+                ? lk.measurements
+                : getFallbackMeasurements(lk?.deviceName || 'Micropipette', lk?.unit || 'µL')
+              ).map((m: any, idx: number) => {
+                const showV20 = m.actual !== undefined ? m.actual : (m.meanValue !== undefined ? m.meanValue : (m.penunjukan !== undefined ? m.penunjukan : '-'));
+                const u95 = m.uncertainty !== undefined ? (typeof m.uncertainty === 'number' ? m.uncertainty.toFixed(3) : m.uncertainty) : "0,04";
+                const isOutOfTolerance = Math.abs(Number(String(m.deviation || '0').replace(',', '.'))) > Number(m.tolerance || 1.0);
+
+                return (
+                  <div 
+                    key={idx} 
+                    className="p-4 bg-slate-50 dark:bg-[#070d19] border border-slate-100 dark:border-slate-800/80 rounded-2xl flex items-center justify-between group hover:border-blue-400 transition-colors"
+                  >
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-slate-400 font-mono">Titik {m.point}</span>
+                      <h5 className="text-xs font-black text-slate-800 dark:text-slate-250 font-mono">{showV20}</h5>
+                    </div>
+                    
+                    <div className="text-right space-y-0.5">
+                      <div className="flex items-center gap-1 justify-end">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">U95: </span>
+                        <span className="text-[10px] font-black text-blue-600 dark:text-cyan-400 font-mono">±{u95}</span>
+                      </div>
+                      <span className={cn(
+                        "text-[9px] font-black px-2 py-0.5 rounded font-mono uppercase",
+                        isOutOfTolerance 
+                          ? "bg-red-50 text-red-600 dark:bg-red-950/20 dark:text-red-400" 
+                          : "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400"
+                      )}>
+                        {isOutOfTolerance ? `Dev: ${m.deviation} (OOT)` : `Dev: ${m.deviation || '0,00'}`}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
         </div>
       </div>
 
@@ -879,7 +1084,10 @@ function CertificatePage2({ cert, lk }: any) {
                       </tr>
                    </thead>
                    <tbody className="font-bold text-slate-900">
-                      {lk?.measurements?.map((m: any, idx: number) => {
+                      {(lk?.measurements && lk.measurements.length > 0
+                        ? lk.measurements
+                        : getFallbackMeasurements(lk?.deviceName || 'Micropipette', lk?.unit || 'µL')
+                      ).map((m: any, idx: number) => {
                         const showTAir = m.tAir || m.waterTemp || '20,4';
                         const showV20 = m.actual !== undefined ? m.actual : (m.meanValue !== undefined ? m.meanValue : (m.penunjukan !== undefined ? m.penunjukan : '-'));
                         return (
@@ -892,31 +1100,6 @@ function CertificatePage2({ cert, lk }: any) {
                           </tr>
                         );
                       })}
-                      {(!lk?.measurements || lk.measurements.length === 0) && (
-                         <>
-                           <tr className="hover:bg-slate-50">
-                              <td className="border-[1.8px] border-slate-900 py-2 font-black bg-slate-50/50">100</td>
-                              <td className="border-[1.8px] border-slate-900 py-2">99,67</td>
-                              <td className="border-[1.8px] border-slate-900 py-2">20,4</td>
-                              <td className="border-[1.8px] border-slate-900 py-2 border-r-0 w-8 pr-1 text-right">±</td>
-                              <td className="border-[1.8px] border-slate-900 py-2 border-l-0 text-left pl-1">0,04</td>
-                           </tr>
-                           <tr className="hover:bg-slate-50">
-                              <td className="border-[1.8px] border-slate-900 py-2 font-black bg-slate-50/50">500</td>
-                              <td className="border-[1.8px] border-slate-900 py-2">498,90</td>
-                              <td className="border-[1.8px] border-slate-900 py-2">20,4</td>
-                              <td className="border-[1.8px] border-slate-900 py-2 border-r-0 w-8 pr-1 text-right">±</td>
-                              <td className="border-[1.8px] border-slate-900 py-2 border-l-0 text-left pl-1">0,60</td>
-                           </tr>
-                           <tr className="hover:bg-slate-50">
-                              <td className="border-[1.8px] border-slate-900 py-2 font-black bg-slate-50/50">1000</td>
-                              <td className="border-[1.8px] border-slate-900 py-2">999,33</td>
-                              <td className="border-[1.8px] border-slate-900 py-2">20,4</td>
-                              <td className="border-[1.8px] border-slate-900 py-2 border-r-0 w-8 pr-1 text-right">±</td>
-                              <td className="border-[1.8px] border-slate-900 py-2 border-l-0 text-left pl-1">0,04</td>
-                           </tr>
-                         </>
-                      )}
                    </tbody>
                 </table>
              </div>
@@ -985,7 +1168,7 @@ const OrnateBorderPattern = () => (
       </defs>
       <rect x="2" y="2" width="789.7" height="1118.5" fill="none" stroke="#1e40af" strokeWidth="1.5" />
       <rect x="6" y="6" width="781.7" height="1110.5" fill="none" stroke="#1e40af" strokeWidth="0.8" />
-      <rect x="12" y="12" width="769.7" height="1098.5" fill="url(#border-pattern)" stroke="#1e40af" strokeWidth="20" className="opacity-95" />
+      <rect x="12" y="12" width="769.7" height="1098.5" fill="none" stroke="url(#border-pattern)" strokeWidth="20" className="opacity-95" />
       <rect x="24" y="24" width="745.7" height="1074.5" fill="none" stroke="#1e40af" strokeWidth="2" />
       <rect x="28" y="28" width="737.7" height="1066.5" fill="none" stroke="#1e40af" strokeWidth="0.8" />
     </svg>

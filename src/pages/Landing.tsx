@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import { useAuth } from '../lib/AuthContext';
 import { useTheme } from '../lib/ThemeContext';
 import { Logo } from '../components/Logo';
-import { Interactive3DCanvas } from '../components/Interactive3DCanvas';
-import { Tilt3D } from '../components/Tilt3D';
+import { cn } from '../lib/utils';
+import { db } from '../lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import {
+
   Zap,
   Shield,
   ShieldCheck,
@@ -61,12 +62,118 @@ export function Landing() {
   const [scrolled, setScrolled] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  // Framer Motion Parallax Transforms
-  const { scrollY } = useScroll();
-  const parallaxBgY = useTransform(scrollY, [0, 600], [0, 180]);
-  const parallaxTextY = useTransform(scrollY, [0, 600], [0, 80]);
-  const parallaxCardY = useTransform(scrollY, [0, 600], [0, -40]);
-  const heroFadeOpacity = useTransform(scrollY, [0, 500], [1, 0]);
+  // Dynamic Landing Page Settings State
+  const [settings, setSettings] = useState({
+    heroTitle: 'SISTEM INFORMASI & KALIBRASI ALAT KESEHATAN PREMIUM',
+    heroSubtitle: 'PT Spektrum Kreasi Pratama - Menjamin Akurasi, Keselamatan, dan Kepatuhan Regulasi Medis di Seluruh Indonesia dengan KAN LK-291-IDN & LP-1849-IDN.',
+    supportWhatsapp: '6281290008888',
+    companyAddress: 'Graha Spektrum, Kav. 45, Jl. Tebet Barat Raya, Jakarta Selatan, DKI Jakarta 12810',
+    companyEmail: 'info@spektrumkreasi.co.id',
+    accreditationKan: 'LK-291-IDN & LP-1849-IDN'
+  });
+
+  // Online Calibration Request Form States
+  const [formStep, setFormStep] = useState(1);
+  const [custName, setCustName] = useState('');
+  const [custOrg, setCustOrg] = useState('');
+  const [custWhatsapp, setCustWhatsapp] = useState('');
+  const [custEmail, setCustEmail] = useState('');
+  const [devName, setDevName] = useState('');
+  const [devBrand, setDevBrand] = useState('');
+  const [devModel, setDevModel] = useState('');
+  const [devSn, setDevSn] = useState('');
+  const [devPriority, setDevPriority] = useState('Sedang');
+  const [devNotes, setDevNotes] = useState('');
+  const [submittingForm, setSubmittingForm] = useState(false);
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  // Fetch settings document on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const docRef = doc(db, 'settings', 'landing_page');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setSettings({
+            heroTitle: data.heroTitle || 'SISTEM INFORMASI & KALIBRASI ALAT KESEHATAN PREMIUM',
+            heroSubtitle: data.heroSubtitle || 'PT Spektrum Kreasi Pratama - Menjamin Akurasi, Keselamatan, dan Kepatuhan Regulasi Medis di Seluruh Indonesia dengan KAN LK-291-IDN & LP-1849-IDN.',
+            supportWhatsapp: data.supportWhatsapp || '6281290008888',
+            companyAddress: data.companyAddress || 'Graha Spektrum, Kav. 45, Jl. Tebet Barat Raya, Jakarta Selatan, DKI Jakarta 12810',
+            companyEmail: data.companyEmail || 'info@spektrumkreasi.co.id',
+            accreditationKan: data.accreditationKan || 'LK-291-IDN & LP-1849-IDN'
+          });
+        }
+      } catch (err) {
+        console.error('Gagal memuat pengaturan landing page:', err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handlePublicRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formStep < 2) {
+      setFormStep(2);
+      return;
+    }
+
+    setSubmittingForm(true);
+    setFormError('');
+
+    try {
+      const woId = 'wo_pub_' + Math.random().toString(36).substring(2, 15);
+      
+      const docRef = doc(db, 'work_orders', woId);
+      await setDoc(docRef, {
+        id: woId,
+        customerName: custOrg,
+        contactPerson: custName,
+        clientEmail: custEmail.toLowerCase().trim(),
+        clientWhatsapp: custWhatsapp,
+        deviceName: devName,
+        brand: devBrand,
+        model: devModel,
+        serialNumber: devSn,
+        priority: devPriority,
+        description: devNotes,
+        requestDate: new Date().toISOString().split('T')[0],
+        status: 'Menunggu',
+        isPublicRequest: true,
+        createdAt: new Date()
+      });
+
+      const logId = 'log_pub_' + Math.random().toString(36).substring(2, 15);
+      const auditRef = doc(db, 'audit_logs', logId);
+      await setDoc(auditRef, {
+        id: logId,
+        action: 'Pengajuan Kalibrasi Publik',
+        details: `Pengajuan kalibrasi online publik baru untuk "${devName}" dari "${custOrg}"`,
+        timestamp: new Date(),
+        userEmail: custEmail.toLowerCase().trim()
+      });
+
+      setFormSuccess(true);
+      setCustName('');
+      setCustOrg('');
+      setCustWhatsapp('');
+      setCustEmail('');
+      setDevName('');
+      setDevBrand('');
+      setDevModel('');
+      setDevSn('');
+      setDevPriority('Sedang');
+      setDevNotes('');
+    } catch (err: any) {
+      console.error('Gagal mengajukan kalibrasi online:', err);
+      setFormError('Gagal mengajukan kalibrasi: ' + err.message);
+    } finally {
+      setSubmittingForm(false);
+    }
+  };
+
+
 
   // Calibration Simulator state
   const [simType, setSimType] = useState<'suhu' | 'timbangan' | 'tekanan'>('suhu');
@@ -75,11 +182,22 @@ export function Landing() {
   const [simRes, setSimRes] = useState<number>(0.01);
   const [simTolerance, setSimTolerance] = useState<number>(0.2);
 
+  // AI OCR Scanner Demonstration State
+  const [activeScanIndex, setActiveScanIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveScanIndex((prev) => (prev + 1) % 5);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
+
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handler);
     return () => window.removeEventListener('scroll', handler);
   }, []);
+
 
   useEffect(() => {
     if (simType === 'suhu') { setSimRef(37.0); setSimRead(37.12); setSimRes(0.01); setSimTolerance(0.2); }
@@ -123,8 +241,7 @@ export function Landing() {
       
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <Interactive3DCanvas density="high" opacity={0.65} interactive={true} />
-        <div className="absolute top-[-200px] right-[-200px] w-[800px] h-[800px] bg-blue-500/8 dark:bg-blue-500/10 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute top-[-200px] right-[-200px] w-[800px] h-[800px] bg-blue-500/8 dark:bg-blue-500/10 rounded-full blur-[150px]" />
         <div className="absolute bottom-[-200px] left-[-200px] w-[600px] h-[600px] bg-indigo-500/8 dark:bg-cyan-500/8 rounded-full blur-[130px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-[100px]" />
       </div>
@@ -137,7 +254,12 @@ export function Landing() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 sm:h-18">
           
-          <button onClick={() => navigate('/')} className="flex items-center max-w-[220px]">
+          <button 
+            onClick={() => navigate('/')} 
+            className="flex items-center max-w-[220px]"
+            title="Kembali ke Beranda"
+            aria-label="Kembali ke Beranda"
+          >
             <Logo className="text-slate-900 dark:text-white" />
           </button>
 
@@ -153,17 +275,17 @@ export function Landing() {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
             </button>
 
             {user ? (
-              <Link to="/dashboard" className="hidden sm:flex px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-blue-500/20 items-center gap-2">
+              <Link to="/dashboard" className="hidden sm:flex px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-blue-500/20 items-center gap-2">
                 <BarChart3 className="w-3.5 h-3.5" /> Dashboard
               </Link>
             ) : (
-              <Link to="/login" className="hidden sm:flex px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-95 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-blue-500/20 items-center gap-2">
+              <Link to="/login" className="hidden sm:flex px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-95 transition-all shadow-lg shadow-blue-500/20 items-center gap-2">
                 <Lock className="w-3.5 h-3.5" /> Akses Portal
               </Link>
             )}
@@ -175,62 +297,57 @@ export function Landing() {
         </div>
 
         {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden bg-white/98 dark:bg-[#040a18]/98 border-t border-slate-200 dark:border-slate-800 overflow-hidden"
-            >
-              <nav className="px-4 py-5 space-y-2">
-                {[['#services', 'Layanan'], ['#workflow', 'Alur Kerja'], ['#calculator', 'Playground U95'], ['#faq', 'FAQ']].map(([href, label]) => (
-                  <a key={href} href={href} onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 rounded-xl transition-all font-mono">
-                    {label}
-                  </a>
-                ))}
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  {user
-                    ? <Link to="/dashboard" className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest"><BarChart3 className="w-3.5 h-3.5" /> Dashboard</Link>
-                    : <Link to="/login" className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest"><Lock className="w-3.5 h-3.5" /> Akses Portal</Link>
-                  }
-                </div>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-white/98 dark:bg-[#040a18]/98 border-t border-slate-200 dark:border-slate-800 overflow-hidden">
+            <nav className="px-4 py-5 space-y-2">
+              {[['#services', 'Layanan'], ['#workflow', 'Alur Kerja'], ['#calculator', 'Playground U95'], ['#faq', 'FAQ']].map(([href, label]) => (
+                <a key={href} href={href} onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 rounded-xl transition-all font-mono">
+                  {label}
+                </a>
+              ))}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                {user
+                  ? <Link to="/dashboard" className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest"><BarChart3 className="w-3.5 h-3.5" /> Dashboard</Link>
+                  : <Link to="/login" className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest"><Lock className="w-3.5 h-3.5" /> Akses Portal</Link>
+                }
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* ===== HERO SECTION ===== */}
       <section ref={heroRef} className="relative pt-28 sm:pt-36 pb-20 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                  {/* Left: Text */}
-          <motion.div className="space-y-8" style={{ y: parallaxTextY, opacity: heroFadeOpacity }}>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-blue-600 dark:text-cyan-400 text-[9px] font-black tracking-[0.3em] uppercase mb-6">
-                <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-ping" />
-                Platform Kalibrasi Alkes Terintegrasi v4.5
-              </span>
+          {/* Left: Text */}
+          <div className="space-y-8">
+            <div>
+              {/* Premium KAN Accreditation Badge */}
+              <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-yellow-500/10 dark:from-amber-500/5 dark:to-yellow-500/5 border border-amber-500/30 dark:border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)] mb-6">
+                <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black text-xs shrink-0 shadow-lg shadow-amber-500/25">
+                  KAN
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-[8px] font-black font-mono tracking-widest text-slate-400 dark:text-slate-500 uppercase leading-none">PT Spektrum Kreasi Pratama</span>
+                  <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 leading-tight uppercase font-mono mt-0.5">
+                    {settings.accreditationKan}
+                  </span>
+                </div>
+              </div>
               
-              <h1 className="text-5xl sm:text-6xl xl:text-7xl font-black tracking-tighter leading-[0.95] text-slate-900 dark:text-white">
-                METROLOGI<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 dark:from-blue-400 dark:via-cyan-400 dark:to-indigo-400">
-                  CALIBRA
-                </span>
-                <span className="text-slate-900 dark:text-white">PRO</span>
+              <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.0] text-slate-900 dark:text-white uppercase">
+                {settings.heroTitle}
               </h1>
-            </motion.div>
+            </div>
 
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-medium max-w-xl">
-              Platform integrasi kalibrasi alat kesehatan berstandar <strong className="text-slate-800 dark:text-white">KAN & Kemenkes RI</strong>. Sinkronisasi otomatis, generator stiker thermal QR, dan asisten ekstraksi cerdas bertenaga <strong className="text-blue-600 dark:text-cyan-400">Gemini AI</strong>.
-            </motion.p>
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed font-medium max-w-xl">
+              {settings.heroSubtitle}
+            </p>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Link to={user ? '/dashboard' : '/login'}
-                className="group flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98]">
+                className="group flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40">
                 {user ? 'Buka Dashboard' : 'Masuk Terminal Operasi'}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -238,10 +355,9 @@ export function Landing() {
                 className="flex items-center justify-center gap-2 px-8 py-4 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-slate-800/80 transition-all">
                 Pelajari Alur Kerja
               </a>
-            </motion.div>
+            </div>
 
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.35 }}
-              className="flex flex-wrap gap-x-6 gap-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex flex-wrap gap-x-6 gap-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
               {[
                 { icon: ShieldCheck, text: 'ISO 17025 Compliant', color: 'text-emerald-500' },
                 { icon: Award, text: 'KAN Accredited', color: 'text-amber-500' },
@@ -251,93 +367,80 @@ export function Landing() {
                   <Icon className={`w-3.5 h-3.5 ${color} shrink-0`} /> {text}
                 </div>
               ))}
-            </motion.div>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.96, y: 20 }} 
-            animate={{ opacity: 1, scale: 1, y: 0 }} 
-            transition={{ duration: 0.8, delay: 0.15 }}
-            style={{ y: parallaxCardY, opacity: heroFadeOpacity }}
-            className="relative hidden lg:block"
-          >
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-cyan-500/10 rounded-[3rem] blur-3xl -z-10 animate-pulse" />
+            </div>
+          </div>
+          <div className="relative hidden lg:block">
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-cyan-500/10 rounded-[3rem] blur-3xl -z-10" />
             
-            <Tilt3D intensity={8}>
-              <div className="bg-white dark:bg-[#060d1f] border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
-                {/* Card Top Bar */}
-                <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                  <div className="ml-auto flex items-center gap-2">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                    <span className="text-[9px] font-black font-mono text-emerald-500 uppercase tracking-widest">Live Sync</span>
-                  </div>
-                </div>
-
-                {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-px bg-slate-100 dark:bg-slate-800">
-                  {[
-                    { label: 'Alat Aktif', value: '284', color: 'text-blue-600 dark:text-cyan-400' },
-                    { label: 'Laik Pakai', value: '97.2%', color: 'text-emerald-500' },
-                    { label: 'Pending LK', value: '12', color: 'text-amber-500' },
-                  ].map(item => (
-                    <div key={item.label} className="bg-white dark:bg-[#060d1f] p-4 text-center">
-                      <p className={`text-xl font-black font-mono ${item.color}`}>{item.value}</p>
-                      <p className="text-[8px] font-bold uppercase text-slate-400 tracking-wider mt-1">{item.label}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Sticker Preview */}
-                <div className="p-5 space-y-4">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 font-mono">Demo Stiker Thermal QR</p>
-                  
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-900/40">
-                    <div className="flex gap-4 items-center">
-                      <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl p-2 shrink-0 flex items-center justify-center">
-                        <QrCode className="w-full h-full text-slate-800 dark:text-slate-200" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase truncate">Syringe Pump Presisi</p>
-                        <p className="text-[9px] font-mono text-slate-400">S/N: SP-982701X</p>
-                        <div className="flex items-center gap-1.5 mt-2">
-                          <Check className="w-3 h-3 text-emerald-500" />
-                          <span className="text-[8px] font-black text-emerald-500 uppercase tracking-wide">LAIK PAKAI — KAN Certified</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 grid grid-cols-2 gap-2 text-[8px] font-mono">
-                      <div>
-                        <span className="text-slate-400">KALIBRASI:</span>
-                        <span className="text-slate-700 dark:text-slate-300 font-bold ml-1">14 MEI 2026</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400">BERLAKU:</span>
-                        <span className="text-emerald-500 font-bold ml-1">14 MEI 2027</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-                    <div className="flex items-center gap-2">
-                      <Database className="w-4 h-4 text-indigo-500" />
-                      <div>
-                        <p className="text-[7px] font-black text-indigo-400 uppercase tracking-wider">Status Inventaris</p>
-                        <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">TERUPDATE INSTAN</p>
-                      </div>
-                    </div>
-                    <span className="text-[8px] font-mono font-black text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700">SYNC OK ✓</span>
-                  </div>
+            <div className="bg-white dark:bg-[#060d1f] border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+              {/* Card Top Bar */}
+              <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                <div className="ml-auto flex items-center gap-2">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+                  <span className="text-[9px] font-black font-mono text-emerald-500 uppercase tracking-widest">Live Sync</span>
                 </div>
               </div>
-            </Tilt3D>
 
-            {/* Floating Badge */}
-            <div className="absolute -top-4 -right-4 bg-gradient-to-br from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-2xl shadow-xl shadow-blue-500/30 text-[8px] font-black uppercase tracking-widest z-20">
-              ⚡ ISO 17025
+              {/* Stats Row */}
+              <div className="grid grid-cols-3 gap-px bg-slate-100 dark:bg-slate-800">
+                {[
+                  { label: 'Alat Aktif', value: '284', color: 'text-blue-600 dark:text-cyan-400' },
+                  { label: 'Laik Pakai', value: '97.2%', color: 'text-emerald-500' },
+                  { label: 'Pending LK', value: '12', color: 'text-amber-500' },
+                ].map(item => (
+                  <div key={item.label} className="bg-white dark:bg-[#060d1f] p-4 text-center">
+                    <p className={`text-xl font-black font-mono ${item.color}`}>{item.value}</p>
+                    <p className="text-[8px] font-bold uppercase text-slate-400 tracking-wider mt-1">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sticker Preview */}
+              <div className="p-5 space-y-4">
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 font-mono">Demo Stiker Thermal QR</p>
+                
+                <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-900/40">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl p-2 shrink-0 flex items-center justify-center">
+                      <QrCode className="w-full h-full text-slate-800 dark:text-slate-200" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase truncate">Syringe Pump Presisi</p>
+                      <p className="text-[9px] font-mono text-slate-400">S/N: SP-982701X</p>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <Check className="w-3 h-3 text-emerald-500" />
+                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-wide">LAIK PAKAI — KAN Certified</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 grid grid-cols-2 gap-2 text-[8px] font-mono">
+                    <div>
+                      <span className="text-slate-400">KALIBRASI:</span>
+                      <span className="text-slate-700 dark:text-slate-300 font-bold ml-1">14 MEI 2026</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">BERLAKU:</span>
+                      <span className="text-emerald-500 font-bold ml-1">14 MEI 2027</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+                  <div className="flex items-center gap-2">
+                    <Database className="w-4 h-4 text-indigo-500" />
+                    <div>
+                      <p className="text-[7px] font-black text-indigo-400 uppercase tracking-wider">Status Inventaris</p>
+                      <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">TERUPDATE INSTAN</p>
+                    </div>
+                  </div>
+                  <span className="text-[8px] font-mono font-black text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700">SYNC OK ✓</span>
+                </div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -346,12 +449,11 @@ export function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {STATS.map((stat, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="text-center">
+              <div key={i} className="text-center">
                 <p className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 font-mono">{stat.value}</p>
                 <p className="text-xs font-black text-slate-700 dark:text-white uppercase tracking-wider mt-1">{stat.label}</p>
                 <p className="text-[9px] text-slate-400 font-medium mt-0.5">{stat.sub}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -367,7 +469,7 @@ export function Landing() {
             { icon: Globe, color: 'text-emerald-500', title: 'KEMENKES RI', sub: 'Regulasi Alat Kesehatan' },
           ].map(({ icon: Icon, color, title, sub }) => (
             <div key={title} className="flex items-center gap-3 group">
-              <div className={`w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+              <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
                 <Icon className={`w-5 h-5 ${color}`} />
               </div>
               <div>
@@ -384,7 +486,7 @@ export function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-3">
             <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.35em] text-blue-600 dark:text-cyan-400 font-mono">
-              <Settings className="w-4 h-4 animate-spin" style={{ animationDuration: '8s' }} />
+              <Settings className="w-4 h-4 text-blue-600 dark:text-cyan-400" />
               Proses Digital Terintegrasi
             </span>
             <h2 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
@@ -399,21 +501,16 @@ export function Landing() {
             {steps.map((step, idx) => {
               const Icon = step.icon;
               return (
-                <motion.div key={idx}
-                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }}
-                  className="h-full"
-                >
-                  <Tilt3D intensity={10} className="h-full">
-                    <div className="group relative bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 h-full">
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
-                        <Icon className="w-7 h-7" />
-                      </div>
-                      <span className="text-[10px] font-black font-mono text-slate-300 dark:text-slate-600 absolute top-6 right-6">0{idx + 1}</span>
-                      <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase mb-3 tracking-tight">{step.title}</h3>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{step.desc}</p>
+                <div key={idx} className="h-full">
+                  <div className="group relative bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 h-full">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center mb-6 shadow-lg transition-transform`}>
+                      <Icon className="w-7 h-7" />
                     </div>
-                  </Tilt3D>
-                </motion.div>
+                    <span className="text-[10px] font-black font-mono text-slate-300 dark:text-slate-600 absolute top-6 right-6">0{idx + 1}</span>
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase mb-3 tracking-tight">{step.title}</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{step.desc}</p>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -437,24 +534,233 @@ export function Landing() {
             {categories.map((cat, idx) => {
               const Icon = cat.icon;
               return (
-                <motion.div key={idx}
-                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.08 }}
-                  className="h-full"
-                >
-                  <Tilt3D intensity={8} className="h-full">
-                    <div className="group flex gap-6 items-start p-7 sm:p-9 rounded-[2.5rem] bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} text-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform`}>
-                        <Icon className="w-7 h-7" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors">{cat.name}</h3>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{cat.desc}</p>
-                      </div>
+                <div key={idx} className="h-full">
+                  <div className="group flex gap-6 items-start p-7 sm:p-9 rounded-[2.5rem] bg-white dark:bg-[#070d1f] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-2xl transition-all duration-300 cursor-pointer h-full">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} text-white flex items-center justify-center shrink-0 shadow-lg transition-transform`}>
+                      <Icon className="w-7 h-7" />
                     </div>
-                  </Tilt3D>
-                </motion.div>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors">{cat.name}</h3>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{cat.desc}</p>
+                    </div>
+                  </div>
+                </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+
+      {/* ===== SPEKTRUM GEMINI AI OCR EXTRACTOR SHOWCASE ===== */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50/40 dark:bg-[#030713]/30 border-t border-slate-100 dark:border-slate-800/80">
+        <div className="max-w-7xl mx-auto space-y-16">
+          <div className="text-center space-y-3">
+            <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.35em] text-blue-600 dark:text-cyan-400 font-mono">
+              <Cpu className="w-4 h-4 text-blue-600 dark:text-cyan-400" /> Cognitive Vision Intelligence
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+              Spektrum <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Gemini AI</span> OCR
+            </h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base font-medium max-w-2xl mx-auto">
+              Sistem ekstraksi data metrologi tercanggih. Unggah sertifikat kalibrasi vendor eksternal Anda, dan biarkan AI menyusun lembar kerja secara instan dan bebas kesalahan.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Left: Interactive Scanning Document */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">1. Berkas Sertifikat Fisik (Sumber Scan)</h3>
+                <span className="text-[10px] font-black text-blue-600 dark:text-cyan-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-950/20 px-3 py-1 rounded-md border border-blue-100 dark:border-blue-900/30 font-mono">Menjalankan Ekstraksi...</span>
+              </div>
+
+              <div className="relative overflow-hidden rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1f] shadow-2xl transition-all duration-500 max-w-md mx-auto aspect-[1/1.414] w-full text-slate-800 dark:text-slate-200">
+                {/* Center Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.02]">
+                  <Cpu className="w-80 h-80 rotate-12" />
+                </div>
+
+                <div className="relative z-10 h-full flex flex-col justify-between font-sans">
+                  {/* Certificate Top Header */}
+                  <div className="text-center space-y-2 border-b border-slate-100 dark:border-slate-850 pb-4">
+                    <h4 className="text-[11px] font-black text-blue-600 uppercase tracking-widest leading-none font-mono">Balai Pengujian Fasilitas Kesehatan</h4>
+                    <h3 className="text-sm font-bold uppercase tracking-tight leading-none italic text-slate-900 dark:text-white">Sertifikat Kalibrasi Alkes</h3>
+                    <p className="text-[8px] font-mono text-slate-400">No. Registrasi: BPFK-5928/2026</p>
+                  </div>
+
+                  {/* Fields lists */}
+                  <div className="flex-1 py-8 space-y-5 text-[11px]">
+                    {/* Field 0: Certificate ID */}
+                    <div className={cn(
+                      "p-3 rounded-xl border transition-all duration-300",
+                      activeScanIndex === 0 
+                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
+                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
+                    )}>
+                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">A. Nomor Sertifikat</span>
+                      <p className="font-bold font-mono text-slate-900 dark:text-white mt-0.5">BPFK-CERT/2026/04128</p>
+                    </div>
+
+                    {/* Field 1: Device Name */}
+                    <div className={cn(
+                      "p-3 rounded-xl border transition-all duration-300",
+                      activeScanIndex === 1
+                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
+                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
+                    )}>
+                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">B. Nama Instrumen Medis</span>
+                      <p className="font-black text-slate-900 dark:text-white mt-0.5 uppercase italic">Defibrillator Monitor</p>
+                    </div>
+
+                    {/* Field 2: Brand/Model */}
+                    <div className={cn(
+                      "p-3 rounded-xl border transition-all duration-300",
+                      activeScanIndex === 2
+                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
+                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
+                    )}>
+                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">C. Merk & Tipe</span>
+                      <p className="font-bold text-slate-900 dark:text-white mt-0.5">PHILIPS / HeartStart XL</p>
+                    </div>
+
+                    {/* Field 3: Serial Number */}
+                    <div className={cn(
+                      "p-3 rounded-xl border transition-all duration-300",
+                      activeScanIndex === 3
+                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
+                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
+                    )}>
+                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">D. Nomor Seri (S/N)</span>
+                      <p className="font-bold font-mono text-slate-900 dark:text-white mt-0.5">SN: PH-40129X</p>
+                    </div>
+
+                    {/* Field 4: Calib Date */}
+                    <div className={cn(
+                      "p-3 rounded-xl border transition-all duration-300",
+                      activeScanIndex === 4
+                        ? "bg-blue-500/5 border-blue-500/30 dark:bg-cyan-500/5 dark:border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.05)]" 
+                        : "border-transparent bg-slate-50/50 dark:bg-slate-900/30"
+                    )}>
+                      <span className="text-[8px] font-mono font-black text-slate-400 uppercase">E. Tanggal Kalibrasi</span>
+                      <p className="font-bold text-slate-900 dark:text-white mt-0.5">12 MEI 2026</p>
+                    </div>
+                  </div>
+
+                  {/* Footers */}
+                  <div className="border-t border-slate-100 dark:border-slate-850 pt-3 text-center text-[7px] text-slate-400 leading-tight font-serif italic">
+                    Laporan ini sah dan diterbitkan oleh laboratorium penguji terakreditasi KAN secara legal.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Dynamic Extracted Output Terminal */}
+            <div className="lg:col-span-6 space-y-6">
+              <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">2. Spektrum Cerdas Coret-Verify (JSON Output)</h3>
+
+              <div className="bg-[#050915] border border-slate-850 rounded-[2.5rem] p-8 sm:p-10 shadow-2xl relative overflow-hidden font-mono min-h-[460px] flex flex-col justify-between">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 blur-[50px] rounded-full" />
+                
+                {/* Terminal Header */}
+                <div className="flex items-center gap-2 pb-6 border-b border-slate-850/80">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span className="ml-4 text-[9px] text-slate-500 uppercase tracking-widest">spektrum-ocr-v4.0:~ gemini-extractor</span>
+                </div>
+
+                {/* Structured Fields */}
+                <div className="flex-1 py-8 space-y-5 text-xs text-slate-400">
+                  {/* Field 0: Cert ID */}
+                  <div className={cn(
+                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
+                    activeScanIndex === 0 
+                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
+                      : "border-transparent bg-slate-900/10"
+                  )}>
+                    <div>
+                      <span className="text-[8px] text-slate-550 font-black uppercase">"certificate_id":</span>
+                      <p className="font-bold text-slate-200 mt-0.5">"BPFK-CERT/2026/04128"</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
+                    </div>
+                  </div>
+
+                  {/* Field 1: Device Name */}
+                  <div className={cn(
+                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
+                    activeScanIndex === 1
+                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
+                      : "border-transparent bg-slate-900/10"
+                  )}>
+                    <div>
+                      <span className="text-[8px] text-slate-550 font-black uppercase">"device_name":</span>
+                      <p className="font-bold text-slate-200 mt-0.5">"Defibrillator Monitor"</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
+                    </div>
+                  </div>
+
+                  {/* Field 2: Brand/Model */}
+                  <div className={cn(
+                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
+                    activeScanIndex === 2
+                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
+                      : "border-transparent bg-slate-900/10"
+                  )}>
+                    <div>
+                      <span className="text-[8px] text-slate-550 font-black uppercase">"brand_and_model":</span>
+                      <p className="font-bold text-slate-200 mt-0.5">"PHILIPS / HeartStart XL"</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
+                    </div>
+                  </div>
+
+                  {/* Field 3: SN */}
+                  <div className={cn(
+                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
+                    activeScanIndex === 3
+                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
+                      : "border-transparent bg-slate-900/10"
+                  )}>
+                    <div>
+                      <span className="text-[8px] text-slate-550 font-black uppercase">"serial_number":</span>
+                      <p className="font-bold text-slate-200 mt-0.5">"SN-PH40129X"</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
+                    </div>
+                  </div>
+
+                  {/* Field 4: Calib Date */}
+                  <div className={cn(
+                    "flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 rounded-2xl border transition-all duration-300",
+                    activeScanIndex === 4
+                      ? "bg-cyan-500/10 border-cyan-500/25 text-white shadow-[0_0_15px_rgba(6,182,212,0.1)]" 
+                      : "border-transparent bg-slate-900/10"
+                  )}>
+                    <div>
+                      <span className="text-[8px] text-slate-550 font-black uppercase">"calibration_date":</span>
+                      <p className="font-bold text-slate-200 mt-0.5">"2026-05-12"</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[8px] text-emerald-450 uppercase tracking-widest font-black bg-emerald-950/20 border border-emerald-900/40 px-2.5 py-1 rounded">MATCH 100%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer status */}
+                <div className="pt-4 border-t border-slate-850/80 flex items-center justify-between text-[8px] text-slate-550">
+                  <span>STABILIZER: ACTIVE</span>
+                  <span>SPEED: 184.2 ms / sheet</span>
+                  <span className="text-cyan-400 font-black">SINKRONISASI DATABASE OK</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -464,7 +770,7 @@ export function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16 space-y-3">
             <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.35em] text-cyan-600 dark:text-cyan-400 font-mono">
-              <Activity className="w-4 h-4 animate-pulse" /> Live Metrology Engine
+              <Activity className="w-4 h-4 text-cyan-600 dark:text-cyan-400" /> Live Metrology Engine
             </span>
             <h2 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
               U95 Calculator <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">Playground</span>
@@ -503,7 +809,17 @@ export function Landing() {
                     <span className="font-semibold text-slate-600 dark:text-slate-400">Nilai Acuan Standar (y<sub>ref</sub>)</span>
                     <span className="font-mono font-black text-blue-600 dark:text-cyan-400 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1 rounded-lg text-[11px]">{simRef} {unit}</span>
                   </div>
-                  <input type="range" min={simType === 'suhu' ? 20 : simType === 'timbangan' ? 1 : 0.1} max={simType === 'suhu' ? 120 : simType === 'timbangan' ? 500 : 20} step={simType === 'suhu' ? 0.5 : simType === 'timbangan' ? 1 : 0.1} value={simRef} onChange={e => setSimRef(Number(e.target.value))} className="w-full accent-blue-600 cursor-pointer" />
+                  <input 
+                    type="range" 
+                    min={simType === 'suhu' ? 20 : simType === 'timbangan' ? 1 : 0.1} 
+                    max={simType === 'suhu' ? 120 : simType === 'timbangan' ? 500 : 20} 
+                    step={simType === 'suhu' ? 0.5 : simType === 'timbangan' ? 1 : 0.1} 
+                    value={simRef} 
+                    onChange={e => setSimRef(Number(e.target.value))} 
+                    className="w-full accent-blue-600 cursor-pointer" 
+                    title="Nilai Acuan Standar"
+                    placeholder="Nilai Acuan Standar"
+                  />
                 </div>
 
                 {/* Observed */}
@@ -512,14 +828,29 @@ export function Landing() {
                     <span className="font-semibold text-slate-600 dark:text-slate-400">Pembacaan Alat DUT (y<sub>read</sub>)</span>
                     <span className="font-mono font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2.5 py-1 rounded-lg text-[11px]">{simRead} {unit}</span>
                   </div>
-                  <input type="range" min={(simRef - (simType === 'suhu' ? 1.5 : simType === 'timbangan' ? 0.3 : 0.8)).toFixed(3)} max={(simRef + (simType === 'suhu' ? 1.5 : simType === 'timbangan' ? 0.3 : 0.8)).toFixed(3)} step={simRes} value={simRead} onChange={e => setSimRead(Number(e.target.value))} className="w-full accent-indigo-600 cursor-pointer" />
+                  <input 
+                    type="range" 
+                    min={(simRef - (simType === 'suhu' ? 1.5 : simType === 'timbangan' ? 0.3 : 0.8)).toFixed(3)} 
+                    max={(simRef + (simType === 'suhu' ? 1.5 : simType === 'timbangan' ? 0.3 : 0.8)).toFixed(3)} 
+                    step={simRes} 
+                    value={simRead} 
+                    onChange={e => setSimRead(Number(e.target.value))} 
+                    className="w-full accent-indigo-600 cursor-pointer" 
+                    title="Pembacaan Alat DUT"
+                    placeholder="Pembacaan Alat DUT"
+                  />
                 </div>
 
                 {/* Resolution & Tolerance */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2 font-mono">Resolusi Alat</label>
-                    <select value={simRes} onChange={e => setSimRes(Number(e.target.value))} className="w-full bg-slate-50 dark:bg-slate-900 text-xs font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    <select 
+                      value={simRes} 
+                      onChange={e => setSimRes(Number(e.target.value))} 
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-xs font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      title="Resolusi Alat"
+                    >
                       <option value={0.1}>0.1 (Kasar)</option>
                       <option value={0.01}>0.01 (Sedang)</option>
                       <option value={0.001}>0.001 (Presisi)</option>
@@ -528,7 +859,12 @@ export function Landing() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2 font-mono">Toleransi (MPE)</label>
-                    <select value={simTolerance} onChange={e => setSimTolerance(Number(e.target.value))} className="w-full bg-slate-50 dark:bg-slate-900 text-xs font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                    <select 
+                      value={simTolerance} 
+                      onChange={e => setSimTolerance(Number(e.target.value))} 
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-xs font-mono p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      title="Toleransi (MPE)"
+                    >
                       {simType === 'suhu' && (<><option value={0.10}>±0.10 °C</option><option value={0.20}>±0.20 °C</option><option value={0.50}>±0.50 °C</option></>)}
                       {simType === 'timbangan' && (<><option value={0.01}>±0.010 g</option><option value={0.05}>±0.050 g</option><option value={0.15}>±0.150 g</option></>)}
                       {simType === 'tekanan' && (<><option value={0.05}>±0.05 bar</option><option value={0.15}>±0.15 bar</option><option value={0.40}>±0.40 bar</option></>)}
@@ -570,7 +906,7 @@ export function Landing() {
                   }`}>
                     {passStrict
                       ? <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-                      : <AlertTriangle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5 animate-pulse" />
+                      : <AlertTriangle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
                     }
                     <div>
                       <p className={`text-xs font-black uppercase tracking-wider ${passStrict ? 'text-emerald-300' : 'text-rose-300'}`}>
@@ -604,27 +940,263 @@ export function Landing() {
 
           <div className="space-y-3">
             {faqs.map((faq, idx) => (
-              <motion.div key={idx} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.08 }}
+              <div key={idx}
                 className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070d1f] overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                 <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                   className="w-full text-left px-6 py-5 flex justify-between items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors cursor-pointer">
                   <span className="text-sm font-black text-slate-800 dark:text-white tracking-wide">{faq.q}</span>
                   <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-300 ${openFaq === idx ? 'rotate-180 text-blue-500' : ''}`} />
                 </button>
-                <AnimatePresence>
-                  {openFaq === idx && (
-                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}>
-                      <div className="px-6 pb-6 pt-0 text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 pt-4">
-                        {faq.a}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                {openFaq === idx && (
+                  <div className="px-6 pb-6 pt-0 text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 pt-4">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* ===== PUBLIC CALIBRATION REQUEST FORM ===== */}
+      <section id="request-form" className="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div className="bg-white/60 dark:bg-[#070d1f]/60 backdrop-blur-3xl border border-slate-200/80 dark:border-slate-800/80 p-8 sm:p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-600 via-cyan-500 to-amber-500" />
+          
+          <div className="text-center mb-10 space-y-3">
+            <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.35em] text-blue-600 dark:text-cyan-400 font-mono">
+              <Sparkles className="w-4 h-4" /> Kalibrasi Instan Publik
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+              Pengajuan Kalibrasi Online 🏥
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              Daftarkan alat kesehatan Anda secara digital untuk kalibrasi dan sertifikasi resmi KAN.
+            </p>
+          </div>
+
+          {formSuccess ? (
+            <div className="p-8 bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 rounded-3xl text-center space-y-4 max-w-md mx-auto">
+              <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
+              <h3 className="text-lg font-black uppercase tracking-tight">Pengajuan Berhasil Dikirim!</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed font-semibold">
+                Terima kasih! Rekor pengajuan kalibrasi online Anda telah masuk ke sistem antrean teknisi kami. Tim admin PT Spektrum Kreasi Pratama akan segera menghubungi Anda melalui nomor WhatsApp yang terdaftar.
+              </p>
+              <button 
+                type="button" 
+                onClick={() => { setFormSuccess(false); setFormStep(1); }} 
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all"
+              >
+                Buat Pengajuan Baru
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handlePublicRequest} className="space-y-8">
+              {formError && (
+                <div className="p-4 bg-red-950/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{formError}</span>
+                </div>
+              )}
+
+              {/* Progress Steps Indicators */}
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                    formStep >= 1 ? 'bg-blue-600 text-white font-mono' : 'bg-slate-200 dark:bg-slate-800 text-slate-400 font-mono'
+                  }`}>
+                    1
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Identitas Fasyankes</span>
+                </div>
+                <div className="w-8 h-[2px] bg-slate-200 dark:bg-slate-800" />
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                    formStep === 2 ? 'bg-blue-600 text-white font-mono' : 'bg-slate-200 dark:bg-slate-800 text-slate-400 font-mono'
+                  }`}>
+                    2
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Spesifikasi Alkes</span>
+                </div>
+              </div>
+
+              {formStep === 1 ? (
+                // STEP 1: Customer details
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nama Rumah Sakit / Fasyankes</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Contoh: RS Hermina Kemayoran"
+                        value={custOrg}
+                        onChange={(e) => setCustOrg(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nama Lengkap Kontak (CP)</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Contoh: Dr. Teguh Pratama"
+                        value={custName}
+                        onChange={(e) => setCustName(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nomor WhatsApp Aktif (62xxx)</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Contoh: 628123456789"
+                        value={custWhatsapp}
+                        onChange={(e) => setCustWhatsapp(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-mono font-bold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Alamat E-mail Fasyankes</label>
+                      <input 
+                        type="email" 
+                        required
+                        placeholder="Contoh: info@hermina-kemayoran.com"
+                        value={custEmail}
+                        onChange={(e) => setCustEmail(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex justify-end">
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        if(custOrg && custName && custWhatsapp && custEmail) {
+                          setFormStep(2);
+                        } else {
+                          setFormError('Harap lengkapi semua bidang sebelum melanjutkan.');
+                        }
+                      }}
+                      className="px-8 h-14 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-black text-[10px] uppercase tracking-[0.25em] rounded-2xl flex items-center justify-center gap-3 transition-all"
+                    >
+                      Langkah Selanjutnya <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // STEP 2: Device details
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nama Alat Kesehatan (Alkes)</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Contoh: Defibrillator / Infusion Pump / ECG"
+                        value={devName}
+                        onChange={(e) => setDevName(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Prioritas Layanan</label>
+                      <select 
+                        value={devPriority} 
+                        onChange={(e) => setDevPriority(e.target.value)}
+                        title="Prioritas Layanan"
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-bold"
+                      >
+                        <option value="Rendah">Rendah (Pemeliharaan Rutin)</option>
+                        <option value="Sedang">Sedang (Kalibrasi Tahunan)</option>
+                        <option value="Tinggi">Tinggi (Kritis / Perbaikan)</option>
+                        <option value="Sangat Tinggi">Sangat Tinggi (Akut / Rusak)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Merk / Produsen</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Contoh: Terumo / Zoll / Omron"
+                        value={devBrand}
+                        onChange={(e) => setDevBrand(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Tipe / Model</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Contoh: TE-331 / M Series"
+                        value={devModel}
+                        onChange={(e) => setDevModel(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Nomor Seri (S/N)</label>
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="Contoh: SN-887162A"
+                        value={devSn}
+                        onChange={(e) => setDevSn(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-mono font-bold"
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-3">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono ml-1">Keluhan / Catatan Layanan Tambahan</label>
+                      <textarea 
+                        rows={2}
+                        placeholder="Tulis keluhan atau detail kondisi alat kesehatan Anda..."
+                        value={devNotes}
+                        onChange={(e) => setDevNotes(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-cyan-400 transition-all font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex justify-between gap-4">
+                    <button 
+                      type="button" 
+                      onClick={() => setFormStep(1)}
+                      className="px-6 py-4 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-350 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-slate-200"
+                    >
+                      Kembali
+                    </button>
+
+                    <button 
+                      type="submit" 
+                      disabled={submittingForm}
+                      className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-black text-[10px] uppercase tracking-[0.25em] rounded-2xl flex items-center justify-center gap-3 transition-all"
+                    >
+                      {submittingForm ? 'Memproses Pengajuan...' : 'Kirim Pengajuan Kalibrasi'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
+          )}
+        </div>
+      </section>
+
+      {/* WhatsApp Floating Button */}
+      <a
+        href={`https://wa.me/${settings.supportWhatsapp}?text=Halo%20PT%20Spektrum%20Kreasi%20Pratama,%20saya%20tertarik%20dengan%20layanan%20kalibrasi%20alkes.`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-full shadow-2xl transition-colors group focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
+        title="Hubungi PT Spektrum Kreasi Pratama via WhatsApp"
+        aria-label="Hubungi kami via WhatsApp"
+      >
+        <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.45 5.507 0 9.961-4.45 9.964-9.943.003-2.66-1.025-5.163-2.898-7.038C16.466 3.75 13.973 2.717 11.97 2.717c-5.518 0-10.003 4.451-10.006 9.95-.001 1.742.457 3.447 1.328 4.954L2.29 21.057l3.784-1.294 1.573.991zm10.297-6.938c-.3-.15-1.771-.875-2.042-.973-.27-.099-.467-.149-.662.15-.195.298-.753.973-.923 1.171-.17.199-.341.224-.642.075-1.127-.565-1.92-1.002-2.673-2.298-.198-.342.198-.318.567-1.053.061-.125.03-.233-.015-.333-.046-.1-.417-1.005-.572-1.378-.15-.366-.315-.316-.432-.322-.112-.006-.24-.006-.368-.006-.128 0-.337.048-.514.24-.177.193-.677.662-.677 1.614 0 .952.693 1.874.79 2.007.097.133 1.363 2.08 3.298 2.919.46.2.818.319 1.098.408.462.146.883.125 1.216.075.371-.056 1.771-.724 2.02-.1.249-.624.249-1.158.174-1.258-.074-.1-.271-.15-.572-.3z" />
+        </svg>
+      </a>
 
       {/* ===== CTA SECTION ===== */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 mx-4 sm:mx-8 lg:mx-16 mb-16 rounded-[3rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-600 relative overflow-hidden">
@@ -639,7 +1211,7 @@ export function Landing() {
             Bergabunglah dengan 150+ fasyankes yang sudah mempercayakan manajemen kalibrasi kepada CalibraPro.
           </p>
           <Link to={user ? '/dashboard' : '/login'}
-            className="inline-flex items-center gap-3 px-10 py-4 bg-white text-blue-700 font-black rounded-2xl text-sm uppercase tracking-wider hover:bg-blue-50 transition-all shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98]">
+            className="inline-flex items-center gap-3 px-10 py-4 bg-white text-blue-700 font-black rounded-2xl text-sm uppercase tracking-wider hover:bg-blue-50 transition-all shadow-2xl shadow-black/20">
             {user ? 'Buka Dashboard Saya' : 'Mulai Gratis Sekarang'}
             <ArrowRight className="w-5 h-5" />
           </Link>

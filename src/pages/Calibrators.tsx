@@ -143,9 +143,23 @@ export function Calibrators() {
 
     setLoading(true);
     let successCount = 0;
+    let duplicateCount = 0;
     try {
       for (const item of activeItems) {
         const finalData = item.data;
+
+        // Check for duplicates in local state
+        const isDuplicate = finalData.serialNumber && finalData.serialNumber.trim() !== '' && calibrators.some(c => 
+          c.serialNumber &&
+          c.serialNumber.toLowerCase().trim() === finalData.serialNumber.toLowerCase().trim() &&
+          c.calibrationDate?.trim() === finalData.calibrationDate?.trim()
+        );
+
+        if (isDuplicate) {
+          duplicateCount++;
+          continue;
+        }
+
         await addDoc(collection(db, 'calibrators'), {
           ...finalData,
           status: 'active',
@@ -161,19 +175,27 @@ export function Calibrators() {
         successCount++;
       }
 
-      await pushNotification(
-        'Batch Standar Terdaftar',
-        `${successCount} Alat standar baru telah ditambahkan ke armada Spektrum via Batch Upload.`,
-        'success',
-        'all',
-        '/calibrators'
-      );
+      if (successCount > 0) {
+        await pushNotification(
+          'Batch Standar Terdaftar',
+          `${successCount} Alat standar baru telah ditambahkan ke armada Spektrum via Batch Upload.`,
+          'success',
+          'all',
+          '/calibrators'
+        );
+      }
 
       const showToast = (msg: string, type: 'success' | 'error' | 'info' = 'success') => {
         setToast({ msg, type });
         setTimeout(() => setToast(null), 4000);
       };
-      showToast(`✓ Berhasil menyimpan ${successCount} standar kalibrasi ke infrastruktur.`, 'success');
+
+      if (duplicateCount > 0) {
+        showToast(`✓ Simpan ${successCount} standar, ${duplicateCount} terdeteksi DOBEL & dilewati.`, successCount > 0 ? 'info' : 'error');
+      } else {
+        showToast(`✓ Berhasil menyimpan ${successCount} standar kalibrasi ke infrastruktur.`, 'success');
+      }
+
       setUploadQueue([]);
       setIsModalOpen(false);
     } catch (error) {
@@ -206,6 +228,23 @@ export function Calibrators() {
       setUploadQueue(prev => prev.map(item => item.id === activeQueueItemId ? { ...item, data: extractedData } : item));
       setActiveQueueItemId(null);
       setExtractedData(null);
+      return;
+    }
+
+    // Validate duplicate Serial Number on the same Calibration Date
+    const isDuplicate = extractedData.serialNumber && extractedData.serialNumber.trim() !== '' && calibrators.some(c => 
+      c.id !== editingId &&
+      c.serialNumber &&
+      c.serialNumber.toLowerCase().trim() === extractedData.serialNumber.toLowerCase().trim() &&
+      c.calibrationDate?.trim() === extractedData.calibrationDate?.trim()
+    );
+
+    if (isDuplicate) {
+      setToast({ 
+        msg: `✕ Gagal: Nomor Seri (S/N) pada tanggal kalibrasi yang sama sudah terdaftar (DOBEL)!`, 
+        type: 'error' 
+      });
+      setTimeout(() => setToast(null), 5000);
       return;
     }
 
@@ -534,7 +573,7 @@ export function Calibrators() {
               placeholder="Cari standarmu..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/25 rounded-2xl pl-12 pr-6 py-4 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#06B6D4] focus:border-[#06B6D4] w-full sm:w-64 transition-all uppercase tracking-widest placeholder:text-slate-400 font-mono"
+              className="pl-12 pr-6 py-4 text-xs font-bold w-full sm:w-64 uppercase tracking-widest font-mono"
             />
           </div>
           
@@ -564,15 +603,15 @@ export function Calibrators() {
               key={item.id}
               whileHover={{ y: -8 }}
               onClick={() => openPreview(item)}
-              className="luxury-card p-8 relative overflow-hidden group hover:scale-[1.015] active:scale-[0.99] cursor-pointer border border-slate-200/50 dark:border-cyan-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.015)] dark:shadow-none bg-white dark:bg-[#0c1224]/85 backdrop-blur-md transition-all duration-300"
+              className="luxury-card p-8 relative overflow-hidden group active:scale-[0.99] cursor-pointer"
             >
               <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-1000">
                  <Zap className="w-32 h-32 text-blue-600 dark:text-cyan-400" />
               </div>
 
               <div className="flex items-start justify-between mb-8 relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-[#070d19] border border-slate-100 dark:border-cyan-500/15 flex items-center justify-center text-slate-400 dark:text-cyan-400 group-hover:text-[#06B6D4] group-hover:bg-[#06B6D4]/10 transition-all shadow-inner">
-                   <Zap className="w-7 h-7" />
+                <div className="w-12 h-12 rounded-2xl bg-slate-500/5 border border-slate-200/10 dark:border-cyan-500/10 flex items-center justify-center text-slate-400 dark:text-cyan-400 group-hover:text-[#06B6D4] group-hover:bg-[#06B6D4]/10 transition-all shadow-inner">
+                   <Zap className="w-6 h-6" />
                 </div>
                 <div className={cn(
                   "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-350 font-mono shadow-sm",

@@ -416,6 +416,8 @@ export default function EquipmentInventory() {
                   <button 
                     onClick={() => setShowAddForm(false)}
                     className="p-4 bg-white border border-slate-100 hover:bg-slate-50 rounded-2xl text-slate-400 hover:text-slate-900 transition-all shadow-sm"
+                    title="Tutup form registrasi"
+                    aria-label="Tutup form registrasi"
                   >
                     <X className="w-6 h-6" />
                   </button>
@@ -470,6 +472,7 @@ export default function EquipmentInventory() {
                       value={formData.defaultMethodId}
                       onChange={(e) => setFormData({...formData, defaultMethodId: e.target.value})}
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all"
+                      title="Pilih Metode Kalibrasi Standar"
                     >
                        <option value="">Pilih Metode Kerja (Opsional)</option>
                        {methods.map(m => (

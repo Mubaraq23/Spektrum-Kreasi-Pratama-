@@ -144,14 +144,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <nav className="flex-1 p-3 space-y-4 mt-4 overflow-auto custom-scrollbar">
+        <nav className="flex-1 p-4 space-y-5 mt-2 overflow-auto custom-scrollbar">
           {['UTAMA', 'METROLOGI', 'PEMELIHARAAN', 'KECERDASAN BUATAN', 'ADMINISTRASI'].map((category) => {
             const items = filteredNavItems.filter(item => item.category === category);
             if (items.length === 0) return null;
             return (
-              <div key={category} className="space-y-1">
+              <div key={category} className="space-y-1.5">
                 {sidebarOpen && (
-                  <div className="px-4 py-2 text-[10px] font-bold uppercase text-slate-400/80 dark:text-slate-500/80 tracking-widest select-none mt-2">
+                  <div className="px-4 py-1 text-[9px] font-extrabold uppercase text-slate-400/70 dark:text-slate-500/70 tracking-[0.2em] select-none">
                     {category}
                   </div>
                 )}
@@ -160,10 +160,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     key={item.path}
                     to={item.path}
                     className={({ isActive }) => cn(
-                      "flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group relative duration-200",
+                      "flex items-center gap-3 px-4 py-2 rounded-xl transition-all group relative duration-200 border border-transparent",
                       isActive 
-                        ? "bg-blue-50/40 dark:bg-cyan-500/[0.06] border border-blue-100/40 dark:border-cyan-500/10 text-blue-600 dark:text-cyan-400 font-bold shadow-sm" 
-                        : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100/40 dark:hover:bg-slate-900/20 border border-transparent"
+                        ? "bg-blue-500/[0.04] dark:bg-cyan-500/[0.04] border-blue-500/10 dark:border-cyan-500/10 text-blue-600 dark:text-cyan-400 font-bold shadow-sm" 
+                        : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100/30 dark:hover:bg-slate-900/10"
                     )}
                   >
                     {({ isActive }) => (
@@ -171,23 +171,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         {isActive && (
                           <motion.div 
                             layoutId="sidebar-active-indicator"
-                            className="absolute left-0 w-[3px] h-5 bg-gradient-to-b from-blue-500 to-indigo-500 dark:from-cyan-400 dark:to-blue-500 rounded-r-md shadow-sm shadow-blue-500/20 dark:shadow-cyan-400/20"
+                            className="absolute left-0 w-[3px] h-4 bg-gradient-to-b from-blue-500 to-indigo-500 dark:from-cyan-400 dark:to-blue-500 rounded-r-md shadow-sm"
                           />
                         )}
                         <item.icon className={cn(
-                          "w-4.5 h-4.5 transition-all duration-300", 
-                          isActive ? "text-blue-600 dark:text-cyan-400 scale-105" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                          "w-4 h-4 transition-all duration-300", 
+                          isActive ? "text-blue-600 dark:text-cyan-400 scale-105" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-350"
                         )} />
                         {sidebarOpen && (
                           <span className={cn(
-                            "text-[12px] font-medium tracking-wide transition-all duration-300", 
-                            isActive ? "text-slate-900 dark:text-white font-semibold" : "text-slate-500 dark:text-slate-400"
+                            "text-[11px] font-semibold tracking-wide transition-all duration-300", 
+                            isActive ? "text-slate-900 dark:text-white font-bold" : "text-slate-500 dark:text-slate-400"
                           )}>
                             {item.label}
                           </span>
                         )}
                         {!sidebarOpen && (
-                          <div className="absolute left-full ml-4 px-3 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 whitespace-nowrap z-50 transition-all translate-x-2 group-hover:translate-x-0 pointer-events-none shadow-2xl">
+                          <div className="absolute left-full ml-4 px-3 py-2 bg-slate-950 text-white text-[9px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 whitespace-nowrap z-50 transition-all translate-x-2 group-hover:translate-x-0 pointer-events-none shadow-2xl">
                             {item.label}
                           </div>
                         )}
@@ -200,37 +200,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div className="mt-auto p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-100/10 dark:bg-slate-950/40">
+        <div className="mt-auto p-4 border-t border-slate-200/10 dark:border-slate-800/20 bg-slate-100/5 dark:bg-slate-950/10">
           {sidebarOpen ? (
-            <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/50 dark:bg-[#070b17]/40 border border-slate-200/40 dark:border-slate-800/60 shadow-sm transition-all duration-300">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-cyan-500 p-0.5 shadow-sm shrink-0">
-                <div className="w-full h-full rounded-[9px] bg-slate-900 flex items-center justify-center font-bold text-white uppercase text-xs overflow-hidden relative">
+            <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/45 dark:bg-[#0b1020]/25 border border-slate-200/20 dark:border-slate-800/25 shadow-sm transition-all duration-300">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-cyan-500 p-0.5 shadow-sm shrink-0">
+                <div className="w-full h-full rounded-[9px] bg-slate-950 flex items-center justify-center font-bold text-white uppercase text-[10px] overflow-hidden relative">
                   <span className="relative z-10">{profile?.displayName?.slice(0, 2) || 'AD'}</span>
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate tracking-tight">{profile?.displayName || 'Administrator'}</p>
+                <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate tracking-tight">{profile?.displayName || 'Administrator'}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
-                   <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wide truncate">{getFormattedRole(profile?.role)}</p>
+                   <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.4)]" />
+                   <p className="text-[9px] text-slate-400 dark:text-slate-550 font-bold tracking-wide truncate">{getFormattedRole(profile?.role)}</p>
                 </div>
               </div>
               <button 
                 onClick={handleLogout}
-                className="p-2 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-all hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg group/logout"
+                className="p-1.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-all hover:bg-red-500/[0.04] rounded-lg group/logout"
                 title="Keluar"
               >
-                <LogOut className="w-4 h-4 group-hover/logout:-translate-y-0.5 transition-transform" />
+                <LogOut className="w-3.5 h-3.5 group-hover/logout:-translate-y-0.5 transition-transform" />
               </button>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-4">
               <button 
                 onClick={handleLogout}
-                className="w-12 h-12 flex items-center justify-center rounded-xl bg-white dark:bg-[#0c111d] border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900 transition-all shadow-sm group/logout hover:shadow-md"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/45 dark:bg-[#0b1020]/25 border border-slate-200/20 dark:border-slate-800/25 text-slate-455 hover:text-red-500 dark:hover:text-red-400 hover:border-red-500/10 dark:hover:border-red-900/10 transition-all shadow-sm group/logout"
                 title="Keluar"
               >
-                <LogOut className="w-5 h-5 group-hover/logout:scale-110 transition-transform" />
+                <LogOut className="w-4 h-4 group-hover/logout:scale-110 transition-transform" />
               </button>
             </div>
           )}
@@ -288,14 +288,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="hidden lg:flex items-center gap-3 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 group transition-all focus-within:ring-2 focus-within:ring-blue-500/10 focus-within:border-blue-400">
-              <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-500 transition-colors" />
+            <div className="hidden lg:flex items-center gap-3 bg-slate-55/35 dark:bg-slate-900/35 px-4 py-2 rounded-xl border border-slate-200/40 dark:border-slate-800/50 group transition-all focus-within:ring-4 focus-within:ring-blue-500/5 focus-within:border-blue-500/30 shadow-sm">
+              <Search className="w-3.5 h-3.5 text-slate-450 group-hover:text-blue-500 transition-colors" />
               <input 
                 type="text" 
                 placeholder="Cari data..." 
                 className="bg-transparent border-none text-[11px] w-48 focus:outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 font-semibold p-0 text-slate-900 dark:text-white"
               />
-              <kbd className="text-[8px] bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded-md text-slate-400 dark:text-slate-500 font-mono border border-slate-200 dark:border-slate-700 shadow-sm ml-2">⌘K</kbd>
+              <kbd className="text-[8px] bg-white/70 dark:bg-slate-800/70 px-1.5 py-0.5 rounded-md text-slate-400 dark:text-slate-500 font-mono border border-slate-200/50 dark:border-slate-700/50 shadow-sm ml-2">⌘K</kbd>
             </div>
             
             <div className="flex items-center gap-4 relative">

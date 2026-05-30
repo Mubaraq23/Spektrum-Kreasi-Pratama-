@@ -208,8 +208,7 @@ export function Interactive3DCanvas({
   return (
     <div 
       ref={mountRef} 
-      className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden -z-10 bg-transparent"
-      style={{ mixBlendMode: 'screen' }}
+      className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden -z-10 bg-transparent mix-blend-screen"
     />
   );
 }

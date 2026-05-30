@@ -35,31 +35,36 @@ export interface UncertaintyBreakdown {
  */
 export function calculateInstrumentUncertainty(
   category: string,
-  resolution: number = 0.01,
-  masterUnc: number = 0.001,
-  drift: number = 0,
+  resolution: any = 0.01,
+  masterUnc: any = 0.001,
+  drift: any = 0,
   m: any = {}
 ): UncertaintyBreakdown {
   const methodUsed = category || 'standard';
   const k = 2; // coverage factor at 95% Confidence Level
 
+  // Robustly parse core parameters to numbers
+  const resNum = (resolution !== undefined && resolution !== null && resolution !== '') ? Number(resolution) : 0.01;
+  const masterUncNum = (masterUnc !== undefined && masterUnc !== null && masterUnc !== '') ? Number(masterUnc) : 0.001;
+  const driftNum = (drift !== undefined && drift !== null && drift !== '') ? Number(drift) : 0;
+
   // 1. Resolution / Skala Terkecil (u1)
   // Rectangular distribution (divided by 2 * sqrt(3))
-  const u1 = resolution / (2 * Math.sqrt(3));
+  const u1 = resNum / (2 * Math.sqrt(3));
 
   // 2. Master Calibrator uncertainty from Certificate (u2)
   // Normally distributed with k=2 on standard certificates
-  const u2 = masterUnc / 2;
+  const u2 = masterUncNum / 2;
 
   // 3. Repeatability of measurements (u3)
   // Standard Deviation of Mean (SD / sqrt(n)), or fallback placeholder if no SD is provided
-  const sd = typeof m.sd === 'number' && !isNaN(m.sd) ? m.sd : 0;
-  const n = typeof m.n === 'number' && m.n > 0 ? m.n : 3;
-  const u3 = sd > 0 ? (sd / Math.sqrt(n)) : ((resolution * 0.25) / Math.sqrt(3));
+  const sd = (m.sd !== undefined && m.sd !== null && m.sd !== '') ? Number(m.sd) : 0;
+  const n = (m.n !== undefined && m.n !== null && m.n !== '' && !isNaN(Number(m.n)) && Number(m.n) > 0) ? Number(m.n) : 3;
+  const u3 = sd > 0 ? (sd / Math.sqrt(n)) : ((resNum * 0.25) / Math.sqrt(3));
 
   // 4. Drift Standard / drift calibration (u4)
   // Rectangular distribution
-  const u4 = drift / Math.sqrt(3);
+  const u4 = driftNum / Math.sqrt(3);
 
   let uCombined = 0;
   let formulaDescription = '';
@@ -77,15 +82,15 @@ export function calculateInstrumentUncertainty(
     case 'kelembaban':
     case 'sterilisasi': {
       // Suhu / Heat & Moisture: includes stability & uniformity (distribution)
-      const stability = typeof m.stability === 'number' && !isNaN(m.stability) ? m.stability : 0;
-      const uniformity = typeof m.uniformity === 'number' && !isNaN(m.uniformity) ? m.uniformity : 0;
+      const stability = (m.stability !== undefined && m.stability !== null && m.stability !== '') ? Number(m.stability) : 0;
+      const uniformity = (m.uniformity !== undefined && m.uniformity !== null && m.uniformity !== '') ? Number(m.uniformity) : 0;
       
       const uStab = stability / (2 * Math.sqrt(3));
       const uUnif = uniformity / (2 * Math.sqrt(3));
       
       let extraSq = 0;
       if (methodUsed === 'sterilisasi') {
-        const autoclaveP = typeof m.autoclaveP === 'number' && !isNaN(m.autoclaveP) ? m.autoclaveP : 0;
+        const autoclaveP = (m.autoclaveP !== undefined && m.autoclaveP !== null && m.autoclaveP !== '') ? Number(m.autoclaveP) : 0;
         extraSq = Math.pow(autoclaveP * 0.02, 2);
       }
 
@@ -109,8 +114,8 @@ export function calculateInstrumentUncertainty(
 
     case 'tekanan': {
       // Tekanan: includes hysteresis & zero-drift setting
-      const histeresis = typeof m.histeresis === 'number' && !isNaN(m.histeresis) ? m.histeresis : 0;
-      const zero = typeof m.zero === 'number' && !isNaN(m.zero) ? m.zero : 0;
+      const histeresis = (m.histeresis !== undefined && m.histeresis !== null && m.histeresis !== '') ? Number(m.histeresis) : 0;
+      const zero = (m.zero !== undefined && m.zero !== null && m.zero !== '') ? Number(m.zero) : 0;
       
       const uHyst = histeresis / (2 * Math.sqrt(3));
       const uZero = zero / (2 * Math.sqrt(3));
@@ -134,17 +139,17 @@ export function calculateInstrumentUncertainty(
     case 'timbangan': 
     case 'gaya_beban_torsi': {
       // Massa (Timbangan): includes scale eccentricity and scale linearity
-      const eccentricity = typeof m.eccentricity === 'number' && !isNaN(m.eccentricity) ? m.eccentricity : 0;
-      const linearity = typeof m.linearity === 'number' && !isNaN(m.linearity) ? m.linearity : 0;
+      const eccentricity = (m.eccentricity !== undefined && m.eccentricity !== null && m.eccentricity !== '') ? Number(m.eccentricity) : 0;
+      const linearity = (m.linearity !== undefined && m.linearity !== null && m.linearity !== '') ? Number(m.linearity) : 0;
       
       const uEcc = eccentricity / (2 * Math.sqrt(3));
       const uLin = linearity / (2 * Math.sqrt(3));
       
       let extraSq = 0;
       if (methodUsed === 'gaya_beban_torsi') {
-        const armLength = typeof m.armLength === 'number' && m.armLength > 0 ? m.armLength : 0.25;
-        const uArm = typeof m.uArm === 'number' && !isNaN(m.uArm) ? m.uArm : 0.001;
-        const actualVal = typeof m.actual === 'number' && !isNaN(m.actual) ? m.actual : (m.point || 1);
+        const armLength = (m.armLength !== undefined && m.armLength !== null && m.armLength !== '' && !isNaN(Number(m.armLength)) && Number(m.armLength) > 0) ? Number(m.armLength) : 0.25;
+        const uArm = (m.uArm !== undefined && m.uArm !== null && m.uArm !== '') ? Number(m.uArm) : 0.001;
+        const actualVal = (m.actual !== undefined && m.actual !== null && m.actual !== '') ? Number(m.actual) : (m.point !== undefined && m.point !== null ? Number(m.point) : 1);
         extraSq = Math.pow(actualVal * (uArm / armLength), 2);
       }
 
@@ -167,11 +172,12 @@ export function calculateInstrumentUncertainty(
 
     case 'volume_flow': {
       // Flow Cairan: Q = V / t
-      const Q = Math.abs(typeof m.actual === 'number' && m.actual !== 0 ? m.actual : (m.point || 10));
-      const V = typeof m.volumeVal === 'number' && m.volumeVal > 0 ? m.volumeVal : 100;
-      const uV = typeof m.uVolume === 'number' && !isNaN(m.uVolume) ? m.uVolume : 0.5;
-      const t = typeof m.timeVal === 'number' && m.timeVal > 0 ? m.timeVal : 60;
-      const uT = typeof m.uTime === 'number' && !isNaN(m.uTime) ? m.uTime : 0.1;
+      const actualVal = (m.actual !== undefined && m.actual !== null && m.actual !== '') ? Number(m.actual) : (m.point !== undefined && m.point !== null ? Number(m.point) : 10);
+      const Q = Math.abs(actualVal);
+      const V = (m.volumeVal !== undefined && m.volumeVal !== null && m.volumeVal !== '' && !isNaN(Number(m.volumeVal)) && Number(m.volumeVal) > 0) ? Number(m.volumeVal) : 100;
+      const uV = (m.uVolume !== undefined && m.uVolume !== null && m.uVolume !== '') ? Number(m.uVolume) : 0.5;
+      const t = (m.timeVal !== undefined && m.timeVal !== null && m.timeVal !== '' && !isNaN(Number(m.timeVal)) && Number(m.timeVal) > 0) ? Number(m.timeVal) : 60;
+      const uT = (m.uTime !== undefined && m.uTime !== null && m.uTime !== '') ? Number(m.uTime) : 0.1;
       
       uCombined = Q * Math.sqrt(Math.pow(uV / V, 2) + Math.pow(uT / t, 2));
       
@@ -190,9 +196,10 @@ export function calculateInstrumentUncertainty(
     case 'gas_flow':
     case 'gas_medis_konsentrasi': {
       // Flow Gas / Gas Medis: Q_std corrected by temp and pressure
-      const Q = Math.abs(typeof m.actual === 'number' && m.actual !== 0 ? m.actual : (m.point || 10));
-      const gasTemp = typeof m.gasTemp === 'number' && !isNaN(m.gasTemp) ? m.gasTemp : 25;
-      const gasPress = typeof m.gasPress === 'number' && !isNaN(m.gasPress) ? m.gasPress : 1013;
+      const actualVal = (m.actual !== undefined && m.actual !== null && m.actual !== '') ? Number(m.actual) : (m.point !== undefined && m.point !== null ? Number(m.point) : 10);
+      const Q = Math.abs(actualVal);
+      const gasTemp = (m.gasTemp !== undefined && m.gasTemp !== null && m.gasTemp !== '') ? Number(m.gasTemp) : 25;
+      const gasPress = (m.gasPress !== undefined && m.gasPress !== null && m.gasPress !== '' && !isNaN(Number(m.gasPress)) && Number(m.gasPress) > 0) ? Number(m.gasPress) : 1013;
       const uTemp = (gasTemp + 273.15) * 0.002 / Math.sqrt(3);
       const uPress = gasPress * 0.001 / Math.sqrt(3);
       
@@ -213,11 +220,12 @@ export function calculateInstrumentUncertainty(
     case 'radiologi':
     case 'dosis_radiasi': {
       // Radiologi: includes KVp, distance deviations
-      const D = Math.abs(typeof m.actual === 'number' && m.actual !== 0 ? m.actual : (m.point || 100));
-      const distanceD = typeof m.distanceD === 'number' && m.distanceD > 0 ? m.distanceD : 100;
-      const uDistance = typeof m.uDistance === 'number' && !isNaN(m.uDistance) ? m.uDistance : 0.5;
-      const kvpVal = typeof m.kvpVal === 'number' && m.kvpVal > 0 ? m.kvpVal : 80;
-      const uKvp = typeof m.uKvp === 'number' && !isNaN(m.uKvp) ? m.uKvp : 1.5;
+      const actualVal = (m.actual !== undefined && m.actual !== null && m.actual !== '') ? Number(m.actual) : (m.point !== undefined && m.point !== null ? Number(m.point) : 100);
+      const D = Math.abs(actualVal);
+      const distanceD = (m.distanceD !== undefined && m.distanceD !== null && m.distanceD !== '' && !isNaN(Number(m.distanceD)) && Number(m.distanceD) > 0) ? Number(m.distanceD) : 100;
+      const uDistance = (m.uDistance !== undefined && m.uDistance !== null && m.uDistance !== '') ? Number(m.uDistance) : 0.5;
+      const kvpVal = (m.kvpVal !== undefined && m.kvpVal !== null && m.kvpVal !== '' && !isNaN(Number(m.kvpVal)) && Number(m.kvpVal) > 0) ? Number(m.kvpVal) : 80;
+      const uKvp = (m.uKvp !== undefined && m.uKvp !== null && m.uKvp !== '') ? Number(m.uKvp) : 1.5;
       
       const term1 = Math.pow(u2 / D, 2);       // u_std
       const term2 = Math.pow(u3 / D, 2);       // u_repeat
@@ -260,7 +268,7 @@ export function calculateInstrumentUncertainty(
   const cmcComplied = (cmcVal !== null && !isNaN(cmcVal)) ? (uExpanded >= cmcVal) : true;
 
   const tur = (tolerance !== null && !isNaN(tolerance) && reportedUncertainty > 0) ? (tolerance / reportedUncertainty) : undefined;
-  const tar = (tolerance !== null && !isNaN(tolerance) && masterUnc > 0) ? (tolerance / masterUnc) : undefined;
+  const tar = (tolerance !== null && !isNaN(tolerance) && masterUncNum > 0) ? (tolerance / masterUncNum) : undefined;
 
   return {
     ...(breakdown as UncertaintyBreakdown),
