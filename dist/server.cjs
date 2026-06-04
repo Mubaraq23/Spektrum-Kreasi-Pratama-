@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -27,22 +28,112 @@ var import_path = __toESM(require("path"), 1);
 var import_fs = __toESM(require("fs"), 1);
 var import_genai = require("@google/genai");
 var import_dotenv = __toESM(require("dotenv"), 1);
-var import_app = require("firebase-admin/app");
-var import_firestore = require("firebase-admin/firestore");
-var import_auth = require("firebase-admin/auth");
+var import_app = require("firebase/app");
+var import_firestore = require("firebase/firestore");
 import_dotenv.default.config();
 var configPath = import_path.default.join(process.cwd(), "firebase-applet-config.json");
 var firebaseConfig = JSON.parse(import_fs.default.readFileSync(configPath, "utf8"));
+var ClientFirestoreAdapter = class {
+  constructor(db) {
+    this.db = db;
+  }
+  collection(name) {
+    return new CollectionReferenceAdapter(this.db, name);
+  }
+};
+var CollectionReferenceAdapter = class _CollectionReferenceAdapter {
+  constructor(db, path2, constraints = []) {
+    this.queryConstraints = [];
+    this.db = db;
+    this.path = path2;
+    this.queryConstraints = constraints;
+  }
+  doc(id) {
+    return new DocumentReferenceAdapter(this.db, this.path, id);
+  }
+  where(field, op, value) {
+    const constraint = (0, import_firestore.where)(field, op, value);
+    return new _CollectionReferenceAdapter(this.db, this.path, [...this.queryConstraints, constraint]);
+  }
+  limit(n) {
+    const constraint = (0, import_firestore.limit)(n);
+    return new _CollectionReferenceAdapter(this.db, this.path, [...this.queryConstraints, constraint]);
+  }
+  async get() {
+    const colRef = (0, import_firestore.collection)(this.db, this.path);
+    const q = (0, import_firestore.query)(colRef, ...this.queryConstraints);
+    const snap = await (0, import_firestore.getDocs)(q);
+    return {
+      empty: snap.empty,
+      docs: snap.docs.map((doc) => new QueryDocumentSnapshotAdapter(doc))
+    };
+  }
+};
+var DocumentReferenceAdapter = class {
+  constructor(db, path2, id) {
+    this.db = db;
+    this.path = path2;
+    this.id = id;
+  }
+  get ref() {
+    return this;
+  }
+  async set(data) {
+    const docRef = (0, import_firestore.doc)(this.db, this.path, this.id);
+    const cleanData = this.replaceFieldValues(data);
+    await (0, import_firestore.setDoc)(docRef, cleanData);
+  }
+  async update(data) {
+    const docRef = (0, import_firestore.doc)(this.db, this.path, this.id);
+    const cleanData = this.replaceFieldValues(data);
+    await (0, import_firestore.updateDoc)(docRef, cleanData);
+  }
+  replaceFieldValues(data) {
+    if (data === null || data === void 0) return data;
+    if (typeof data !== "object") return data;
+    if (data._mockType === "serverTimestamp") {
+      return (0, import_firestore.serverTimestamp)();
+    }
+    if (Array.isArray(data)) {
+      return data.map((item) => this.replaceFieldValues(item));
+    }
+    const clean = {};
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        if (data[key] && data[key]._mockType === "serverTimestamp") {
+          clean[key] = (0, import_firestore.serverTimestamp)();
+        } else {
+          clean[key] = this.replaceFieldValues(data[key]);
+        }
+      }
+    }
+    return clean;
+  }
+};
+var QueryDocumentSnapshotAdapter = class {
+  constructor(docSnap) {
+    this.docSnap = docSnap;
+  }
+  get id() {
+    return this.docSnap.id;
+  }
+  get ref() {
+    return new DocumentReferenceAdapter(this.docSnap.firestore, this.docSnap.ref.parent.path, this.docSnap.id);
+  }
+  data() {
+    return this.docSnap.data();
+  }
+};
+var FieldValue = {
+  serverTimestamp: () => ({ _mockType: "serverTimestamp" })
+};
 var db_admin;
-var auth_admin;
 try {
-  const adminApp = (0, import_app.getApps)().length === 0 ? (0, import_app.initializeApp)({
-    projectId: firebaseConfig.projectId
-  }) : (0, import_app.getApps)()[0];
-  db_admin = (0, import_firestore.getFirestore)(adminApp, firebaseConfig.firestoreDatabaseId);
-  auth_admin = (0, import_auth.getAuth)(adminApp);
+  const clientApp = (0, import_app.getApps)().length === 0 ? (0, import_app.initializeApp)(firebaseConfig) : (0, import_app.getApps)()[0];
+  const clientDb = (0, import_firestore.getFirestore)(clientApp, firebaseConfig.firestoreDatabaseId);
+  db_admin = new ClientFirestoreAdapter(clientDb);
 } catch (error) {
-  console.error("Firebase Admin initialization failed:", error);
+  console.error("Firebase client-side connection initialization failed:", error);
 }
 function formatGeminiError(error) {
   const errMsg = String(error?.message || error || "");
@@ -563,8 +654,8 @@ async function startServer() {
           password: "admin123",
           displayName: "ABDURRAHMAN (ADMIN)",
           role: "admin",
-          createdAt: import_firestore.FieldValue.serverTimestamp(),
-          updatedAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp()
         },
         {
           uid: "user_tech_demo",
@@ -572,8 +663,8 @@ async function startServer() {
           password: "tech123",
           displayName: "TEGUH PRATAMA (TEKNISI)",
           role: "technician",
-          createdAt: import_firestore.FieldValue.serverTimestamp(),
-          updatedAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp()
         },
         {
           uid: "user_client_demo",
@@ -581,8 +672,8 @@ async function startServer() {
           password: "client123",
           displayName: "RS PONDOK INDAH (CLIENT)",
           role: "client",
-          createdAt: import_firestore.FieldValue.serverTimestamp(),
-          updatedAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp()
         }
       ];
       for (const u of users) {
@@ -596,7 +687,7 @@ async function startServer() {
         companyAddress: "Graha Spektrum, Kav. 45, Jl. Tebet Barat Raya, Jakarta Selatan, DKI Jakarta 12810",
         companyEmail: "info@spektrumkreasi.co.id",
         accreditationKan: "LK-291-IDN & LP-1849-IDN",
-        updatedAt: import_firestore.FieldValue.serverTimestamp()
+        updatedAt: FieldValue.serverTimestamp()
       });
       const calibratorsRef = db_admin.collection("calibrators");
       const calibrators = [
@@ -609,7 +700,7 @@ async function startServer() {
           lastCalibration: "2025-10-15",
           nextCalibration: "2026-10-15",
           status: "Aktif",
-          createdAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp()
         },
         {
           id: "cal_2",
@@ -620,7 +711,7 @@ async function startServer() {
           lastCalibration: "2025-08-20",
           nextCalibration: "2026-08-20",
           status: "Aktif",
-          createdAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp()
         },
         {
           id: "cal_3",
@@ -631,7 +722,7 @@ async function startServer() {
           lastCalibration: "2025-12-05",
           nextCalibration: "2026-12-05",
           status: "Aktif",
-          createdAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp()
         }
       ];
       for (const c of calibrators) {
@@ -651,7 +742,7 @@ async function startServer() {
           priority: "Tinggi",
           description: "Aliran cairan kadang tersendat",
           clientEmail: "hospital_pondok_indah@client.com",
-          createdAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp()
         },
         {
           id: "wo_2",
@@ -665,7 +756,7 @@ async function startServer() {
           priority: "Sangat Tinggi",
           description: "Pemeriksaan rutin tahunan",
           clientEmail: "hermina.kemayoran@client.com",
-          createdAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp()
         },
         {
           id: "wo_3",
@@ -679,7 +770,7 @@ async function startServer() {
           priority: "Rendah",
           description: "Kalibrasi ulang akurasi tekanan",
           clientEmail: "pratama.sehat@client.com",
-          createdAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp()
         }
       ];
       for (const wo of workOrders) {
@@ -696,7 +787,7 @@ async function startServer() {
         technicianName: "TEGUH PRATAMA (TEKNISI)",
         status: "Selesai",
         isPass: true,
-        createdAt: import_firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
         measurements: [
           { parameterName: "Laju Aliran (Flow Rate)", point: 100, actual: 99.8, unit: "ml/h", deviation: -0.2, tolerance: 5, uncertainty: 0.15 },
           { parameterName: "Laju Aliran (Flow Rate)", point: 50, actual: 49.9, unit: "ml/h", deviation: -0.1, tolerance: 2.5, uncertainty: 0.08 }
@@ -710,7 +801,7 @@ async function startServer() {
         id: "log_1",
         action: "Inisialisasi Sistem",
         details: "Inisialisasi data contoh premium full-stack PT Spektrum Kreasi Pratama berhasil dilakukan oleh seeder.",
-        timestamp: import_firestore.FieldValue.serverTimestamp(),
+        timestamp: FieldValue.serverTimestamp(),
         userEmail: "system@spektrumkreasi.co.id"
       });
       res.json({
@@ -742,8 +833,8 @@ async function startServer() {
           password,
           displayName,
           role,
-          createdAt: import_firestore.FieldValue.serverTimestamp(),
-          updatedAt: import_firestore.FieldValue.serverTimestamp()
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp()
         });
         snapshot = await usersRef.where("email", "==", emailStandard).limit(1).get();
       }
@@ -752,7 +843,7 @@ async function startServer() {
       if (!userData.password || userData.password !== password) {
         await userDoc.ref.update({
           password,
-          updatedAt: import_firestore.FieldValue.serverTimestamp()
+          updatedAt: FieldValue.serverTimestamp()
         });
         userData.password = password;
       }
@@ -790,7 +881,7 @@ async function startServer() {
             password,
             displayName,
             role: role2,
-            updatedAt: import_firestore.FieldValue.serverTimestamp()
+            updatedAt: FieldValue.serverTimestamp()
           });
           return res.json({
             success: true,
@@ -812,8 +903,8 @@ async function startServer() {
         password,
         displayName,
         role,
-        createdAt: import_firestore.FieldValue.serverTimestamp(),
-        updatedAt: import_firestore.FieldValue.serverTimestamp()
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp()
       };
       await usersRef.doc(uid).set(newUser);
       res.json({
@@ -848,8 +939,8 @@ async function startServer() {
         password,
         displayName,
         role,
-        createdAt: import_firestore.FieldValue.serverTimestamp(),
-        updatedAt: import_firestore.FieldValue.serverTimestamp()
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp()
       });
       res.json({ success: true, uid });
     } catch (error) {

@@ -3,9 +3,19 @@ import path from 'path';
 import fs from 'fs';
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from 'dotenv';
-import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import { getAuth } from 'firebase-admin/auth';
+import { initializeApp as initializeClientApp, getApps as getClientApps } from 'firebase/app';
+import { 
+  getFirestore as getClientFirestore,
+  collection as clientCollection,
+  doc as clientDoc,
+  setDoc as clientSetDoc,
+  updateDoc as clientUpdateDoc,
+  getDocs as clientGetDocs,
+  query as clientQuery,
+  where as clientWhere,
+  limit as clientLimit,
+  serverTimestamp as clientServerTimestamp
+} from 'firebase/firestore';
 
 dotenv.config();
 
@@ -13,18 +23,140 @@ dotenv.config();
 const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
 const firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-// Initialize Firebase Admin
+// Custom adapter classes to mimic firebase-admin API using the client SDK
+class ClientFirestoreAdapter {
+  private db: any;
+  constructor(db: any) {
+    this.db = db;
+  }
+  collection(name: string) {
+    return new CollectionReferenceAdapter(this.db, name);
+  }
+}
+
+class CollectionReferenceAdapter {
+  private db: any;
+  private path: string;
+  private queryConstraints: any[] = [];
+
+  constructor(db: any, path: string, constraints: any[] = []) {
+    this.db = db;
+    this.path = path;
+    this.queryConstraints = constraints;
+  }
+
+  doc(id: string) {
+    return new DocumentReferenceAdapter(this.db, this.path, id);
+  }
+
+  where(field: string, op: string, value: any) {
+    const constraint = clientWhere(field, op as any, value);
+    return new CollectionReferenceAdapter(this.db, this.path, [...this.queryConstraints, constraint]);
+  }
+
+  limit(n: number) {
+    const constraint = clientLimit(n);
+    return new CollectionReferenceAdapter(this.db, this.path, [...this.queryConstraints, constraint]);
+  }
+
+  async get() {
+    const colRef = clientCollection(this.db, this.path);
+    const q = clientQuery(colRef, ...this.queryConstraints);
+    const snap = await clientGetDocs(q);
+    
+    return {
+      empty: snap.empty,
+      docs: snap.docs.map(doc => new QueryDocumentSnapshotAdapter(doc))
+    };
+  }
+}
+
+class DocumentReferenceAdapter {
+  private db: any;
+  private path: string;
+  private id: string;
+
+  constructor(db: any, path: string, id: string) {
+    this.db = db;
+    this.path = path;
+    this.id = id;
+  }
+
+  get ref() {
+    return this;
+  }
+
+  async set(data: any) {
+    const docRef = clientDoc(this.db, this.path, this.id);
+    const cleanData = this.replaceFieldValues(data);
+    await clientSetDoc(docRef, cleanData);
+  }
+
+  async update(data: any) {
+    const docRef = clientDoc(this.db, this.path, this.id);
+    const cleanData = this.replaceFieldValues(data);
+    await clientUpdateDoc(docRef, cleanData);
+  }
+
+  private replaceFieldValues(data: any): any {
+    if (data === null || data === undefined) return data;
+    if (typeof data !== 'object') return data;
+    
+    if (data._mockType === 'serverTimestamp') {
+      return clientServerTimestamp();
+    }
+
+    if (Array.isArray(data)) {
+      return data.map(item => this.replaceFieldValues(item));
+    }
+
+    const clean: any = {};
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        if (data[key] && data[key]._mockType === 'serverTimestamp') {
+          clean[key] = clientServerTimestamp();
+        } else {
+          clean[key] = this.replaceFieldValues(data[key]);
+        }
+      }
+    }
+    return clean;
+  }
+}
+
+class QueryDocumentSnapshotAdapter {
+  private docSnap: any;
+  constructor(docSnap: any) {
+    this.docSnap = docSnap;
+  }
+
+  get id() {
+    return this.docSnap.id;
+  }
+
+  get ref() {
+    return new DocumentReferenceAdapter(this.docSnap.firestore, this.docSnap.ref.parent.path, this.docSnap.id);
+  }
+
+  data() {
+    return this.docSnap.data();
+  }
+}
+
+const FieldValue = {
+  serverTimestamp: () => ({ _mockType: 'serverTimestamp' })
+};
+
+// Initialize Firestore Client SDK and wrap with adapter
 let db_admin: any;
-let auth_admin: any;
+let auth_admin: any = null; // Left as null as it is not used in the server logic
 
 try {
-  const adminApp = getApps().length === 0 ? initializeApp({
-    projectId: firebaseConfig.projectId,
-  }) : getApps()[0];
-  db_admin = getFirestore(adminApp, firebaseConfig.firestoreDatabaseId);
-  auth_admin = getAuth(adminApp);
+  const clientApp = getClientApps().length === 0 ? initializeClientApp(firebaseConfig) : getClientApps()[0];
+  const clientDb = getClientFirestore(clientApp, firebaseConfig.firestoreDatabaseId);
+  db_admin = new ClientFirestoreAdapter(clientDb);
 } catch (error) {
-  console.error('Firebase Admin initialization failed:', error);
+  console.error('Firebase client-side connection initialization failed:', error);
 }
 
 function formatGeminiError(error: any): string {

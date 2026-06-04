@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Spektrum Kalibrasi</string>
+    <string name="title_activity_main">Spektrum Kalibrasi</string>
+    <string name="package_name">com.spektrum.kalibrasi</string>
+    <string name="custom_url_scheme">com.spektrum.kalibrasi</string>
+</resources>

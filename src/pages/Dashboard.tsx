@@ -751,29 +751,30 @@ export function Dashboard() {
       </div>
 
       {/* Welcome Title Banner with Smart Link Indicator */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 transition-all duration-300">
         <div>
           <div className="flex items-center gap-2 mb-2">
              <div className="w-6 h-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full" />
              <p className="text-[10px] text-blue-600 dark:text-cyan-400 font-extrabold uppercase tracking-[0.35em] font-mono">Pusat Kendali Utama</p>
           </div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-tight uppercase">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-tight uppercase">
             Selamat Datang, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-700 dark:from-white dark:via-cyan-300 dark:to-blue-400 italic font-black">{profile?.displayName?.split(' ')[0] || 'Operator'}</span> 🛰️
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mt-2 font-semibold">Terminal pengujian presisi tinggi & peninjauan kepatuhan KAN PT Spektrum Kreasi Pratama.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-2 font-semibold">Terminal pengujian presisi tinggi &amp; peninjauan kepatuhan KAN PT Spektrum Kreasi Pratama.</p>
         </div>
         
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white/80 dark:bg-[#10192d] backdrop-blur-md p-1.5 rounded-2xl border border-sky-500/15 dark:border-cyan-500/25 shadow-lg shadow-slate-100/50 dark:shadow-none">
-             <div className="px-4 py-2 flex items-center gap-2.5">
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 bg-white/80 dark:bg-[#10192d] backdrop-blur-md p-1 sm:p-1.5 rounded-2xl border border-sky-500/15 dark:border-cyan-500/25 shadow-lg shadow-slate-100/50 dark:shadow-none">
+             <div className="px-3 sm:px-4 py-2 flex items-center gap-2">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono">Server CalibraPro: Aktif</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">Server CalibraPro: Aktif</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono sm:hidden">Aktif</span>
              </div>
              <button 
                onClick={() => window.location.reload()}
-               className="px-5 py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-black dark:hover:bg-slate-950 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-md active:scale-95 cursor-pointer"
+               className="px-3 sm:px-5 py-2 sm:py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-black dark:hover:bg-slate-950 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-md active:scale-95 cursor-pointer"
              >
-               Muat Ulang
+               Refresh
              </button>
           </div>
         </div>
@@ -788,15 +789,15 @@ export function Dashboard() {
         {/* Panel Header */}
         <div className="border-b border-slate-200/40 dark:border-cyan-500/10 pb-5 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="flex h-2 w-2 relative">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-1.5">
+              <span className="flex h-2 w-2 relative shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
               </span>
-              <span className="text-[10px] uppercase font-mono tracking-[0.3em] text-[#06B6D4] font-bold">SPEKTRUM MATRIX ARRAY PROBE V-90</span>
-              <span className="text-[9px] uppercase font-mono tracking-widest text-[#D4AF37] border border-[#D4AF37]/25 px-1.5 py-0.5 rounded">ISO 17025 VERIFIED</span>
+              <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-[0.2em] sm:tracking-[0.3em] text-[#06B6D4] font-bold">SPEKTRUM MATRIX ARRAY PROBE V-90</span>
+              <span className="text-[8px] sm:text-[9px] uppercase font-mono tracking-widest text-[#D4AF37] border border-[#D4AF37]/25 px-1.5 py-0.5 rounded hidden sm:inline">ISO 17025 VERIFIED</span>
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 font-sans">
+            <h2 className="text-base sm:text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 font-sans">
               Interactive Spektrum Metrology Signal Dashboard
             </h2>
           </div>
