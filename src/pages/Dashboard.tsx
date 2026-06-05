@@ -1278,7 +1278,7 @@ export function Dashboard() {
       <div className="grid grid-cols-12 gap-6">
         
         {/* Graph 1: Calibration Activity (Real-time flow) */}
-        <div className="col-span-12 lg:col-span-8 immersive-card p-6 flex flex-col justify-between overflow-hidden relative group">
+        <div className="col-span-12 lg:col-span-8 immersive-card min-w-0 p-6 flex flex-col justify-between overflow-hidden relative group">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4 relative z-10">
             <div>
               <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Aktivitas Kalibrasi Harian</h3>
@@ -1286,7 +1286,7 @@ export function Dashboard() {
             </div>
             <div className="flex items-center gap-1.5 p-1 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg">
                <span className="w-2.5 h-2.5 bg-blue-600 dark:bg-cyan-500 rounded-full" />
-               <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono">Unit Kalibrasi</span>
+               <span className="text-[8px] font-black uppercase tracking-widest text-slate-550 dark:text-slate-400 font-mono">Unit Kalibrasi</span>
             </div>
           </div>
 
@@ -1294,7 +1294,7 @@ export function Dashboard() {
             {loading ? (
               <div className="h-full w-full bg-slate-50 dark:bg-slate-900 rounded-2xl animate-pulse" />
             ) : (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="99%" height={300}>
                 <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -1346,14 +1346,14 @@ export function Dashboard() {
         </div>
 
         {/* Graph 2: Frequently Calibrated Equipment & Stats */}
-        <div className="col-span-12 lg:col-span-4 immersive-card p-6 flex flex-col justify-between">
+        <div className="col-span-12 lg:col-span-4 immersive-card min-w-0 p-6 flex flex-col justify-between">
           <div>
             <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Alat Terbanyak Dikalibrasi</h3>
             <p className="text-[8px] text-slate-400 dark:text-slate-500 uppercase tracking-[0.35em] font-black mt-2 font-mono">Daftar Paling Sering Diproses</p>
           </div>
 
           <div className="h-[210px] w-full mt-4">
-            <ResponsiveContainer width="100%" height={210}>
+            <ResponsiveContainer width="99%" height={210}>
               <BarChart data={freqData} layout="vertical" margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
                 <CartesianGrid stroke="currentColor" strokeOpacity={0.06} horizontal={false} />
                 <XAxis type="number" hide />
@@ -1396,7 +1396,7 @@ export function Dashboard() {
         </div>
 
         {/* Graph 3: Tech performance breakdown */}
-        <div className="col-span-12 lg:col-span-6 immersive-card p-6">
+        <div className="col-span-12 lg:col-span-6 immersive-card min-w-0 p-6">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <div>
               <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Produktifitas & Kinerja Teknisi</h3>
@@ -1405,7 +1405,7 @@ export function Dashboard() {
           </div>
 
           <div className="h-[250px] w-full">
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="99%" height={250}>
               <BarChart data={techData} margin={{ top: 20, right: 30, left: -20, bottom: 0 }}>
                 <CartesianGrid stroke="currentColor" strokeOpacity={0.06} vertical={false} />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} tick={{ fill: 'currentColor', opacity: 0.6, fontWeight: '800' }} />
@@ -1430,7 +1430,7 @@ export function Dashboard() {
         </div>
 
         {/* Graph 4: Calibration Pass/Fail Ratio over time */}
-        <div className="col-span-12 lg:col-span-6 immersive-card p-6 flex flex-col justify-between">
+        <div className="col-span-12 lg:col-span-6 immersive-card min-w-0 p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <div>
               <h3 className="text-md font-black text-slate-900 dark:text-white tracking-widest uppercase italic leading-none">Rasio Lolos vs Gagal Kalibrasi</h3>
@@ -1444,7 +1444,7 @@ export function Dashboard() {
           </div>
 
           <div className="h-[250px] w-full">
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="99%" height={250}>
               <ComposedChart data={passFailData} margin={{ top: 20, right: -5, left: -20, bottom: 0 }}>
                 <CartesianGrid stroke="currentColor" strokeOpacity={0.06} vertical={false} />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} tick={{ fill: 'currentColor', opacity: 0.6, fontWeight: '800' }} />

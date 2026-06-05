@@ -50,6 +50,8 @@ export function Worksheets() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showScanner, setShowScanner] = useState(false);
   const [equipment, setEquipment] = useState<any[]>([]);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [isMethodDropdownOpen, setIsMethodDropdownOpen] = useState(false);
   
   // Custom Toast State
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
@@ -412,54 +414,134 @@ export function Worksheets() {
                   {/* Filter Kategori Alat Kesehatan */}
                   <div className="space-y-3">
                     <label className="text-[11px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest ml-1 font-mono">Kategori Alat Kesehatan</label>
-                    <div className="relative group">
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => {
-                          setSelectedCategory(e.target.value);
-                          setSelectedMethod('');
-                          setDeviceName('');
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+                          setIsMethodDropdownOpen(false);
                         }}
-                        className="w-full bg-white dark:bg-[#070d19]/80 border border-slate-400 dark:border-slate-700/80 rounded-2xl px-6 py-5 text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer uppercase tracking-widest"
-                        title="Kategori Alat Kesehatan"
-                        aria-label="Kategori Alat Kesehatan"
+                        className="w-full bg-white dark:bg-[#070d19]/80 border border-slate-300 dark:border-slate-705 rounded-2xl px-6 py-5 text-sm font-bold text-left text-slate-800 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all flex items-center justify-between uppercase tracking-widest"
                       >
-                        <option value="all" className="bg-white dark:bg-[#070d19] text-slate-600 dark:text-slate-400 font-black">-- SEMUA KATEGORI --</option>
-                        {categories.map((cat: string) => (
-                          <option key={cat} value={cat} className="bg-white dark:bg-[#070d19] text-black dark:text-white">
-                            {cat.toUpperCase()}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                        <span>
+                          {selectedCategory === 'all' ? '-- SEMUA KATEGORI --' : selectedCategory.toUpperCase()}
+                        </span>
+                        <ChevronDown className={cn("w-4 h-4 text-slate-550 transition-transform", isCategoryDropdownOpen && "rotate-180")} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {isCategoryDropdownOpen && (
+                          <>
+                            <div className="fixed inset-0 z-10" onClick={() => setIsCategoryDropdownOpen(false)} />
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 10 }}
+                              className="absolute left-0 right-0 mt-2 bg-white dark:bg-[#10192d] border border-slate-250 dark:border-slate-800 rounded-2xl shadow-2xl z-20 max-h-60 overflow-y-auto custom-scrollbar"
+                            >
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedCategory('all');
+                                  setSelectedMethod('');
+                                  setDeviceName('');
+                                  setIsCategoryDropdownOpen(false);
+                                }}
+                                className={cn(
+                                  "w-full text-left px-6 py-4 text-xs font-bold transition-all uppercase tracking-wider hover:bg-slate-50 dark:hover:bg-slate-900 border-b border-slate-100 dark:border-slate-800/50",
+                                  selectedCategory === 'all' ? "text-blue-600 dark:text-cyan-400 bg-blue-50/20 dark:bg-cyan-950/10" : "text-slate-600 dark:text-slate-400"
+                                )}
+                              >
+                                -- SEMUA KATEGORI --
+                              </button>
+                              {categories.map((cat: string) => (
+                                <button
+                                  key={cat}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedCategory(cat);
+                                    setSelectedMethod('');
+                                    setDeviceName('');
+                                    setIsCategoryDropdownOpen(false);
+                                  }}
+                                  className={cn(
+                                    "w-full text-left px-6 py-4 text-xs font-bold transition-all uppercase tracking-wider hover:bg-slate-50 dark:hover:bg-slate-900 border-b border-slate-100 dark:border-slate-800/50 last:border-0",
+                                    selectedCategory === cat ? "text-blue-600 dark:text-cyan-400 bg-blue-50/20 dark:bg-cyan-950/10" : "text-slate-800 dark:text-slate-200"
+                                  )}
+                                >
+                                  {cat.toUpperCase()}
+                                </button>
+                              ))}
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <label className="text-[11px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest ml-1 font-mono">Protokol Kalibrasi (Metode)</label>
-                    <div className="relative group">
-                      <select 
-                        value={selectedMethod}
-                        onChange={(e) => {
-                          const methodId = e.target.value;
-                          setSelectedMethod(methodId);
-                          const method = methods.find(m => m.id === methodId);
-                          if (method) {
-                            setDeviceName(getDeviceNameFromMethodTitle(method.title || method.name || ''));
-                          }
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMethodDropdownOpen(!isMethodDropdownOpen);
+                          setIsCategoryDropdownOpen(false);
                         }}
-                        className="w-full bg-white dark:bg-[#070d19]/80 border border-slate-400 dark:border-slate-700/80 rounded-2xl px-6 py-5 text-sm font-bold text-black dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer uppercase tracking-widest"
-                        title="Protokol Kalibrasi (Metode)"
-                        aria-label="Protokol Kalibrasi (Metode)"
+                        className="w-full bg-white dark:bg-[#070d19]/80 border border-slate-300 dark:border-slate-705 rounded-2xl px-6 py-5 text-sm font-bold text-left text-slate-800 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all flex items-center justify-between uppercase tracking-widest"
                       >
-                        <option value="" className="bg-white dark:bg-[#070d19] text-slate-600 dark:text-slate-400 font-black">-- PILIH PROTOKOL --</option>
-                        {filteredMethodsInModal.map((m: any) => (
-                          <option key={m.id} value={m.id} className="bg-white dark:bg-[#070d19] text-black dark:text-white">
-                            {translateToIndonesian(m.title || m.name || 'Tanpa Nama')}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                        <span>
+                          {selectedMethod 
+                            ? translateToIndonesian(methods.find(m => m.id === selectedMethod)?.title || methods.find(m => m.id === selectedMethod)?.name || '')
+                            : '-- PILIH PROTOKOL --'}
+                        </span>
+                        <ChevronDown className={cn("w-4 h-4 text-slate-550 transition-transform", isMethodDropdownOpen && "rotate-180")} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {isMethodDropdownOpen && (
+                          <>
+                            <div className="fixed inset-0 z-10" onClick={() => setIsMethodDropdownOpen(false)} />
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: 10 }}
+                              className="absolute left-0 right-0 mt-2 bg-white dark:bg-[#10192d] border border-slate-250 dark:border-slate-800 rounded-2xl shadow-2xl z-20 max-h-60 overflow-y-auto custom-scrollbar"
+                            >
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedMethod('');
+                                  setIsMethodDropdownOpen(false);
+                                }}
+                                className={cn(
+                                  "w-full text-left px-6 py-4 text-xs font-bold transition-all uppercase tracking-wider hover:bg-slate-50 dark:hover:bg-slate-900 border-b border-slate-100 dark:border-slate-800/50",
+                                  !selectedMethod ? "text-blue-600 dark:text-cyan-400 bg-blue-50/20 dark:bg-cyan-950/10" : "text-slate-600 dark:text-slate-400"
+                                )}
+                              >
+                                -- PILIH PROTOKOL --
+                              </button>
+                              {filteredMethodsInModal.map((m: any) => (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedMethod(m.id);
+                                    setDeviceName(getDeviceNameFromMethodTitle(m.title || m.name || ''));
+                                    setIsMethodDropdownOpen(false);
+                                  }}
+                                  className={cn(
+                                    "w-full text-left px-6 py-4 text-xs font-bold transition-all uppercase tracking-wider hover:bg-slate-50 dark:hover:bg-slate-900 border-b border-slate-100 dark:border-slate-800/50 last:border-0",
+                                    selectedMethod === m.id ? "text-blue-600 dark:text-cyan-400 bg-blue-50/20 dark:bg-cyan-950/10" : "text-slate-800 dark:text-slate-200"
+                                  )}
+                                >
+                                  {translateToIndonesian(m.title || m.name || 'Tanpa Nama')}
+                                </button>
+                              ))}
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
 

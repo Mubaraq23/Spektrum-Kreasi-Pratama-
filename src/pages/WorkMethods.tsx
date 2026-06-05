@@ -755,7 +755,7 @@ export function WorkMethods() {
                                 placeholder="k=2"
                                 title="Faktor Cakupan Standard"
                                 onChange={(e) => setCalcStdK(Number(e.target.value))}
-                                className="bg-slate-55 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center py-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-mono"
+                                className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-center py-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-mono"
                               />
                             </div>
                           </div>
@@ -781,7 +781,7 @@ export function WorkMethods() {
                                 placeholder="n=10"
                                 title="Jumlah Pengulangan"
                                 onChange={(e) => setCalcRepeatN(Math.max(1, Number(e.target.value)))}
-                                className="bg-slate-55 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-center py-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-mono"
+                                className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-center py-3 text-sm font-bold text-slate-500 dark:text-slate-400 font-mono"
                               />
                             </div>
                           </div>
