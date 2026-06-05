@@ -193,7 +193,7 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
 
                       {/* Info Grid (Owner Details) */}
                       <div className="space-y-[15px] mb-8">
-                        <InfoRow label="Pemilik" labelEng="Costumer" value={data.fasyankesName} />
+                        <InfoRow label="Pemilik" labelEng="Customer" value={data.fasyankesName} />
                         <InfoRow label="Alamat" labelEng="Address" value={data.fasyankesAddress || data.location} />
                         <InfoRow label="Tanggal Terima Unit" labelEng="Unit Received Date" value={formattedAtDate(data.createdAt || data.issuedAt)} />
                         <InfoRow label="Tanggal Kalibrasi" labelEng="Date of Calibration" value={formattedAtDate(data.createdAt || data.issuedAt)} />

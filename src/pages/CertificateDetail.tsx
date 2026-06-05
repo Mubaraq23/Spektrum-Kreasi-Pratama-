@@ -525,7 +525,7 @@ export function CertificateDetail() {
     doc.rect(20, 281, 170, 7, 'FD');
     doc.setFont("helvetica", "italic");
     doc.setFontSize(6.5);
-    doc.text("Hasil hanya berhubungan dengan instrumen yang dikalibrasi dan laporan ini tidak boleh digandakan sebagian tanpa persetujuan PT. PT. SPEKTRUM KREASI PRATAMA", 105, 285.5, { align: "center" });
+    doc.text("Hasil hanya berhubungan dengan instrumen yang dikalibrasi dan laporan ini tidak boleh digandakan sebagian tanpa persetujuan PT. SPEKTRUM KREASI PRATAMA", 105, 285.5, { align: "center" });
 
     // SAVE THE FILE
     const filename = `Sertifikat_Kalibrasi_${cert?.certificateNumber?.replace(/\//g, "_") || "SKP"}.pdf`;
@@ -853,7 +853,7 @@ function CertificatePage1({ cert, lk }: any) {
 
         {/* Info Grid (Owner Details) */}
         <div className="space-y-[15px] mb-8">
-          <InfoRow label="Pemilik" labelEng="Costumer" value={lk?.fasyankesName} />
+          <InfoRow label="Pemilik" labelEng="Customer" value={lk?.fasyankesName} />
           <InfoRow label="Alamat" labelEng="Address" value={lk?.fasyankesAddress || lk?.location} />
           <InfoRow label="Tanggal Terima Unit" labelEng="Unit Received Date" value={formattedAtDate(lk?.createdAt || cert?.issuedAt)} />
           <InfoRow label="Tanggal Kalibrasi" labelEng="Date of Calibration" value={formattedAtDate(lk?.createdAt || cert?.issuedAt)} />

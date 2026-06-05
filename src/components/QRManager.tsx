@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
-import { Html5QrcodeScanner, Html5Qrcode } from 'html5-qrcode';
+import { Html5QrcodeScanner, Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
+// @ts-ignore
+import JsBarcode from 'jsbarcode';
 import { 
   QrCode, 
   Camera, 
@@ -50,7 +52,9 @@ interface QRScannerProps {
 
 export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const barcodeCanvasRef = useRef<HTMLCanvasElement>(null);
   const [downloadUrl, setDownloadUrl] = useState<string>('');
+  const [barcodeUrl, setBarcodeUrl] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const qrValue = `${window.location.origin}/inventory?scan=${item.serialNumber}`;
 
@@ -76,16 +80,44 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
         }
       );
     }
+
+    if (barcodeCanvasRef.current) {
+      try {
+        // @ts-ignore
+        JsBarcode(barcodeCanvasRef.current, item.serialNumber, {
+          format: "CODE128",
+          width: 1.5,
+          height: 45,
+          displayValue: true,
+          fontSize: 10,
+          margin: 2,
+          background: "#ffffff",
+          lineColor: "#0f172a"
+        });
+        setBarcodeUrl(barcodeCanvasRef.current.toDataURL('image/png'));
+      } catch (err) {
+        console.error('Error generating barcode:', err);
+      }
+    }
   }, [item, qrValue]);
 
   const handleDownload = () => {
-    if (!downloadUrl) return;
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `QR_TAG_${item.brand}_${item.serialNumber}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (downloadUrl) {
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `QR_TAG_${item.brand}_${item.serialNumber}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    if (barcodeUrl) {
+      const link = document.createElement('a');
+      link.href = barcodeUrl;
+      link.download = `BARCODE_${item.brand}_${item.serialNumber}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const handlePrint = () => {
@@ -138,6 +170,11 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
               display: flex;
               justify-content: center;
             }
+            .barcode-wrapper {
+              margin: 10px 0;
+              display: flex;
+              justify-content: center;
+            }
             .asset-name {
               font-size: 14px;
               font-weight: 900;
@@ -168,7 +205,10 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
             <div class="header">SUMD INDONESIA</div>
             <div class="subheader">Spektrum Utama Metrologi Integrasi</div>
             <div class="qr-wrapper">
-              <img src="${downloadUrl}" width="160" height="160" />
+              <img src="${downloadUrl}" width="140" height="140" />
+            </div>
+            <div class="barcode-wrapper">
+              <img src="${barcodeUrl}" width="220" height="60" />
             </div>
             <div class="asset-name">LK-${item.name}</div>
             <div class="asset-meta">
@@ -215,8 +255,8 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
               <QrCode className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-mono">Tanda Pengenal QR</h2>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Identifikasi Aset Digital</p>
+              <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-mono">Tanda Pengenal Aset</h2>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">QR &amp; Barcode Digital</p>
             </div>
           </div>
           <button 
@@ -229,17 +269,22 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
           </button>
         </div>
 
-        <div className="p-8 flex flex-col items-center">
+        <div className="p-6 flex flex-col items-center">
           {/* Main design sticker */}
-          <div className="w-full max-w-[280px] border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-6 bg-slate-50/30 dark:bg-slate-950/20 text-center flex flex-col items-center shadow-inner">
+          <div className="w-full max-w-[320px] border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-5 bg-slate-50/30 dark:bg-slate-950/20 text-center flex flex-col items-center shadow-inner">
             <span className="text-[9px] font-black tracking-[0.25em] text-[#06B6D4] uppercase font-mono mb-0.5">METROLOGY TAG</span>
-            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest block border-b border-slate-100 dark:border-slate-800 pb-3 w-full">SUMD AUTO-VERIFY</span>
+            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest block border-b border-slate-100 dark:border-slate-800 pb-2 w-full">SUMD AUTO-VERIFY</span>
             
-            <div className="my-5 bg-white p-2.5 rounded-2xl shadow-md border border-slate-200/40">
-              <canvas ref={canvasRef} className="max-w-[160px] h-auto" />
+            <div className="flex flex-col gap-3 my-4 w-full items-center">
+              <div className="bg-white p-2 rounded-2xl shadow-sm border border-slate-200/40">
+                <canvas ref={canvasRef} className="max-w-[130px] h-auto" />
+              </div>
+              <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200/40 w-full flex justify-center">
+                <canvas ref={barcodeCanvasRef} className="max-w-[220px] h-auto" />
+              </div>
             </div>
 
-            <h3 className="text-md font-black text-slate-900 dark:text-white tracking-tight uppercase leading-none truncate w-full mb-1">LK-{item.name}</h3>
+            <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight uppercase leading-none truncate w-full mb-1">LK-{item.name}</h3>
             <p className="text-[9px] font-black text-slate-400 dark:text-cyan-400/80 font-mono uppercase tracking-widest truncate w-full">
               {item.brand} &bull; S/N: {item.serialNumber}
             </p>
@@ -312,7 +357,20 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
         } catch (_) {}
       }
 
-      const html5QrCode = new Html5Qrcode('qr-reader-target');
+      const html5QrCode = new Html5Qrcode('qr-reader-target', {
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.CODE_39,
+          Html5QrcodeSupportedFormats.CODE_93,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E,
+          Html5QrcodeSupportedFormats.ITF
+        ],
+        verbose: false
+      });
       scannerRef.current = html5QrCode;
       setScannerActive(true);
       setCameraPermission(true);
@@ -551,7 +609,7 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
                       <div id="qr-reader-target" className="w-full h-full" />
                       
                       {scannerActive && (
-                        <div className="absolute inset-0 border-2 border-emerald-500, pointer-events-none rounded-3xl animation-pulse">
+                        <div className="absolute inset-0 border-2 border-emerald-500 pointer-events-none rounded-3xl animate-pulse">
                           <div className="absolute top-1/2 left-1/10 right-1/10 h-0.5 bg-emerald-400 shadow-xl shadow-emerald-500/80 animate-bounce" />
                         </div>
                       )}
