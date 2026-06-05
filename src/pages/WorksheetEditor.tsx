@@ -5690,7 +5690,7 @@ export function WorksheetEditor() {
                         <th className="px-2 py-2 w-[130px] min-w-[130px] max-w-[130px] font-bold text-left border-r border-slate-200/50 dark:border-slate-800/40">
                           Parameter
                         </th>
-                        <th className="px-1 py-2 w-24 font-bold text-center border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Titik Ukur &amp; Unit</th>
+                        <th className="px-1 py-2 w-28 font-bold text-center border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Titik Ukur &amp; Unit</th>
                         {editMetrologyMode && (
                           <>
                             <th className="px-0.5 py-2 w-14 text-center font-bold border-r border-slate-200/50 dark:border-slate-800/40 text-slate-700 dark:text-slate-300">Res (u₁)</th>
@@ -5991,7 +5991,7 @@ export function WorksheetEditor() {
                                     autoFillFromCalibrator(newM, idx, isNaN(pt) ? 0 : pt, newM[idx].parameterName);
                                     setMeasurements(newM);
                                   }}
-                                  className="w-14 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-1 py-0.5 text-xs font-bold text-slate-900 dark:text-slate-100 outline-none transition-all font-mono text-center"
+                                  className="!w-14 shrink-0 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-1 py-0.5 text-xs font-bold text-slate-900 dark:text-slate-100 outline-none transition-all font-mono text-center"
                                 />
                                 <input
                                   type="text"
@@ -6006,7 +6006,7 @@ export function WorksheetEditor() {
                                     newM[idx].unit = e.target.value;
                                     setMeasurements(newM);
                                   }}
-                                  className="w-10 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs text-slate-650 dark:text-[#b38728]/90 font-black outline-none transition-all font-mono text-center"
+                                  className="!w-10 shrink-0 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs text-slate-650 dark:text-[#b38728]/90 font-black outline-none transition-all font-mono text-center"
                                 />
                               </div>
                             </td>
