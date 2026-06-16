@@ -628,7 +628,7 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
                         placeholder="Ketik S/N, Merk, atau Nama Alat..."
                         value={manualSearch}
                         onChange={(e) => setManualSearch(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold focus:outline-none focus:border-cyan-555 placeholder:text-slate-400"
+                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold focus:outline-none focus:border-cyan-500 placeholder:text-slate-400"
                       />
                     </div>
 

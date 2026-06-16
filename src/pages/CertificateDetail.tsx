@@ -723,10 +723,10 @@ export function CertificateDetail() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-blue-650 dark:text-cyan-400" />
+                <Sparkles className="w-5 h-5 text-blue-600 dark:text-cyan-400" />
                 <h4 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono">Hasil Pengukuran</h4>
               </div>
-              <span className="text-[9px] font-mono text-slate-450 dark:text-slate-500 font-black uppercase">Unit: {lk?.unit || 'µL'}</span>
+              <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 font-black uppercase">Unit: {lk?.unit || 'µL'}</span>
             </div>
 
             <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">

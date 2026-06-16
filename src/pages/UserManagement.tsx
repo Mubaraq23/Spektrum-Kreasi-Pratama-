@@ -243,7 +243,7 @@ export function UserManagement() {
                             "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none transition-all shadow-sm focus:ring-4 focus:ring-blue-500/10 italic",
                             user.role === 'admin' ? "text-red-600 dark:text-red-400 border-red-100 dark:border-red-950/30 bg-red-500/5 dark:bg-red-500/10" : 
                             user.role === 'supervisor' ? "text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-950/30 bg-blue-500/5 dark:bg-blue-500/10" :
-                            user.role === 'client' ? "text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-950/30 bg-purple-500/5 dark:bg-purple-550/10" : "text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-950/30 bg-emerald-500/5 dark:bg-emerald-500/10"
+                            user.role === 'client' ? "text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-950/30 bg-purple-500/5 dark:bg-purple-500/10" : "text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-950/30 bg-emerald-500/5 dark:bg-emerald-500/10"
                           )}
                         >
                           <option value="technician">Teknisi Protocol</option>
@@ -407,7 +407,7 @@ function AddUserModal({ isOpen, onClose, onCopy, copied, onRefresh }: any) {
                      <UserPlus className="w-10 h-10" />
                   </div>
                   <h2 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight uppercase italic leading-none">Security Provisioning</h2>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-550 font-black uppercase tracking-widest mt-2 font-mono">Create or Invite Authorized Personnel</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest mt-2 font-mono">Create or Invite Authorized Personnel</p>
                </div>
 
                <div className="flex bg-slate-50 dark:bg-slate-950 p-1.5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-inner">
@@ -444,11 +444,11 @@ function AddUserModal({ isOpen, onClose, onCopy, copied, onRefresh }: any) {
                         <ul className="space-y-6">
                            <li className="flex gap-6 items-start">
                               <span className="w-8 h-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black shrink-0 text-xs shadow-sm italic">1</span>
-                              <p className="text-slate-550 dark:text-slate-400 text-sm leading-relaxed font-medium pt-1 italic"><span className="font-black text-slate-900 dark:text-slate-200 uppercase">Deploy Hub URL</span> and transmit to candidate.</p>
+                              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium pt-1 italic"><span className="font-black text-slate-900 dark:text-slate-200 uppercase">Deploy Hub URL</span> and transmit to candidate.</p>
                            </li>
                            <li className="flex gap-6 items-start">
                               <span className="w-8 h-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black shrink-0 text-xs shadow-sm italic">2</span>
-                              <p className="text-slate-550 dark:text-slate-400 text-sm leading-relaxed font-medium pt-1 italic">Candidate executes <span className="font-black text-slate-900 dark:text-slate-200 uppercase">Authentication Setup</span>.</p>
+                              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium pt-1 italic">Candidate executes <span className="font-black text-slate-900 dark:text-slate-200 uppercase">Authentication Setup</span>.</p>
                            </li>
                         </ul>
                      </section>
@@ -491,9 +491,9 @@ function AddUserModal({ isOpen, onClose, onCopy, copied, onRefresh }: any) {
                             </div>
                           </div>
                           
-                          <div className="bg-white/80 dark:bg-black/40 p-4 rounded-xl text-[9px] text-[#8a1c1c] dark:text-red-350 font-mono space-y-2 border border-red-100/50 shadow-inner">
+                          <div className="bg-white/80 dark:bg-black/40 p-4 rounded-xl text-[9px] text-[#8a1c1c] dark:text-red-300 font-mono space-y-2 border border-red-100/50 shadow-inner">
                             <p className="font-bold uppercase tracking-wider text-[8px]">Langkah Aktivasi 1-Menit:</p>
-                            <ol className="list-decimal pl-4 space-y-1 font-medium text-red-750 dark:text-red-400">
+                            <ol className="list-decimal pl-4 space-y-1 font-medium text-red-700 dark:text-red-400">
                               <li>Klik tombol biru di bawah ini untuk membuka halaman aktivasi GCP Console.</li>
                               <li>Gunakan akun Google yang sama dengan pengelola database ini.</li>
                               <li>Tekan tombol <span className="font-bold text-red-900 dark:text-red-200">"ENABLE" (Aktifkan)</span> di halaman tersebut.</li>

@@ -18,23 +18,23 @@ export function Logo({ className = '', iconOnly = false }: LogoProps) {
         <defs>
           {/* Vibrant Deep-Blue to Electric-Cyan Gradient for Top swoosh */}
           <linearGradient id="spektrumBlueTop" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0284c7" />
-            <stop offset="50%" stopColor="#0284c7" />
-            <stop offset="100%" stopColor="#1e3a8a" />
+            <stop offset="0%" stopColor="#8b5cf6" />
+            <stop offset="50%" stopColor="#6366f1" />
+            <stop offset="100%" stopColor="#312e81" />
           </linearGradient>
 
           {/* Electric Cyan to Sky Blue Gradient for Bottom swoosh */}
           <linearGradient id="spektrumBlueBottom" x1="100%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#1e3a8a" />
-            <stop offset="60%" stopColor="#0284c7" />
-            <stop offset="100%" stopColor="#22d3ee" />
+            <stop offset="0%" stopColor="#4c1d95" />
+            <stop offset="60%" stopColor="#f43f5e" />
+            <stop offset="100%" stopColor="#06b6d4" />
           </linearGradient>
 
           {/* Premium Metallic Silver-to-Grey Gradient for Inner Arc */}
           <linearGradient id="spektrumSilver" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#94a3b8" />
-            <stop offset="50%" stopColor="#cbd5e1" />
-            <stop offset="100%" stopColor="#64748b" />
+            <stop offset="0%" stopColor="#cbd5e1" />
+            <stop offset="50%" stopColor="#e2e8f0" />
+            <stop offset="100%" stopColor="#94a3b8" />
           </linearGradient>
         </defs>
 
@@ -91,8 +91,8 @@ export function Logo({ className = '', iconOnly = false }: LogoProps) {
               fontFamily="system-ui, -apple-system, sans-serif"
               fontWeight="700"
               fontSize="10"
-              fill="#2563eb"
-              className="text-blue-600 dark:text-cyan-400 font-mono"
+              fill="#8b5cf6"
+              className="text-indigo-500 dark:text-rose-400 font-mono"
               letterSpacing="0.45em"
             >
               METROLOGY & CALIBRATION

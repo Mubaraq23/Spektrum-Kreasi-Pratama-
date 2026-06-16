@@ -67,7 +67,7 @@ export function Certificates() {
                 Manajemen <span className="text-blue-600 italic">Sertifikat</span>
               </h1>
            </div>
-           <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1">Database Sertifikat Kalibrasi Terpusat • Quantum Precision Systems</p>
+           <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] ml-1">Database Sertifikat Kalibrasi Terpusat • PT. SPEKTRUM KREASI PRATAMA</p>
         </div>
         <div className="relative group w-full md:w-auto">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />

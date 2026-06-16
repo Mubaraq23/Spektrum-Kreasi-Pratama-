@@ -293,7 +293,7 @@ export function LKStickerThermalPrint({ lk, qrCodeUrl, isLaik, onPrintSuccess }:
             </div>
 
             <div class="sticker-footer">
-              <div class="footer-brand">${logoOption !== 'none' ? 'PT QUANTUM PRECISION SYSTEMS' : 'SPEKTRUM CALIBRAPRO'}</div>
+              <div class="footer-brand">${logoOption !== 'none' ? 'PT SPEKTRUM KREASI PRATAMA' : 'SPEKTRUM CALIBRAPRO'}</div>
               <div class="footer-signature">PIC: ${lk.technicianName?.split(' ')[0] || 'METROLOGIST'}</div>
             </div>
           </div>
@@ -327,7 +327,7 @@ export function LKStickerThermalPrint({ lk, qrCodeUrl, isLaik, onPrintSuccess }:
       <div className="space-y-4">
         {/* Preset Selector */}
         <div>
-          <label className="block text-[8px] font-black text-slate-550 dark:text-slate-400 uppercase tracking-widest mb-1.5 font-mono">
+          <label className="block text-[8px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 font-mono">
             Ukuran Label Roll Fisik
           </label>
           <div className="grid grid-cols-3 gap-2">

@@ -669,7 +669,7 @@ export function WorkMethods() {
                   <div className="bg-white/80 dark:bg-slate-900/80 p-4 border border-blue-200/60 dark:border-blue-900/30 rounded-xl font-mono text-xs font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center justify-center gap-2">
                     <span>u<sub>c</sub> = √[ (u₁)² + (u₂)² + (u₃)² + (u₄)² ]</span>
                   </div>
-                  <p className="text-[9px] text-slate-550 dark:text-slate-400 font-bold uppercase leading-relaxed font-mono">Prinsip dasar penggabungan kuadratik (root-sum-of-squares) untuk parameter yang tidak saling berkorelasi.</p>
+                  <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase leading-relaxed font-mono">Prinsip dasar penggabungan kuadratik (root-sum-of-squares) untuk parameter yang tidak saling berkorelasi.</p>
                 </div>
 
                 {/* Expanded */}
@@ -681,7 +681,7 @@ export function WorkMethods() {
                   <div className="bg-white/80 dark:bg-slate-900/80 p-4 border border-emerald-200/60 dark:border-emerald-900/30 rounded-xl font-mono text-xs font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center justify-center gap-2">
                     <span>U<sub>95</sub> = k × u<sub>c</sub>  (k = 2)</span>
                   </div>
-                  <p className="text-[9px] text-slate-550 dark:text-slate-400 font-bold uppercase leading-relaxed font-mono">Dilaporkan pada tingkat kepercayaan sekitar 95% dengan faktor cakupan k=2 sesuai standar Komite Akreditasi Nasional (KAN).</p>
+                  <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase leading-relaxed font-mono">Dilaporkan pada tingkat kepercayaan sekitar 95% dengan faktor cakupan k=2 sesuai standar Komite Akreditasi Nasional (KAN).</p>
                 </div>
               </div>
 
@@ -707,7 +707,7 @@ export function WorkMethods() {
                         <span className="text-[9px] font-black text-blue-600 dark:text-cyan-400 uppercase tracking-widest font-mono italic">Playground Metrologi Cerdas</span>
                         <h4 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none italic">Simulator Uncertainty Budget U95</h4>
                       </div>
-                      <div className="flex items-center gap-2 bg-emerald-500/5 dark:bg-emerald-950/15 border border-emerald-500/20 px-4 py-2 rounded-xl text-[10px] text-emerald-700 dark:text-emerald-450 font-black uppercase tracking-wider font-mono">
+                      <div className="flex items-center gap-2 bg-emerald-500/5 dark:bg-emerald-950/15 border border-emerald-500/20 px-4 py-2 rounded-xl text-[10px] text-emerald-700 dark:text-emerald-400 font-black uppercase tracking-wider font-mono">
                         <Sparkles className="w-3.5 h-3.5" />
                         GUM ISO/IEC 17025 Compliant
                       </div>
@@ -810,7 +810,7 @@ export function WorkMethods() {
                             .unc-share-u3 { width: ${u3Pct}%; }
                             .unc-share-u4 { width: ${u4Pct}%; }
                           ` }} />
-                          <h6 className="text-[10px] font-black text-slate-450 dark:text-slate-550 uppercase tracking-wider font-mono">Persentase Kontribusi Ketidakpastian (Uncertainty Share)</h6>
+                          <h6 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono">Persentase Kontribusi Ketidakpastian (Uncertainty Share)</h6>
                           <div className="h-6 w-full rounded-full overflow-hidden flex bg-slate-100 dark:bg-slate-800">
                             {u1Pct > 0 && <div className="bg-blue-500 h-full transition-all duration-300 unc-share-u1" title={`Resolusi: ${u1Pct.toFixed(1)}%`} />}
                             {u2Pct > 0 && <div className="bg-indigo-500 h-full transition-all duration-300 unc-share-u2" title={`Sertifikat Master: ${u2Pct.toFixed(1)}%`} />}
@@ -859,7 +859,7 @@ export function WorkMethods() {
                           </div>
 
                           <div className="pt-4 border-t border-white/10 dark:border-cyan-500/10 space-y-1">
-                            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-200 dark:text-emerald-450">Expanded Uncertainty (U95, k=2)</span>
+                            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-200 dark:text-emerald-400">Expanded Uncertainty (U95, k=2)</span>
                             <h3 className="text-3xl font-black font-mono text-emerald-300 dark:text-emerald-400 italic leading-none">± {u95.toFixed(5)}</h3>
                             <p className="text-[8px] text-white/50 dark:text-slate-400 font-bold uppercase tracking-wider font-mono">Tingkat Kepercayaan 95.45% (Coverage Factor k = 2)</p>
                           </div>
@@ -934,7 +934,7 @@ export function WorkMethods() {
  
               <div>
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 leading-tight italic tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase">MK-{translateToIndonesian(method.title)}</h3>
-                <span className="text-[9px] font-black text-blue-600 dark:text-[#06B6D4] uppercase tracking-[0.2em] bg-blue-50/50 dark:bg-cyan-500/10 px-3 py-1.5 rounded-full border border-blue-100 dark:border-cyan-550/20 shadow-sm italic">{method.deviceCategory}</span>
+                <span className="text-[9px] font-black text-blue-600 dark:text-[#06B6D4] uppercase tracking-[0.2em] bg-blue-50/50 dark:bg-cyan-500/10 px-3 py-1.5 rounded-full border border-blue-100 dark:border-cyan-500/20 shadow-sm italic">{method.deviceCategory}</span>
               </div>
  
               <div className="space-y-4 pt-2">
@@ -950,7 +950,7 @@ export function WorkMethods() {
  
               <button 
                 onClick={() => handleToggleParameterEdit(method)}
-                className="w-full flex items-center justify-between p-5 bg-slate-50 dark:bg-[#070d19] border border-slate-100 dark:border-slate-800/80 rounded-[1.8rem] text-[10px] font-black text-slate-400 dark:text-slate-400/80 uppercase tracking-widest group-hover:text-blue-700 dark:group-hover:text-blue-450 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/20 group-hover:border-blue-200 dark:group-hover:border-blue-900 group-hover:shadow-lg group-hover:shadow-blue-500/5 transition-all"
+                className="w-full flex items-center justify-between p-5 bg-slate-50 dark:bg-[#070d19] border border-slate-100 dark:border-slate-800/80 rounded-[1.8rem] text-[10px] font-black text-slate-400 dark:text-slate-400/80 uppercase tracking-widest group-hover:text-blue-700 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/20 group-hover:border-blue-200 dark:group-hover:border-blue-900 group-hover:shadow-lg group-hover:shadow-blue-500/5 transition-all"
               >
                 Atur MK & Parameter
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
@@ -1304,7 +1304,7 @@ export function WorkMethods() {
                                   rows={5}
                                   placeholder="Tuliskan tujuan misi kalibrasi..."
                                   title="Mission Objectives"
-                                  className="w-full bg-white dark:bg-[#10192d] border border-slate-200 dark:border-slate-800 rounded-[2rem] px-6 py-6 text-sm font-medium text-slate-500 dark:text-slate-350 leading-relaxed focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all resize-none shadow-sm italic"
+                                  className="w-full bg-white dark:bg-[#10192d] border border-slate-200 dark:border-slate-800 rounded-[2rem] px-6 py-6 text-sm font-medium text-slate-500 dark:text-slate-300 leading-relaxed focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all resize-none shadow-sm italic"
                                 />
                              </div>
                           </div>
@@ -1317,7 +1317,7 @@ export function WorkMethods() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                                {(selectedMethod.physicalChecks || []).map((check: string, idx: number) => (
-                                  <div key={idx} className="flex gap-4 p-4 bg-slate-50 dark:bg-[#070d19]/85 border border-slate-100 dark:border-slate-800 border-l-4 border-l-blue-600 dark:border-l-cyan-500 rounded-2xl group relative hover:bg-white dark:hover:bg-[#10192d] hover:border-blue-200 dark:hover:border-cyan-550/30 transition-all shadow-sm">
+                                  <div key={idx} className="flex gap-4 p-4 bg-slate-50 dark:bg-[#070d19]/85 border border-slate-100 dark:border-slate-800 border-l-4 border-l-blue-600 dark:border-l-cyan-500 rounded-2xl group relative hover:bg-white dark:hover:bg-[#10192d] hover:border-blue-200 dark:hover:border-cyan-500/30 transition-all shadow-sm">
                                      <textarea 
                                        value={check}
                                        rows={2}
@@ -1328,7 +1328,7 @@ export function WorkMethods() {
                                        }}
                                        placeholder="Deskripsi pemeriksaan fisik"
                                        title="Deskripsi Pemeriksaan Fisik"
-                                       className="bg-transparent border-none focus:outline-none flex-1 text-xs font-bold text-slate-600 dark:text-slate-350 italic whitespace-normal break-words resize-none font-mono"
+                                       className="bg-transparent border-none focus:outline-none flex-1 text-xs font-bold text-slate-600 dark:text-slate-300 italic whitespace-normal break-words resize-none font-mono"
                                      />
                                      <button 
                                        onClick={() => {
@@ -1369,7 +1369,7 @@ export function WorkMethods() {
                                        }}
                                        placeholder="Deskripsi pemeriksaan fungsi"
                                        title="Deskripsi Pemeriksaan Fungsi"
-                                       className="bg-transparent border-none focus:outline-none flex-1 text-xs font-bold text-slate-600 dark:text-slate-350 italic whitespace-normal break-words resize-none font-mono"
+                                       className="bg-transparent border-none focus:outline-none flex-1 text-xs font-bold text-slate-600 dark:text-slate-300 italic whitespace-normal break-words resize-none font-mono"
                                      />
                                      <button 
                                        onClick={() => {

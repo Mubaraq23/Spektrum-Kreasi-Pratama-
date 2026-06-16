@@ -395,7 +395,7 @@ export function IKAssistant() {
                 )}
 
                 {showPdfSuccess && (
-                  <div className="absolute top-4 right-4 z-50 bg-indigo-650 text-white text-[9px] font-black tracking-widest uppercase px-5 py-2.5 rounded-xl shadow-lg border border-indigo-500/30 flex items-center gap-2">
+                  <div className="absolute top-4 right-4 z-50 bg-indigo-600 text-white text-[9px] font-black tracking-widest uppercase px-5 py-2.5 rounded-xl shadow-lg border border-indigo-500/30 flex items-center gap-2">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     PDF berhasil dibuat & diunduh!
                   </div>

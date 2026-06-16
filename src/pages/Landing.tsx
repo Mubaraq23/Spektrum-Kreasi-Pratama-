@@ -12,7 +12,7 @@ import {
   Gauge, Cpu, Sun, Moon, HelpCircle, Check, AlertTriangle, ChevronDown,
   Settings, QrCode, FileSpreadsheet, Menu, X, Star, Globe, Lock,
   BarChart3, Atom, TrendingUp, Search, Layers, MessageCircle, Phone, Mail,
-  Activity, AwardIcon, Compass, Server
+  Activity, AwardIcon, Compass, Server, Download
 } from 'lucide-react';
 
 const STATS = [
@@ -153,23 +153,23 @@ export function Landing() {
   ];
 
   const navLinks = [['#workflow','Alur Kerja'],['#services','Kategori'],['#request-form','Registrasi Alat'],['#faq','Bantuan']];  return (
-    <div className="min-h-screen bg-[#f4f6fb] dark:bg-[#030712] text-slate-900 dark:text-slate-100 overflow-x-hidden font-sans relative selection:bg-cyan-500 selection:text-black transition-colors duration-300">
+    <div className="min-h-screen bg-[#fafafc] dark:bg-[#06080e] text-slate-900 dark:text-slate-100 overflow-x-hidden font-sans relative selection:bg-rose-500 selection:text-white transition-colors duration-300">
       
       {/* ── Background Blobs & Interactive Glows ── */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div 
-          className="absolute w-[600px] h-[600px] rounded-full bg-cyan-500/[0.08] dark:bg-cyan-500/[0.12] blur-[150px] transition-transform duration-700 ease-out top-[5%] right-[5%]"
+          className="absolute w-[600px] h-[600px] rounded-full bg-rose-500/[0.08] dark:bg-rose-500/[0.12] blur-[150px] transition-transform duration-700 ease-out top-[5%] right-[5%]"
           style={{
             transform: `translate(${mousePosition.x - 10}%, ${mousePosition.y - 15}%)`,
           } as React.CSSProperties}
         />
         <div 
-          className="absolute w-[500px] h-[500px] rounded-full bg-violet-600/[0.06] dark:bg-violet-600/[0.1] blur-[130px] transition-transform duration-700 ease-out bottom-[15%] left-[5%]"
+          className="absolute w-[500px] h-[500px] rounded-full bg-indigo-600/[0.06] dark:bg-indigo-600/[0.1] blur-[130px] transition-transform duration-700 ease-out bottom-[15%] left-[5%]"
           style={{
             transform: `translate(${mousePosition.x * -0.8}%, ${mousePosition.y * -0.8}%)`,
           } as React.CSSProperties}
         />
-        <div className="absolute top-[35%] left-[45%] w-[400px] h-[400px] rounded-full bg-blue-600/[0.04] dark:bg-blue-600/[0.08] blur-[120px]" />
+        <div className="absolute top-[35%] left-[45%] w-[400px] h-[400px] rounded-full bg-violet-600/[0.04] dark:bg-violet-600/[0.08] blur-[120px]" />
       </div>
 
       {/* Futuristic Mesh Grid Pattern */}
@@ -181,13 +181,13 @@ export function Landing() {
       <header className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-white/85 dark:bg-[#040814]/85 backdrop-blur-xl border-b border-slate-200/50 dark:border-cyan-500/10 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+          ? "bg-white/85 dark:bg-[#06080e]/85 backdrop-blur-xl border-b border-slate-200/50 dark:border-rose-500/10 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
           : "bg-transparent"
       )}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
 
           <button onClick={() => navigate('/')} className="flex items-center gap-2 group" title="Beranda" aria-label="Beranda">
-            <Logo className="text-slate-900 dark:text-white h-9 drop-shadow-[0_0_15px_rgba(6,182,212,0.15)] dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-transform group-hover:scale-105" />
+            <Logo className="text-slate-900 dark:text-white h-9 drop-shadow-[0_0_15px_rgba(99,102,241,0.15)] dark:drop-shadow-[0_0_15px_rgba(244,63,94,0.3)] transition-transform group-hover:scale-105" />
           </button>
 
           {/* Desktop nav */}
@@ -195,9 +195,9 @@ export function Landing() {
             {navLinks.map(([href, label]) => (
               <a key={href} href={href}
                 className={cn(
-                  "text-[10px] font-black uppercase tracking-[0.25em] transition-all font-mono hover:text-blue-600 dark:hover:text-cyan-400 relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-600 dark:after:bg-cyan-500 after:transition-all hover:after:w-full",
+                  "text-[10px] font-black uppercase tracking-[0.25em] transition-all font-mono hover:text-indigo-600 dark:hover:text-rose-400 relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-indigo-600 dark:after:bg-rose-400 after:transition-all hover:after:w-full",
                   label === 'Registrasi Alat'
-                    ? "text-blue-600 dark:text-cyan-400 font-extrabold"
+                    ? "text-indigo-600 dark:text-rose-400 font-extrabold"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white"
                 )}
               >
@@ -210,7 +210,7 @@ export function Landing() {
             {/* Theme Toggle (Custom styled for dark/light portal vibe) */}
             <button
               onClick={toggleTheme}
-              className="p-3 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-cyan-400 hover:border-slate-300 dark:hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm dark:shadow-inner"
+              className="p-3 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-rose-400 hover:border-slate-300 dark:hover:border-rose-500/30 transition-all cursor-pointer shadow-sm dark:shadow-inner"
               title={theme === 'dark' ? 'Mode Terang' : 'Mode Gelap'}
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" /> : <Moon className="w-4 h-4 text-slate-700" />}
@@ -218,14 +218,18 @@ export function Landing() {
 
             {/* CTA button with Glassmorphic cyber effect */}
             {user ? (
-              <Link to="/dashboard" className="hidden sm:flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white dark:text-slate-950 bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-cyan-400 dark:to-blue-500 hover:opacity-90 transition-all shadow-[0_0_20px_rgba(6,182,212,0.15)] dark:shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:-translate-y-0.5 active:translate-y-0">
+              <Link to="/dashboard" className="hidden sm:flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white dark:text-slate-950 bg-gradient-to-r from-indigo-600 to-rose-500 dark:from-rose-400 dark:to-indigo-500 hover:opacity-90 transition-all shadow-[0_0_20px_rgba(99,102,241,0.15)] dark:shadow-[0_0_20px_rgba(244,63,94,0.3)] hover:-translate-y-0.5 active:translate-y-0">
                 <BarChart3 className="w-3.5 h-3.5" /> Dashboard
               </Link>
             ) : (
-              <Link to="/login" className="hidden sm:flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-slate-300 dark:border-cyan-500/20 bg-white/40 dark:bg-slate-950/40 hover:bg-slate-100 dark:hover:bg-cyan-500/10 hover:border-blue-600 dark:hover:border-cyan-400 transition-all shadow-[0_0_15px_rgba(6,182,212,0.03)] dark:shadow-[0_0_25px_rgba(6,182,212,0.2)] hover:-translate-y-0.5 active:translate-y-0">
-                <Lock className="w-3.5 h-3.5 text-blue-600 dark:text-cyan-400" /> Akses Portal
+              <Link to="/login" className="hidden sm:flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 hover:bg-slate-100 dark:hover:bg-rose-500/10 hover:border-indigo-600 dark:hover:border-rose-400 transition-all shadow-[0_0_15px_rgba(99,102,241,0.03)] dark:shadow-[0_0_25px_rgba(244,63,94,0.2)] hover:-translate-y-0.5 active:translate-y-0">
+                <Lock className="w-3.5 h-3.5 text-indigo-600 dark:text-rose-400" /> Akses Portal
               </Link>
             )}
+
+            <a href="/spektrum-kalibrasi.apk" download className="hidden sm:flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 hover:bg-slate-100 dark:hover:bg-rose-500/10 hover:border-indigo-600 dark:hover:border-rose-400 transition-all shadow-[0_0_15px_rgba(99,102,241,0.03)] dark:shadow-[0_0_25px_rgba(244,63,94,0.2)] hover:-translate-y-0.5 active:translate-y-0">
+              <Download className="w-3.5 h-3.5 text-indigo-650 dark:text-rose-400" /> Unduh APK
+            </a>
 
             {/* Mobile menu toggle */}
             <button
@@ -240,20 +244,23 @@ export function Landing() {
 
         {/* Mobile dropdown menu with neon style */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-[#040814]/98 border-t border-cyan-500/10 shadow-2xl">
+          <div className="lg:hidden bg-[#06080e]/98 border-t border-rose-500/10 shadow-2xl">
             <nav className="px-6 py-6 space-y-2">
               {navLinks.map(([href, label]) => (
                 <a key={href} href={href} onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/5 rounded-2xl transition-all font-mono"
+                  className="flex items-center gap-3 px-4 py-3.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-rose-400 hover:bg-rose-500/5 rounded-2xl transition-all font-mono"
                 >
                   {label}
                 </a>
               ))}
-              <div className="pt-4 border-t border-slate-800">
+              <div className="pt-4 border-t border-slate-800 flex flex-col gap-3">
                 {user
-                  ? <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 w-full"><BarChart3 className="w-4 h-4" /> Dashboard</Link>
-                  : <Link to="/login"     onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border border-cyan-500/20 bg-slate-950/40 w-full"><Lock className="w-4 h-4 text-cyan-400" /> Akses Portal</Link>
+                  ? <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-950 bg-gradient-to-r from-rose-400 to-indigo-500 w-full"><BarChart3 className="w-4 h-4" /> Dashboard</Link>
+                  : <Link to="/login"     onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border border-rose-500/20 bg-slate-950/40 w-full"><Lock className="w-4 h-4 text-rose-400" /> Akses Portal</Link>
                 }
+                <a href="/spektrum-kalibrasi.apk" download onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 w-full">
+                  <Download className="w-4 h-4 text-rose-400" /> Unduh Aplikasi (APK)
+                </a>
               </div>
             </nav>
           </div>
@@ -283,38 +290,38 @@ export function Landing() {
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.08] uppercase">
               <span className="block text-slate-900 dark:text-white opacity-95">{settings.heroTitle.split(' ').slice(0,3).join(' ')}</span>
-              <span className="block my-2.5 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-500 dark:from-cyan-400 dark:via-blue-400 dark:to-indigo-400 drop-shadow-[0_0_20px_rgba(6,182,212,0.1)] dark:drop-shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+              <span className="block my-2.5 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-rose-500 to-violet-500 dark:from-rose-400 dark:via-indigo-400 dark:to-violet-400 drop-shadow-[0_0_20px_rgba(99,102,241,0.1)] dark:drop-shadow-[0_0_20px_rgba(244,63,94,0.15)]">
                 {settings.heroTitle.split(' ').slice(3,6).join(' ')}
               </span>
               <span className="block text-slate-700 dark:text-slate-300">{settings.heroTitle.split(' ').slice(6).join(' ')}</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-450 leading-relaxed font-medium max-w-2xl">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed font-medium max-w-2xl">
               {settings.heroSubtitle}
             </p>
 
             {/* Action CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
               <Link to={user ? '/dashboard' : '/login'}
-                className="group flex items-center justify-center gap-3 px-7 py-4.5 rounded-2xl font-black text-[11px] uppercase tracking-widest text-white dark:text-slate-950 bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-cyan-400 dark:to-blue-500 hover:opacity-90 transition-all shadow-[0_8px_30px_rgba(6,182,212,0.15)] dark:shadow-[0_8px_30px_rgba(6,182,212,0.2)] hover:shadow-[0_8px_40px_rgba(6,182,212,0.35)] hover:-translate-y-0.5 active:translate-y-0"
+                className="group flex items-center justify-center gap-3 px-7 py-4.5 rounded-2xl font-black text-[11px] uppercase tracking-widest text-white dark:text-slate-950 bg-gradient-to-r from-indigo-600 to-rose-500 dark:from-rose-400 dark:to-indigo-500 hover:opacity-90 transition-all shadow-[0_8px_30px_rgba(99,102,241,0.15)] dark:shadow-[0_8px_30px_rgba(244,63,94,0.2)] hover:shadow-[0_8px_40px_rgba(99,102,241,0.35)] hover:-translate-y-0.5 active:translate-y-0"
               >
                 {user ? 'Buka Dashboard Utama' : 'Masuk Terminal Operasi'}
                 <ArrowRight className="w-4 h-4 text-white dark:text-slate-950 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href="#workflow"
-                className="flex items-center justify-center gap-2 px-7 py-4.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-200 dark:hover:bg-slate-800/85 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm"
+              <a href="/spektrum-kalibrasi.apk" download
+                className="flex items-center justify-center gap-2 px-7 py-4.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800/85 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm"
               >
-                Alur Kerja Digital
+                <Download className="w-4.5 h-4.5 text-indigo-600 dark:text-rose-400" /> Unduh Aplikasi Android (APK)
               </a>
             </div>
 
             {/* Quality Seals */}
             <div className="flex flex-wrap gap-x-6 gap-y-3 pt-6 border-t border-slate-200 dark:border-slate-900/80">
               {[
-                { icon: ShieldCheck, text: 'ISO 17025 Compliant', color: 'text-blue-600 dark:text-cyan-400' },
+                { icon: ShieldCheck, text: 'ISO 17025 Compliant', color: 'text-indigo-600 dark:text-rose-400' },
                 { icon: Award,       text: 'Akreditasi KAN Resmi',  color: 'text-amber-500 dark:text-amber-400' },
-                { icon: Database,    text: 'Sinkronisasi Kemenkes', color: 'text-indigo-600 dark:text-blue-400' },
+                { icon: Database,    text: 'Sinkronisasi Kemenkes', color: 'text-violet-600 dark:text-indigo-400' },
               ].map(({ icon: Icon, text, color }) => (
                 <div key={text} className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500 font-mono">
                   <Icon className={cn("w-3.5 h-3.5 shrink-0", color)} /> {text}
@@ -325,8 +332,8 @@ export function Landing() {
 
           {/* Right Column: Premium Cyber Dashboard Preview Widget */}
           <div className="lg:col-span-5 relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 rounded-[2.5rem] blur-2xl opacity-70 group-hover:opacity-90 transition-opacity pointer-events-none" />
-            <div className="relative bg-[#080c1a]/90 border border-cyan-500/15 p-6 rounded-[2rem] shadow-2xl space-y-6 backdrop-blur-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-rose-500/10 to-indigo-500/10 rounded-[2.5rem] blur-2xl opacity-70 group-hover:opacity-90 transition-opacity pointer-events-none" />
+            <div className="relative bg-[#080c1a]/90 border border-rose-500/15 p-6 rounded-[2rem] shadow-2xl space-y-6 backdrop-blur-xl">
               
               {/* Header Info */}
               <div className="flex justify-between items-center border-b border-slate-900 pb-4">
@@ -422,7 +429,7 @@ export function Landing() {
       <section id="workflow" className="py-24 sm:py-32 px-4 sm:px-6 lg:px-8 bg-slate-50/40 dark:bg-slate-950/40 border-y border-slate-200 dark:border-slate-900 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
-            <span className="section-label inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-blue-600/25 dark:border-cyan-500/20 bg-blue-550/5 dark:bg-cyan-500/5 text-[9px] font-mono tracking-widest text-blue-600 dark:text-cyan-400 uppercase">
+            <span className="section-label inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-blue-600/25 dark:border-cyan-500/20 bg-blue-500/5 dark:bg-cyan-500/5 text-[9px] font-mono tracking-widest text-blue-600 dark:text-cyan-400 uppercase">
               <Settings className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} /> Sistem Integrasi Kalibrasi
             </span>
             <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
@@ -437,7 +444,7 @@ export function Landing() {
             {steps.map((step, idx) => {
               const Icon = step.icon;
               return (
-                <div key={idx} className="group relative bg-[#f8fafc] dark:bg-[#090d1f] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 hover:border-blue-450 dark:hover:border-cyan-500/30 hover:shadow-[0_10px_35px_rgba(6,182,212,0.04)] dark:hover:shadow-[0_10px_35px_rgba(6,182,212,0.08)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
+                <div key={idx} className="group relative bg-[#f8fafc] dark:bg-[#090d1f] border border-slate-200 dark:border-slate-800 rounded-3xl p-8 hover:border-blue-400 dark:hover:border-cyan-500/30 hover:shadow-[0_10px_35px_rgba(6,182,212,0.04)] dark:hover:shadow-[0_10px_35px_rgba(6,182,212,0.08)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-center mb-6">
                       <div className={cn("w-12 h-12 rounded-2xl bg-gradient-to-br text-slate-950 flex items-center justify-center shadow-lg font-black", step.color)}>
@@ -445,7 +452,7 @@ export function Landing() {
                       </div>
                       <span className="text-[12px] font-black font-mono text-slate-400 dark:text-slate-700 group-hover:text-blue-600 dark:group-hover:text-cyan-500/50 transition-colors">{step.num}</span>
                     </div>
-                    <h3 className="text-base font-black text-slate-850 dark:text-white uppercase tracking-tight mb-3">{step.title}</h3>
+                    <h3 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-tight mb-3">{step.title}</h3>
                     <p className="text-slate-500 dark:text-slate-400 text-xs font-medium leading-relaxed">{step.desc}</p>
                   </div>
                 </div>
@@ -482,8 +489,8 @@ export function Landing() {
                       <Icon className="w-5 h-5 text-white dark:text-slate-950" />
                     </div>
                     <div>
-                      <h3 className="text-base font-black text-slate-850 dark:text-white uppercase tracking-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors">{cat.name}</h3>
-                      <p className="text-slate-550 dark:text-slate-400 text-xs font-medium leading-relaxed">{cat.desc}</p>
+                      <h3 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-tight mb-2 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors">{cat.name}</h3>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs font-medium leading-relaxed">{cat.desc}</p>
                     </div>
                   </div>
                 );
@@ -505,7 +512,7 @@ export function Landing() {
 
             <div className="space-y-4">
               {faqs.map((faq, idx) => (
-                <div key={idx} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-[#f8fafc] dark:bg-[#090d1f]/80 overflow-hidden shadow-md hover:border-blue-450 dark:hover:border-cyan-500/20 transition-all duration-300">
+                <div key={idx} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-[#f8fafc] dark:bg-[#090d1f]/80 overflow-hidden shadow-md hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300">
                   <button
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                     className="w-full text-left px-5 py-4.5 flex justify-between items-center gap-4 hover:bg-slate-100/50 dark:hover:bg-cyan-500/[0.02] transition-colors cursor-pointer"
@@ -534,13 +541,13 @@ export function Landing() {
           <div className="relative bg-[#f8fafc]/90 dark:bg-[#080d1e]/80 backdrop-blur-2xl border border-slate-200 dark:border-cyan-500/10 p-8 sm:p-12 rounded-[2.5rem] shadow-2xl overflow-hidden">
             
             {/* Hologram top edge neon line */}
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-650 to-transparent dark:via-cyan-400 shadow-[0_0_10px_#06b6d4]" />
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-600 to-transparent dark:via-cyan-400 shadow-[0_0_10px_#06b6d4]" />
 
             <div className="text-center mb-10 space-y-3">
               <span className="section-label inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-blue-600/25 dark:border-cyan-500/20 bg-blue-500/5 dark:bg-cyan-500/5 text-[9px] font-mono tracking-widest text-blue-600 dark:text-cyan-400 uppercase">
                 <Sparkles className="w-3.5 h-3.5" /> Portal Registrasi Cepat
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-850 dark:text-white uppercase tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
                 Registrasi Instan Alat Kesehatan 🏥
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
@@ -565,7 +572,7 @@ export function Landing() {
             ) : (
               <form onSubmit={handlePublicRequest} className="space-y-6">
                 {formError && (
-                  <div className="p-4 bg-red-550/5 dark:bg-red-500/10 border border-red-200 dark:border-red-500/25 text-red-650 dark:text-red-400 rounded-2xl flex items-start gap-3 text-xs font-semibold">
+                  <div className="p-4 bg-red-500/5 dark:bg-red-500/10 border border-red-200 dark:border-red-500/25 text-red-600 dark:text-red-400 rounded-2xl flex items-start gap-3 text-xs font-semibold">
                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                     <span>{formError}</span>
                   </div>
@@ -587,33 +594,33 @@ export function Landing() {
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 block">Nama Narahubung / PIC</label>
                       <input type="text" required placeholder="Dr. Teguh Pratama" value={custName} onChange={e=>setCustName(e.target.value)}
-                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-blue-600 dark:focus:border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/5 dark:focus:ring-cyan-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-indigo-600 dark:focus:border-rose-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600/5 dark:focus:ring-rose-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 block">Nomor WhatsApp Aktif (62xxx)</label>
                       <input type="text" required placeholder="6281234567890" value={custWhatsapp} onChange={e=>setCustWhatsapp(e.target.value)}
-                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-blue-600 dark:focus:border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/5 dark:focus:ring-cyan-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-indigo-600 dark:focus:border-rose-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600/5 dark:focus:ring-rose-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 block">Alamat Email Resmi</label>
                       <input type="email" required placeholder="info@rshermina.com" value={custEmail} onChange={e=>setCustEmail(e.target.value)}
-                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-blue-600 dark:focus:border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/5 dark:focus:ring-cyan-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-indigo-600 dark:focus:border-rose-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600/5 dark:focus:ring-rose-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
                       />
                     </div>
                   </div>
 
                   {/* Instrument Specifications Section */}
                   <div className="space-y-4">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-cyan-400 font-mono mb-2">02. Spesifikasi Alat Kesehatan</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-rose-400 font-mono mb-2">02. Spesifikasi Alat Kesehatan</h3>
 
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 block">Nama Alat Medis</label>
                       <input type="text" required placeholder="Defibrillator / Infusion Pump" value={devName} onChange={e=>setDevName(e.target.value)}
-                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-blue-600 dark:focus:border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/5 dark:focus:ring-cyan-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                        className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-indigo-600 dark:focus:border-rose-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600/5 dark:focus:ring-rose-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
                       />
                     </div>
 
@@ -621,13 +628,13 @@ export function Landing() {
                       <div className="space-y-1.5">
                         <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 block">Merk / Manufaktur</label>
                         <input type="text" required placeholder="Zoll / Terumo" value={devBrand} onChange={e=>setDevBrand(e.target.value)}
-                          className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-blue-600 dark:focus:border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/5 dark:focus:ring-cyan-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                          className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-indigo-600 dark:focus:border-rose-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600/5 dark:focus:ring-rose-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
                         />
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-[9px] font-black uppercase tracking-wider text-slate-500 block">Tipe / Model</label>
                         <input type="text" required placeholder="M Series / TE-331" value={devModel} onChange={e=>setDevModel(e.target.value)}
-                          className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-blue-600 dark:focus:border-cyan-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/5 dark:focus:ring-cyan-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+                          className="w-full bg-white dark:bg-[#050914] border border-slate-200 dark:border-slate-800 focus:border-indigo-600 dark:focus:border-rose-500/50 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600/5 dark:focus:ring-rose-500/5 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
                         />
                       </div>
                     </div>
@@ -662,12 +669,12 @@ export function Landing() {
 
                 <div className="flex justify-end pt-4 border-t border-slate-200 dark:border-slate-950">
                   <button type="submit" disabled={submittingForm}
-                    className="flex items-center gap-2 px-10 py-4 text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg shadow-cyan-500/10 cursor-pointer"
+                    className="flex items-center gap-2 px-10 py-4 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed bg-gradient-to-r from-indigo-600 to-rose-500 shadow-lg shadow-indigo-600/15 cursor-pointer"
                   >
                     {submittingForm ? (
                       <><div className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" /> Mendaftarkan...</>
                     ) : (
-                      <>Kirim Pengajuan Kalibrasi <ArrowRight className="w-4 h-4 text-slate-950" /></>
+                      <>Kirim Pengajuan Kalibrasi <ArrowRight className="w-4 h-4" /></>
                     )}
                   </button>
                 </div>
@@ -702,7 +709,7 @@ export function Landing() {
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-2 space-y-6">
               <div className="flex items-center gap-2">
-                <Zap className="w-7 h-7 text-cyan-400 fill-cyan-400 drop-shadow-[0_0_10px_#06b6d4]" />
+                <Zap className="w-7 h-7 text-rose-400 fill-rose-400 drop-shadow-[0_0_10px_#f43f5e]" />
                 <span className="text-2xl font-black italic tracking-widest text-white">SPEKTRUM</span>
               </div>
               <p className="text-slate-400 text-sm font-medium leading-relaxed max-w-md">
@@ -720,7 +727,7 @@ export function Landing() {
               <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] font-mono mb-6">Navigasi Utama</p>
               <div className="space-y-3.5">
                 {[['/', 'Kembali ke Atas'], ['/login', 'Terminal Masuk'], ['/login', 'Sertifikat KAN'], ['/login', 'Simulasi Kalibrasi']].map(([to, label]) => (
-                  <Link key={label} to={to} className="block text-sm text-slate-400 hover:text-cyan-400 transition-colors font-medium font-mono uppercase tracking-wider text-[11px]">{label}</Link>
+                  <Link key={label} to={to} className="block text-sm text-slate-400 hover:text-rose-400 transition-colors font-medium font-mono uppercase tracking-wider text-[11px]">{label}</Link>
                 ))}
               </div>
             </div>
@@ -739,7 +746,7 @@ export function Landing() {
 
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <p className="text-slate-650 text-[9px] tracking-[0.25em] font-black uppercase font-mono text-center sm:text-left">
+            <p className="text-slate-600 text-[9px] tracking-[0.25em] font-black uppercase font-mono text-center sm:text-left">
               © 2026 PT Spektrum Kreasi Pratama. Seluruh Hak Cipta Dilindungi.
             </p>
             <Link to="/login" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-cyan-400 transition-colors font-mono">

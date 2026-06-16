@@ -289,7 +289,7 @@ export function Worksheets() {
       <div className="w-full flex flex-wrap items-center justify-between gap-4 border-b border-sky-500/10 dark:border-cyan-500/10 pb-3 text-[10px] font-mono tracking-[0.2em] text-slate-400 dark:text-slate-500 select-none">
         <div className="flex items-center gap-4">
           <span className="text-[#06B6D4] font-black">METROLOGY ID: WORKSHEETS-CORE</span>
-          <span className="hidden sm:inline text-slate-300 dark:text-slate-850">|</span>
+          <span className="hidden sm:inline text-slate-300 dark:text-slate-800">|</span>
           <span className="hidden sm:inline">KAN SERVICE LEVEL A-PROV</span>
         </div>
         <div className="flex items-center gap-3">
@@ -426,7 +426,7 @@ export function Worksheets() {
                         <span>
                           {selectedCategory === 'all' ? '-- SEMUA KATEGORI --' : selectedCategory.toUpperCase()}
                         </span>
-                        <ChevronDown className={cn("w-4 h-4 text-slate-550 transition-transform", isCategoryDropdownOpen && "rotate-180")} />
+                        <ChevronDown className={cn("w-4 h-4 text-slate-500 transition-transform", isCategoryDropdownOpen && "rotate-180")} />
                       </button>
                       
                       <AnimatePresence>
@@ -495,7 +495,7 @@ export function Worksheets() {
                             ? translateToIndonesian(methods.find(m => m.id === selectedMethod)?.title || methods.find(m => m.id === selectedMethod)?.name || '')
                             : '-- PILIH PROTOKOL --'}
                         </span>
-                        <ChevronDown className={cn("w-4 h-4 text-slate-550 transition-transform", isMethodDropdownOpen && "rotate-180")} />
+                        <ChevronDown className={cn("w-4 h-4 text-slate-500 transition-transform", isMethodDropdownOpen && "rotate-180")} />
                       </button>
                       
                       <AnimatePresence>
@@ -584,7 +584,7 @@ export function Worksheets() {
                                   "text-[9px] font-black px-3 py-2 border rounded-xl uppercase tracking-wider transition-all",
                                   deviceName === name 
                                     ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/25" 
-                                    : "bg-white dark:bg-[#0c111d] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-55 hover:border-blue-400 hover:text-blue-600"
+                                    : "bg-white dark:bg-[#0c111d] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 hover:border-blue-400 hover:text-blue-600"
                                 )}
                               >
                                 {name}
@@ -635,7 +635,7 @@ export function Worksheets() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => !isImporting && setIsExcelModalOpen(false)}
-              className="absolute inset-0 bg-slate-955/60 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
             />
             
             <motion.div 
@@ -654,7 +654,7 @@ export function Worksheets() {
                 </div>
                 <button 
                   onClick={() => !isImporting && setIsExcelModalOpen(false)}
-                  className="p-1 px-2.5 text-[10px] uppercase font-black tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-850 rounded-lg transition-all"
+                  className="p-1 px-2.5 text-[10px] uppercase font-black tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 rounded-lg transition-all"
                 >
                   Tutup
                 </button>
@@ -692,7 +692,7 @@ export function Worksheets() {
                 </div>
 
                 {isImporting && (
-                  <div className="space-y-2.5 animate-pulse bg-slate-50 dark:bg-slate-900/20 p-4 rounded-2xl border border-slate-150 dark:border-slate-800">
+                  <div className="space-y-2.5 animate-pulse bg-slate-50 dark:bg-slate-900/20 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
                     <div className="flex items-center gap-2.5">
                       <Loader2 className="w-4 h-4 text-emerald-500 animate-spin" />
                       <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-mono">
@@ -748,10 +748,10 @@ export function Worksheets() {
            </div>
          ) : filteredWorksheets.length === 0 ? (
            <div className="col-span-full py-32 text-center bg-white dark:bg-slate-900 rounded-[3.5rem] border-2 border-dashed border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none">
-              <div className="w-24 h-24 bg-amber-50 dark:bg-slate-955 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+              <div className="w-24 h-24 bg-amber-50 dark:bg-slate-950 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
                  <Search className="w-10 h-10 text-amber-500" />
               </div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-widest mb-2 italic text-slate-655">Pencarian Tidak Ditemukan</h3>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-widest mb-2 italic text-slate-600">Pencarian Tidak Ditemukan</h3>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em] mb-4">Tidak ada lembar kerja yang cocok dengan kata kunci "{searchQuery}"</p>
               <button 
                 onClick={() => setSearchQuery('')}
@@ -866,7 +866,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
       <div>
         <div className="flex items-start justify-between mb-8 relative z-10">
           <div className="flex items-center gap-4">
-             <div className="w-12 h-12 rounded-[1.2rem] bg-slate-50 dark:bg-[#070d19] border border-slate-200/60 dark:border-cyan-500/15 flex items-center justify-center text-slate-400 dark:text-cyan-400/60 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 group-hover:bg-cyan-500/10 dark:group-hover:bg-cyan-955/20 group-hover:border-cyan-500/25 group-hover:rotate-6 transition-all shadow-inner">
+             <div className="w-12 h-12 rounded-[1.2rem] bg-slate-50 dark:bg-[#070d19] border border-slate-200/60 dark:border-cyan-500/15 flex items-center justify-center text-slate-400 dark:text-cyan-400/60 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 group-hover:bg-cyan-500/10 dark:group-hover:bg-cyan-950/20 group-hover:border-cyan-500/25 group-hover:rotate-6 transition-all shadow-inner">
                 <ClipboardCheck className="w-6 h-6" />
              </div>
              <div>
@@ -884,7 +884,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
         </div>
 
         <div className="space-y-4 relative z-10">
-           <div className="bg-slate-50/50 dark:bg-[#070d19]/80 p-5 rounded-2xl border border-slate-200/50 dark:border-cyan-500/10 group-hover:bg-[#06B6D4]/5 group-hover:border-cyan-500/20 dark:group-hover:border-cyan-555/15 transition-all shadow-inner">
+           <div className="bg-slate-50/50 dark:bg-[#070d19]/80 p-5 rounded-2xl border border-slate-200/50 dark:border-cyan-500/10 group-hover:bg-[#06B6D4]/5 group-hover:border-cyan-500/20 dark:group-hover:border-cyan-500/15 transition-all shadow-inner">
                  <div className="flex items-center gap-2 mb-3">
                     <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-bounce" />
                     <p className="text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest leading-none font-mono">Arsitektur Perangkat</p>
@@ -905,7 +905,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
          <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
                {[1,2].map(i => (
-                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-[#10192d] bg-slate-100 dark:bg-[#070d19] flex items-center justify-center text-[9px] font-black text-slate-450 dark:text-slate-500 uppercase shadow-sm italic group-hover:border-cyan-500/10 transition-colors">
+                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-[#10192d] bg-slate-100 dark:bg-[#070d19] flex items-center justify-center text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase shadow-sm italic group-hover:border-cyan-500/10 transition-colors">
                     {String.fromCharCode(64 + i)}
                  </div>
                ))}
@@ -931,7 +931,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
                    e.preventDefault();
                    setConfirmDelete(!confirmDelete);
                  }}
-                 className="p-2.5 bg-white dark:bg-[#070d19] text-slate-350 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all rounded-xl border border-slate-200 dark:border-cyan-500/15 hover:border-red-100 hover:shadow-lg hover:shadow-red-500/10 cursor-pointer"
+                 className="p-2.5 bg-white dark:bg-[#070d19] text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all rounded-xl border border-slate-200 dark:border-cyan-500/15 hover:border-red-100 hover:shadow-lg hover:shadow-red-500/10 cursor-pointer"
                >
                  <Trash2 className="w-4.5 h-4.5" />
                </motion.button>
@@ -950,7 +950,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             animate={{ opacity: 1, backdropFilter: 'blur(12px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            className="absolute inset-0 bg-red-655/15 dark:bg-red-955/40 z-20 flex flex-col items-center justify-center p-6 text-center"
+            className="absolute inset-0 bg-red-600/15 dark:bg-red-950/40 z-20 flex flex-col items-center justify-center p-6 text-center"
           >
              <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center mb-4 shadow-2xl shadow-red-600/40">
                 <Trash2 className="text-white w-6 h-6" />

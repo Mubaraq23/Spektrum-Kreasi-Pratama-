@@ -615,7 +615,7 @@ export function Calibrators() {
                 </div>
                 <div className={cn(
                   "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-350 font-mono shadow-sm",
-                   item.status === 'active' ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 dark:text-rose-450 border-rose-500/20 animate-pulse"
+                   item.status === 'active' ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 animate-pulse"
                 )}>
                   <span className={cn(
                     "w-1.5 h-1.5 rounded-full",
@@ -629,24 +629,24 @@ export function Calibrators() {
                  <div>
                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 transition-colors uppercase italic">{item.name}</h3>
                    <div className="flex items-center gap-2">
-                     <span className="text-[10px] text-blue-750 dark:text-cyan-400 font-black uppercase tracking-widest bg-blue-50 dark:bg-cyan-500/10 px-2 py-0.5 rounded-md">{item.brand}</span>
+                     <span className="text-[10px] text-blue-700 dark:text-cyan-400 font-black uppercase tracking-widest bg-blue-50 dark:bg-cyan-500/10 px-2 py-0.5 rounded-md">{item.brand}</span>
                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{item.model}</span>
                    </div>
                  </div>
 
                  <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-100 dark:border-slate-800/80">
                     <div>
-                       <p className="text-[8px] text-slate-450 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Identitas S/N</p>
+                       <p className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Identitas S/N</p>
                        <p className="text-xs text-slate-900 dark:text-white font-black tracking-tight">{item.serialNumber || '-'}</p>
                     </div>
                     <div>
-                       <p className="text-[8px] text-slate-450 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Nomor Sertifikat</p>
+                       <p className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Nomor Sertifikat</p>
                        <p className="text-xs text-slate-900 dark:text-white font-black truncate tracking-tight">{item.certificateNumber || '-'}</p>
                     </div>
                  </div>
 
                  <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 dark:text-slate-450 uppercase tracking-widest font-mono">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest font-mono">
                        <Calendar className="w-4 h-4 text-blue-600 dark:text-cyan-400" />
                        Kadaluarsa: <span className="text-slate-950 dark:text-white">{item.expiryDate || '-'}</span>
                     </div>
@@ -669,7 +669,7 @@ export function Calibrators() {
                       {isAdmin && (
                         <button 
                            onClick={(e) => { e.stopPropagation(); setItemToDelete(item.id); }}
-                           className="p-2.5 bg-white dark:bg-[#070d19] hover:bg-red-500/10 text-slate-350 dark:text-cyan-400/40 hover:text-red-500 rounded-xl transition-all border border-slate-100 dark:border-cyan-500/10 cursor-pointer"
+                           className="p-2.5 bg-white dark:bg-[#070d19] hover:bg-red-500/10 text-slate-300 dark:text-cyan-400/40 hover:text-red-500 rounded-xl transition-all border border-slate-100 dark:border-cyan-500/10 cursor-pointer"
                            title="Hapus Alat"
                         >
                            <Trash2 className="w-4 h-4" />
@@ -796,7 +796,7 @@ export function Calibrators() {
                             )}
                             <button
                               onClick={() => setUploadQueue(prev => prev.filter(q => q.id !== item.id))}
-                              className="p-1.5 bg-white dark:bg-[#10192d] hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-450 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 border border-slate-100 dark:border-slate-800/80 rounded-lg transition-colors cursor-pointer shadow-sm"
+                              className="p-1.5 bg-white dark:bg-[#10192d] hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 border border-slate-100 dark:border-slate-800/80 rounded-lg transition-colors cursor-pointer shadow-sm"
                               title="Hapus"
                             >
                               <X className="w-3.5 h-3.5" />
@@ -816,7 +816,7 @@ export function Calibrators() {
                       <button
                         onClick={handleSaveAllQueue}
                         disabled={uploadQueue.filter(q => q.status === 'extracted').length === 0}
-                        className="flex-1 px-8 py-4 bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 font-black rounded-2xl disabled:bg-slate-100 disabled:text-slate-450 disabled:shadow-none transition-all shadow-xl shadow-cyan-500/10 uppercase tracking-widest text-[10px] cursor-pointer"
+                        className="flex-1 px-8 py-4 bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 font-black rounded-2xl disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none transition-all shadow-xl shadow-cyan-500/10 uppercase tracking-widest text-[10px] cursor-pointer"
                       >
                         Simpan Semua Standar ({uploadQueue.filter(q => q.status === 'extracted').length})
                       </button>
@@ -1116,7 +1116,7 @@ export function Calibrators() {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
                   <div className="lg:col-span-1 space-y-8">
                     <div className="bg-white dark:bg-[#10192d] border border-slate-100 dark:border-cyan-500/15 rounded-[2.5rem] p-8 shadow-sm space-y-8">
-                      <h4 className="text-[10px] font-black text-slate-350 dark:text-slate-550 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                      <h4 className="text-[10px] font-black text-slate-300 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
                         <HardDrive className="w-4 h-4 text-blue-500 dark:text-cyan-400" />
                         Aset Core Data
                       </h4>
@@ -1145,7 +1145,7 @@ export function Calibrators() {
                           <h4 className="text-[10px] font-black text-blue-600 dark:text-cyan-400 uppercase tracking-[0.3em] font-mono leading-none mb-2">Metrology Matrix Analysis</h4>
                           <p className="text-sm text-slate-400 dark:text-slate-500 font-medium italic">Data koreksi dan ketidakpastian yang terverifikasi</p>
                         </div>
-                        <div className="w-10 h-10 bg-slate-50 dark:bg-[#0c1224] rounded-xl flex items-center justify-center text-slate-350">
+                        <div className="w-10 h-10 bg-slate-50 dark:bg-[#0c1224] rounded-xl flex items-center justify-center text-slate-300">
                            <Settings2 className="w-5 h-5" />
                         </div>
                       </div>
@@ -1169,7 +1169,7 @@ export function Calibrators() {
                                      <p className="text-xs font-black text-blue-600 dark:text-cyan-400 uppercase italic leading-none">{p.parameterName || 'N/A'}</p>
                                   </td>
                                   <td className="px-8 py-6">
-                                     <p className="text-[10px] font-black text-slate-350 dark:text-slate-500 uppercase font-mono">{p.channel || 'UTAMA'}</p>
+                                     <p className="text-[10px] font-black text-slate-300 dark:text-slate-500 uppercase font-mono">{p.channel || 'UTAMA'}</p>
                                   </td>
                                   <td className="px-8 py-6 text-center">
                                      <span className="text-sm font-black text-slate-900 dark:text-white">{p.point}</span>
@@ -1178,7 +1178,7 @@ export function Calibrators() {
                                   <td className="px-8 py-6 text-right font-black text-base text-blue-600 dark:text-cyan-400 font-mono">
                                     {p.correction}
                                   </td>
-                                  <td className="px-8 py-6 text-right font-mono text-xs text-slate-405 dark:text-slate-550 font-black">
+                                  <td className="px-8 py-6 text-right font-mono text-xs text-slate-405 dark:text-slate-500 font-black">
                                     {p.uncertainty}
                                   </td>
                                 </tr>

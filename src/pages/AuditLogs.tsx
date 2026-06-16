@@ -148,7 +148,7 @@ export function AuditLogs() {
              <div className="w-2 h-8 bg-indigo-600 rounded-full" />
              <p className="text-[10px] text-indigo-600 font-black uppercase tracking-[0.4em] font-mono">Keamanan & Kepatuhan</p>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-slate-955 tracking-tighter leading-none italic uppercase">
+          <h1 className="text-5xl md:text-6xl font-black text-slate-950 tracking-tighter leading-none italic uppercase">
             Audit <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-800">Aktivitas</span>
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm font-medium max-w-xl">
@@ -168,7 +168,7 @@ export function AuditLogs() {
           )}
           <button 
             onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-850 transition-all shadow-sm cursor-pointer"
+            className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             Dashboard
@@ -277,7 +277,7 @@ export function AuditLogs() {
                             <span className="text-slate-900 dark:text-white font-black tracking-tight">{log.operatorName}</span>
                          </div>
                       </td>
-                      <td className="px-8 py-5 text-slate-850 dark:text-slate-200 font-bold truncate max-w-xs" title={log.action}>
+                      <td className="px-8 py-5 text-slate-800 dark:text-slate-200 font-bold truncate max-w-xs" title={log.action}>
                         {log.action}
                       </td>
                       <td className="px-8 py-5">

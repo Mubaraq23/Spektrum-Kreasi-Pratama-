@@ -679,7 +679,7 @@ export function Dashboard() {
                 <div className="p-6 bg-slate-50 dark:bg-[#070c1a] border border-slate-200 dark:border-slate-800 rounded-2xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full filter blur-xl" />
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-mono font-black text-slate-550 uppercase tracking-widest">Akurasi deviasi</span>
+                    <span className="text-[10px] font-mono font-black text-slate-500 uppercase tracking-widest">Akurasi deviasi</span>
                     <span className="text-xs font-black font-mono text-emerald-500 uppercase">99.8% OK</span>
                   </div>
                   <div className="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden mb-3">
@@ -1124,8 +1124,8 @@ export function Dashboard() {
                 >
                   <div className={cn(
                     "p-2 rounded-lg shrink-0",
-                    n.type === 'alert' ? 'bg-red-50 dark:bg-red-950/30 text-red-655 dark:text-red-400' :
-                    n.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-655 dark:text-emerald-400' :
+                    n.type === 'alert' ? 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400' :
+                    n.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' :
                     'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-[#06B6D4]'
                   )}>
                     {n.type === 'alert' ? <AlertTriangle className="w-4 h-4" /> : 
@@ -1154,7 +1154,7 @@ export function Dashboard() {
       <div className="space-y-4">
         <div className="flex items-center gap-2 px-1">
           <Sparkles className="w-4 h-4 text-[#06B6D4] animate-pulse" />
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-550 dark:text-slate-400 font-mono">Pusat Kendali & Fitur Pintar AI</h4>
+          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono">Pusat Kendali & Fitur Pintar AI</h4>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Link to="/worksheets" className="group">
@@ -1286,7 +1286,7 @@ export function Dashboard() {
             </div>
             <div className="flex items-center gap-1.5 p-1 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-lg">
                <span className="w-2.5 h-2.5 bg-blue-600 dark:bg-cyan-500 rounded-full" />
-               <span className="text-[8px] font-black uppercase tracking-widest text-slate-550 dark:text-slate-400 font-mono">Unit Kalibrasi</span>
+               <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono">Unit Kalibrasi</span>
             </div>
           </div>
 
@@ -1711,7 +1711,7 @@ export function Dashboard() {
                             "text-[8px] font-mono font-black px-2 py-0.5 rounded-lg border",
                             rec.priority === "TINGGI" ? "bg-red-500/10 text-red-500 border-red-500/20" :
                             rec.priority === "SEDANG" ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
-                            "bg-blue-500/10 text-blue-500 dark:text-cyan-450 border-blue-500/20"
+                            "bg-blue-500/10 text-blue-500 dark:text-cyan-400 border-blue-500/20"
                           )}>
                             PRIORITAS {rec.priority}
                           </span>
@@ -2009,7 +2009,7 @@ function StatCard({ label, value, footer, icon: Icon, color, progress, badge, lo
     <Tilt3D intensity={5} className="h-full">
       <div 
         className={cn(
-          "bg-white dark:bg-[#070c1b] border border-slate-200/40 dark:border-slate-850/60 rounded-[20px] p-6 relative overflow-hidden group transition-all duration-300 h-full",
+          "bg-white dark:bg-[#070c1b] border border-slate-200/40 dark:border-slate-800/60 rounded-[20px] p-6 relative overflow-hidden group transition-all duration-300 h-full",
           borderHover[color] || "hover:border-blue-200",
           "shadow-sm shadow-slate-200/20 dark:shadow-none hover:shadow-xl hover:shadow-[#b38728]/5"
         )}
@@ -2026,7 +2026,7 @@ function StatCard({ label, value, footer, icon: Icon, color, progress, badge, lo
              <Icon className={cn("w-5 h-5", accentColor[color])} />
           </div>
           {badge && (
-            <span className="text-[8px] font-mono font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-xl border border-amber-550/30">
+            <span className="text-[8px] font-mono font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 px-2.5 py-1 rounded-xl border border-amber-500/30">
               {badge}
             </span>
           )}

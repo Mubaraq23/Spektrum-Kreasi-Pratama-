@@ -206,7 +206,7 @@ export default function EquipmentInventory() {
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-2 uppercase italic">
             Inventaris Alat <span className="text-[#06B6D4] italic">Medis</span>
           </h1>
-          <p className="text-[10px] text-slate-550 dark:text-slate-400 font-bold uppercase tracking-[0.3em]">Manajemen Aset & Pemeliharaan Spektrum Lab</p>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-[0.3em]">Manajemen Aset & Pemeliharaan Spektrum Lab</p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <button 
@@ -289,7 +289,7 @@ export default function EquipmentInventory() {
                 <Stethoscope className="w-8 h-8" />
               </div>
               {item.status === 'LAIK PAKAI' ? (
-                <div className="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/25 shadow-sm flex items-center gap-1.2 text-emerald-550 dark:text-emerald-400">
+                <div className="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/25 shadow-sm flex items-center gap-1.2 text-emerald-500 dark:text-emerald-400">
                   <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
                   <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] italic">LAIK PAKAI</span>
                 </div>
@@ -299,7 +299,7 @@ export default function EquipmentInventory() {
                   <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] italic">TIDAK LAIK</span>
                 </div>
               ) : (
-                <div className="px-3 py-1 bg-sky-500/10 rounded-full border border-sky-500/25 shadow-sm flex items-center gap-1.2 text-sky-550 dark:text-cyan-400">
+                <div className="px-3 py-1 bg-sky-500/10 rounded-full border border-sky-500/25 shadow-sm flex items-center gap-1.2 text-sky-500 dark:text-cyan-400">
                   <span className="w-1.5 h-1.5 bg-sky-500 rounded-full" />
                   <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] italic">SIAP DIGUNAKAN</span>
                 </div>

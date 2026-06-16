@@ -1314,7 +1314,7 @@ export function IPMModule() {
                   </div>
                   <div>
                     <span className="text-slate-400 dark:text-slate-500 block uppercase font-bold text-[8px]">Masa Frekuensi</span>
-                    <span className="font-black text-rose-500 dark:text-rose-450 uppercase">Setiap 6 Bulan</span>
+                    <span className="font-black text-rose-500 dark:text-rose-400 uppercase">Setiap 6 Bulan</span>
                   </div>
                 </div>
               </div>
@@ -1757,7 +1757,7 @@ export function IPMModule() {
                         <button
                           type="button"
                           onClick={() => setIsVisualAccordionOpen(!isVisualAccordionOpen)}
-                          className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
+                          className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
                         >
                           <span className="flex items-center gap-2">
                             <ClipboardList className="w-4 h-4 text-blue-500" />
@@ -1776,7 +1776,7 @@ export function IPMModule() {
                               className="p-4 bg-white dark:bg-[#0c111d] space-y-2 overflow-hidden"
                             >
                               {visualArray.map((item) => (
-                                <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
+                                <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-800 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
                                   <input
                                     type="text"
                                     title="Nama Parameter Fisik"
@@ -1835,7 +1835,7 @@ export function IPMModule() {
                         <button
                           type="button"
                           onClick={() => setIsFunctionalAccordionOpen(!isFunctionalAccordionOpen)}
-                          className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
+                          className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
                         >
                           <span className="flex items-center gap-2">
                             <Activity className="w-4 h-4 text-blue-500 animate-pulse" />
@@ -1854,7 +1854,7 @@ export function IPMModule() {
                               className="p-4 bg-white dark:bg-[#0c111d] space-y-2 overflow-hidden"
                             >
                               {functionalArray.map((item) => (
-                                <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
+                                <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-800 hover:border-blue-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
                                   <input
                                     type="text"
                                     title="Nama Parameter Fungsi"
@@ -2086,7 +2086,7 @@ export function IPMModule() {
 
                         {/* Standard Electrical Safety Test fields */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/50 dark:bg-slate-950/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-sm col-span-2">
-                          <div className="col-span-2 pb-1.5 border-b border-slate-150 dark:border-slate-900 flex justify-between items-center">
+                          <div className="col-span-2 pb-1.5 border-b border-slate-200 dark:border-slate-900 flex justify-between items-center">
                             <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono flex items-center gap-1.5">
                               <Shield className="w-3.5 h-3.5 text-blue-500" />
                               Pengujian Keselamatan Listrik (NFPA 99 EST)
@@ -2098,7 +2098,7 @@ export function IPMModule() {
 
                           {/* Grounding Resistance Telemetry Meter */}
                           <div className={cn(
-                            "space-y-2 p-3.5 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 transition-all duration-300",
+                            "space-y-2 p-3.5 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-200 dark:border-slate-800 transition-all duration-300",
                             measGroundResistance > 0.5 && "glow-fail-danger"
                           )}>
                             <div className="flex justify-between items-center text-[9px] font-mono">
@@ -2142,7 +2142,7 @@ export function IPMModule() {
 
                           {/* Chassis Leakage Telemetry Meter */}
                           <div className={cn(
-                            "space-y-2 p-3.5 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 transition-all duration-300",
+                            "space-y-2 p-3.5 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-200 dark:border-slate-800 transition-all duration-300",
                             measLeakageCurrent > 300 && "glow-fail-danger"
                           )}>
                             <div className="flex justify-between items-center text-[9px] font-mono">
@@ -2350,7 +2350,7 @@ export function IPMModule() {
                 </div>
               </div>
               
-              <p className="text-xs text-slate-500 dark:text-slate-450 font-sans tracking-wide leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-sans tracking-wide leading-relaxed">
                 Apakah Anda yakin ingin menghapus **SEMESTINYA SELURUH CATATAN PEMELIHARAAN PREVENTIF (IPM)** secara permanen dari Firestore database? Tindakan ini sangat kritis dan tidak dapat dikembalikan.
               </p>
               

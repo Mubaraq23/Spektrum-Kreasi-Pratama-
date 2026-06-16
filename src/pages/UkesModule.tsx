@@ -1189,34 +1189,34 @@ export function UkesModule() {
         <div className="p-3.5 bg-white dark:bg-[#0c111d] rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
           <div className="flex justify-between items-center">
             <span className="text-[10px] text-slate-400 font-black uppercase font-mono">AKURASI TEGANGAN (kVp)</span>
-            <span className="bg-amber-100 text-amber-850 text-[8px] font-black uppercase px-2 py-0.5 rounded">Batas Perpres</span>
+            <span className="bg-amber-100 text-amber-800 text-[8px] font-black uppercase px-2 py-0.5 rounded">Batas Perpres</span>
           </div>
-          <p className="text-xl font-black text-slate-850 dark:text-white font-mono mt-1">&le; 10% Deviation</p>
+          <p className="text-xl font-black text-slate-800 dark:text-white font-mono mt-1">&le; 10% Deviation</p>
           <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">Perka BAPETEN No. 2 Tahun 2018</span>
         </div>
 
         <div className="p-3.5 bg-white dark:bg-[#0c111d] rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
           <div className="flex justify-between items-center">
             <span className="text-[10px] text-slate-400 font-black uppercase font-mono">REPRODUKSIBILITAS DOSIS</span>
-            <span className="bg-amber-100 text-amber-850 text-[8px] font-black uppercase px-2 py-0.5 rounded">Batas Perpres</span>
+            <span className="bg-amber-100 text-amber-800 text-[8px] font-black uppercase px-2 py-0.5 rounded">Batas Perpres</span>
           </div>
-          <p className="text-xl font-black text-slate-850 dark:text-white font-mono mt-1">CV &le; 0.05 (5%)</p>
+          <p className="text-xl font-black text-slate-800 dark:text-white font-mono mt-1">CV &le; 0.05 (5%)</p>
           <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">Koefisien Variasi Paparan</span>
         </div>
 
         <div className="p-3.5 bg-white dark:bg-[#0c111d] rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
           <div className="flex justify-between items-center">
             <span className="text-[10px] text-slate-400 font-black uppercase font-mono">AKURASI KOLIMASI (X-RAY)</span>
-            <span className="bg-amber-100 text-amber-850 text-[8px] font-black uppercase px-2 py-0.5 rounded">Batas Perpres</span>
+            <span className="bg-amber-100 text-amber-800 text-[8px] font-black uppercase px-2 py-0.5 rounded">Batas Perpres</span>
           </div>
-          <p className="text-xl font-black text-slate-850 dark:text-white font-mono mt-1">&le; 2% of SID</p>
+          <p className="text-xl font-black text-slate-800 dark:text-white font-mono mt-1">&le; 2% of SID</p>
           <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">Penyimpangan Berkas Sinar Cahaya</span>
         </div>
 
         <div className="p-3.5 bg-white dark:bg-[#0c111d] rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
           <div className="flex justify-between items-center">
             <span className="text-[10px] text-indigo-500 font-black uppercase font-mono">TOTAL REKORD UKES</span>
-            <span className="bg-indigo-100 text-indigo-850 text-[8px] font-black uppercase px-2 py-0.5 rounded">Database</span>
+            <span className="bg-indigo-100 text-indigo-800 text-[8px] font-black uppercase px-2 py-0.5 rounded">Database</span>
           </div>
           <p className="text-xl font-black text-indigo-600 dark:text-indigo-400 font-mono mt-1">{records.length} Berkas</p>
           <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">Kelaikan Pesawat Radiologi</span>
@@ -1248,10 +1248,10 @@ export function UkesModule() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
             <div>
               <h3 className="text-xs font-black text-slate-800 dark:text-slate-200 font-mono uppercase tracking-widest flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-indigo-550" />
+                <TrendingUp className="w-4 h-4 text-indigo-500" />
                 Tren Nilai Half Value Layer (HVL) vs Batas Regulasi BAPETEN
               </h3>
-              <p className="text-[10px] text-slate-450 dark:text-slate-400 font-medium">
+              <p className="text-[10px] text-slate-400 dark:text-slate-400 font-medium">
                 Visualisasi historis kelaikan penetrasi radiasi berkas utama Sinar-X di lapangan dibandingkan toleransi keselamatan BAPETEN.
               </p>
             </div>
@@ -1351,7 +1351,7 @@ export function UkesModule() {
             </div>
           ) : filteredRecords.length === 0 ? (
             <div className="p-12 text-center bg-white dark:bg-[#0c111d] rounded-3xl border border-slate-200 dark:border-slate-810">
-              <Atom className="w-12 h-12 text-slate-200 dark:text-slate-850 mx-auto mb-3" />
+              <Atom className="w-12 h-12 text-slate-200 dark:text-slate-800 mx-auto mb-3" />
               <p className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono mb-1">Tidak Ada Rekor Uji Kesesuaian</p>
               <p className="text-[10px] text-slate-400 font-medium">Buat rekor kepatuhan baru dengan mengeklik tombol di kanan atas.</p>
             </div>
@@ -1388,7 +1388,7 @@ export function UkesModule() {
                         <span className="text-xs font-black text-slate-900 dark:text-white uppercase font-mono tracking-tight group-hover/card:text-indigo-500 transition-colors">
                           {r.deviceName}
                         </span>
-                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-850 text-slate-500 font-mono">
+                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono">
                           {r.brand} {r.model}
                         </span>
                       </div>
@@ -1414,7 +1414,7 @@ export function UkesModule() {
                           <span className="font-bold text-slate-600 dark:text-slate-400">{r.operatorName}</span>
                         </div>
                         <div>
-                          <span className="text-slate-450 block uppercase text-[8px] text-indigo-500">Masa Kalibrasi Ulang:</span>
+                          <span className="text-slate-400 block uppercase text-[8px] text-indigo-500">Masa Kalibrasi Ulang:</span>
                           <span className="font-black text-slate-700 dark:text-slate-300">Setiap 2 Tahun</span>
                         </div>
                       </div>
@@ -1423,7 +1423,7 @@ export function UkesModule() {
                     <div className="flex flex-col items-end gap-2 shrink-0">
                       <span className={cn(
                         "text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-xl font-mono border",
-                        fails ? "bg-red-50 text-red-650 border-red-200" :
+                        fails ? "bg-red-50 text-red-600 border-red-200" :
                         cond ? "bg-amber-50 text-amber-600 border-amber-200" :
                         "bg-emerald-50 text-emerald-600 border-emerald-200"
                       )}>
@@ -1455,7 +1455,7 @@ export function UkesModule() {
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
-                  <h3 className="text-xs font-black text-slate-850 dark:text-white uppercase tracking-wider font-mono">
+                  <h3 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono">
                     Lembar Hasil Uji Kepatuhan
                   </h3>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest font-mono">
@@ -1467,7 +1467,7 @@ export function UkesModule() {
                   <button
                     type="button"
                     onClick={() => exportUkesToPDF(selectedRecord)}
-                    className="p-2 px-3 bg-indigo-600 hover:bg-indigo-750 text-white rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-wider cursor-pointer"
+                    className="p-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-wider cursor-pointer"
                     title="Ekspor PDF Kemenkes/BAPETEN Resmi"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -1672,7 +1672,7 @@ export function UkesModule() {
                 <div className="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3.5">
                   <h4 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono flex items-center justify-between">
                     <span>1. Akurasi Tegangan &amp; Waktu</span>
-                    <span className="bg-indigo-100 text-indigo-850 text-[8px] px-1.5 py-0.5 rounded uppercase">U95</span>
+                    <span className="bg-indigo-100 text-indigo-800 text-[8px] px-1.5 py-0.5 rounded uppercase">U95</span>
                   </h4>
                   
                   <div className="grid grid-cols-2 gap-4 font-mono text-[10px]">
@@ -1699,7 +1699,7 @@ export function UkesModule() {
 
                   {/* Raw runs table for Tegangan and Waktu */}
                   <div className="mt-3 overflow-x-auto scroll-smooth snap-x touch-pan-x scrollbar-thin scrollbar-thumb-indigo-500/20 scrollbar-track-transparent pb-1">
-                    <div className="bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 overflow-hidden shadow-sm min-w-[440px] sm:min-w-0">
+                    <div className="bg-white dark:bg-[#0c111d] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm min-w-[440px] sm:min-w-0">
                       <table className="w-full text-left border-collapse text-[9px] font-mono">
                         <thead>
                           <tr className="bg-slate-50/60 dark:bg-slate-900/60 border-b border-indigo-100 dark:border-indigo-950 text-slate-400 font-extrabold uppercase tracking-wider">
@@ -1804,7 +1804,7 @@ export function UkesModule() {
                         {selectedRecord.calculations.doseCV.toFixed(4)} ({(selectedRecord.calculations.doseCV * 100).toFixed(4)}%)
                       </span>
                     </div>
-                    <div className="text-[8.5px] text-slate-401 dark:text-slate-450 border-t border-slate-201 dark:border-slate-801 pt-1 ml-0.5">
+                    <div className="text-[8.5px] text-slate-401 dark:text-slate-400 border-t border-slate-201 dark:border-slate-801 pt-1 ml-0.5">
                       Batas Regulasi CV BAPETEN: &le; 0.05 (5.0000%)
                     </div>
                   </div>
@@ -1816,7 +1816,7 @@ export function UkesModule() {
                         const doseVals = selectedRecord.parameters.doseValues || [];
                         const doseVal = doseVals[idx - 1] ?? selectedRecord.parameters[`dose${idx}`];
                         return (
-                          <div key={idx} className="bg-white dark:bg-[#0c111d] rounded-xl p-2 border border-slate-150 dark:border-slate-850 text-center shadow-sm flex-1 min-w-[70px] sm:min-w-0">
+                          <div key={idx} className="bg-white dark:bg-[#0c111d] rounded-xl p-2 border border-slate-200 dark:border-slate-800 text-center shadow-sm flex-1 min-w-[70px] sm:min-w-0">
                             <span className="text-[7px] text-slate-400 font-black uppercase block font-mono">Run {idx}</span>
                             <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 block font-mono mt-0.5">{doseVal !== undefined && doseVal !== null ? Number(doseVal).toFixed(3) : '-'}</span>
                             <span className="text-[6.5px] text-slate-400 block font-mono">mGy</span>
@@ -1886,7 +1886,7 @@ export function UkesModule() {
                   </div>
 
                   {selectedRecord.parameters.hvlValue < getMinHvlRequired(selectedRecord.parameters.kvpSeting, selectedRecord.deviceName) && (
-                    <div className="mt-2 text-red-750 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-semibold leading-normal font-mono">
+                    <div className="mt-2 text-red-700 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-semibold leading-normal font-mono">
                       <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5 animate-bounce" />
                       <span>
                         ⚠️ PERINGATAN BAPETEN: Nilai HVL Terukur ({(selectedRecord.parameters.hvlValue || 0).toFixed(2)} mm Al) di bawah standar proteksi radiasi BAPETEN (&ge; {getMinHvlRequired(selectedRecord.parameters.kvpSeting, selectedRecord.deviceName).toFixed(1)} mm Al untuk {selectedRecord.parameters.kvpSeting} kVp)! Resiko pancaran radiasi lunak tinggi, butuh filter tambahan segera.
@@ -1896,15 +1896,15 @@ export function UkesModule() {
 
                   {/* Individual deviation and HVL cards */}
                   <div className="grid grid-cols-3 gap-2 mt-2 font-mono text-[9px]">
-                    <div className="p-2 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 shadow-sm">
+                    <div className="p-2 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                       <span className="text-slate-404 block text-[7px] font-black uppercase font-mono">Selisih X (&Delta;X)</span>
                       <p className="font-black text-[10px] text-slate-800 dark:text-slate-200 mt-0.5">{(selectedRecord.parameters.misalignX || 0).toFixed(1)} cm</p>
                     </div>
-                    <div className="p-2 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 shadow-sm">
+                    <div className="p-2 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                       <span className="text-slate-404 block text-[7px] font-black uppercase font-mono">Selisih Y (&Delta;Y)</span>
                       <p className="font-black text-[10px] text-slate-800 dark:text-slate-200 mt-0.5">{(selectedRecord.parameters.misalignY || 0).toFixed(1)} cm</p>
                     </div>
-                    <div className="p-2 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-150 dark:border-slate-850 shadow-sm flex flex-col justify-between">
+                    <div className="p-2 bg-white dark:bg-[#0c111d] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                       <span className="text-slate-404 block text-[7px] font-black uppercase font-mono">HVL Parameter</span>
                       <div className="flex justify-between items-end mt-0.5 font-mono">
                         <span className="font-black text-[11px] text-[#2e5bff] dark:text-indigo-400">{(selectedRecord.parameters.hvlValue || 0).toFixed(2)}</span>
@@ -1948,7 +1948,7 @@ export function UkesModule() {
                     </div>
                   </div>
                   {selectedRecord.calculations.tubeLeakageStatus === 'Tidak Lolos' && (
-                    <div className="mt-2 text-red-750 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-semibold leading-normal font-mono glow-fail-danger">
+                    <div className="mt-2 text-red-700 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-semibold leading-normal font-mono glow-fail-danger">
                       <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5 animate-bounce" />
                       <span>
                         ⚠️ PENDETEKSIAN BAHAYA: Kebocoran Radiasi Wadah Tabung ({(selectedRecord.parameters.tubeLeakage || 0).toFixed(2)} mGy/jam) melanggar batas keselamatan BAPETEN! Sangat berbahaya jika dioperasikan!
@@ -1981,7 +1981,7 @@ export function UkesModule() {
                     <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-900 font-mono text-[10px] space-y-2">
                       {Object.entries(selectedRecord.customParameters as Record<string, string>).map(([name, status]) => (
                         <div key={name} className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-900 last:border-b-0">
-                          <span className="text-slate-650 dark:text-slate-350">{name}:</span>
+                          <span className="text-slate-600 dark:text-slate-300">{name}:</span>
                           <span className={cn(
                             "text-[8.5px] font-black uppercase px-2 py-0.5 rounded font-mono",
                             status === 'Lolos' ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800 animate-pulse font-extrabold"
@@ -1998,7 +1998,7 @@ export function UkesModule() {
                 <span className="text-[9px] text-slate-401 font-black uppercase tracking-wider block font-mono">Kesimpulan Akhir Kepatuhan BAPETEN</span>
                 <p className={cn(
                   "text-xs font-black font-mono mt-1.5 uppercase tracking-tight",
-                  selectedRecord.kesimpulan.includes('TIDAK') ? "text-red-650" : selectedRecord.kesimpulan.includes('BERSYARAT') ? "text-amber-500" : "text-emerald-600"
+                  selectedRecord.kesimpulan.includes('TIDAK') ? "text-red-600" : selectedRecord.kesimpulan.includes('BERSYARAT') ? "text-amber-500" : "text-emerald-600"
                 )}>
                   {selectedRecord.kesimpulan}
                 </p>
@@ -2007,7 +2007,7 @@ export function UkesModule() {
             </div>
           ) : (
             <div className="p-12 text-center text-slate-400">
-              <FileSpreadsheet className="w-12 h-12 text-slate-150 dark:text-slate-850 mx-auto mb-3" />
+              <FileSpreadsheet className="w-12 h-12 text-slate-200 dark:text-slate-800 mx-auto mb-3" />
               <p className="text-xs font-black uppercase tracking-widest font-mono">Pilih Rekor Ukes</p>
               <p className="text-[9px] text-slate-400 mt-1 uppercase leading-relaxed font-mono">Klik salah satu berkas di sebelah kiri untuk menampilkan rincian kalkulasi kelaikan penyinaran radiasi secara terperinci.</p>
             </div>
@@ -2038,7 +2038,7 @@ export function UkesModule() {
                   <div className="flex items-center gap-2.5">
                     <Atom className="w-5 h-5 text-indigo-600 animate-spin" />
                     <div>
-                      <h3 className="text-sm font-black text-slate-850 dark:text-white uppercase tracking-wider font-mono">
+                      <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono">
                         Pencatatan Uji Kesesuaian BAPETEN Baru
                       </h3>
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest font-mono">
@@ -2166,7 +2166,7 @@ export function UkesModule() {
                     </h4>
 
                     {/* Tegangan (kVp) */}
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-900 space-y-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-900 space-y-2.5">
                       <div className="flex justify-between items-center">
                         <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono">Akurasi Tegangan (kVp)</span>
                         <span className={cn(
@@ -2195,7 +2195,7 @@ export function UkesModule() {
                     </div>
 
                     {/* Waktu Eksposur (ms) */}
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-900 space-y-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-900 space-y-2.5">
                       <div className="flex justify-between items-center">
                         <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono">Akurasi Waktu Penyinaran (ms)</span>
                         <span className={cn(
@@ -2224,7 +2224,7 @@ export function UkesModule() {
                     </div>
 
                     {/* Reproduksibilitas (5 Runs) */}
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-900 space-y-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-900 space-y-2.5">
                       <div className="flex justify-between items-center">
                         <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono">Reproduksibilitas Dosis Paparan (mGy)</span>
                         <span className={cn(
@@ -2257,7 +2257,7 @@ export function UkesModule() {
                     </div>
 
                     {/* Kolimasi, SID, HVL */}
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-900 space-y-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-900 space-y-2.5">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5">
                         <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono">Kolimasi Lapangan &amp; Penyaringan HVL</span>
                         <div className="flex flex-wrap gap-1.5">
@@ -2278,11 +2278,11 @@ export function UkesModule() {
                         </div>
                         <div>
                           <label htmlFor="misX" className="text-[8px] text-slate-400 block mb-0.5">Penyimpangan X (cm)</label>
-                          <input id="misX" title="Penyimpangan X (cm)" placeholder="0.0" type="text" inputMode="decimal" value={misX} onChange={(e) => setMisX(e.target.value)} className="w-full text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-black font-mono focus:border-indigo-550 focus:ring-1 focus:ring-indigo-500/10 outline-none transition-all" />
+                          <input id="misX" title="Penyimpangan X (cm)" placeholder="0.0" type="text" inputMode="decimal" value={misX} onChange={(e) => setMisX(e.target.value)} className="w-full text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-black font-mono focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10 outline-none transition-all" />
                         </div>
                         <div>
                           <label htmlFor="misY" className="text-[8px] text-slate-400 block mb-0.5">Penyimpangan Y (cm)</label>
-                          <input id="misY" title="Penyimpangan Y (cm)" placeholder="0.0" type="text" inputMode="decimal" value={misY} onChange={(e) => setMisY(e.target.value)} className="w-full text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-black font-mono focus:border-indigo-550 focus:ring-1 focus:ring-indigo-500/10 outline-none transition-all" />
+                          <input id="misY" title="Penyimpangan Y (cm)" placeholder="0.0" type="text" inputMode="decimal" value={misY} onChange={(e) => setMisY(e.target.value)} className="w-full text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs font-black font-mono focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10 outline-none transition-all" />
                         </div>
                         <div>
                           <label htmlFor="hvlVal" className="text-[8px] text-slate-400 block mb-0.5">Ketebalan HVL (mmAl)</label>
@@ -2298,12 +2298,12 @@ export function UkesModule() {
                     </div>
 
                     {/* Kebocoran Radiasi Wadah Tabung */}
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-150 dark:border-slate-900 space-y-2.5">
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-900 space-y-2.5">
                       <div className="flex justify-between items-center">
                         <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono">Kebocoran Radiasi Wadah Tabung</span>
                         <span className={cn(
                           "text-[8px] font-black uppercase px-2 py-0.5 rounded font-mono",
-                          calculated.tubeLeakageStatus === 'Lolos' ? "bg-emerald-100 text-emerald-800" : "bg-red-200 text-red-850 animate-pulse font-extrabold"
+                          calculated.tubeLeakageStatus === 'Lolos' ? "bg-emerald-100 text-emerald-800" : "bg-red-200 text-red-800 animate-pulse font-extrabold"
                         )}>Status: {calculated.tubeLeakageStatus} ({calculated.tubeLeakageStatus === 'Lolos' ? 'Batas Aman' : 'Bahaya Dosis Tinggi'})</span>
                       </div>
                       <div className="grid grid-cols-2 gap-3 text-xs font-mono">
@@ -2329,7 +2329,7 @@ export function UkesModule() {
                         </div>
                       </div>
                       {Number(tubeLeakage) > BAPETEN_LIMITS.tubeLeakage && (
-                        <div className="mt-2 text-red-750 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-mono leading-normal font-bold glow-fail-danger">
+                        <div className="mt-2 text-red-700 dark:text-red-400 bg-red-100/30 dark:bg-rose-950/25 border border-red-200 dark:border-rose-900/40 rounded-xl p-3 flex gap-2 text-[9px]/[1.3] font-mono leading-normal font-bold glow-fail-danger">
                           <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5 animate-bounce" />
                           <span>⚠️ VAL_LEAK_WARNING: Kebocoran Radiasi ({tubeLeakage} mGy/jam) melanggar ambang batas BAPETEN (&le; 1.0 mGy/jam)! Risiko paparan radiasi sekunder/bocor sangat kritis bagi keselamatan personil!</span>
                         </div>
@@ -2339,19 +2339,19 @@ export function UkesModule() {
                     {/* Section 7: Parameter Kustom / Tambahan (Dynamic Accordion) */}
                     <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#0c111d] mt-4 col-span-1 md:col-span-2">
                       <div className="p-4 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-350 font-mono flex items-center gap-1.5">
+                        <span className="text-[9px] font-black uppercase text-slate-700 dark:text-slate-300 font-mono flex items-center gap-1.5">
                           <Plus className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
                           Parameter Pengujian Tambahan / Kustom ({customParameters.length} Poin)
                         </span>
                       </div>
                       <div className="p-4 space-y-2">
                         {customParameters.map((item) => (
-                          <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-850 hover:border-indigo-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
+                          <div key={item.id} className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-950/60 rounded-xl border border-slate-200/60 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-cyan-500/20 transition-all duration-300 gap-3">
                             <input
                               type="text"
                               value={item.name}
                               onChange={(e) => updateCustomParameterName(item.id, e.target.value)}
-                              className="text-[10px] font-mono text-slate-850 dark:text-slate-200 bg-transparent border-0 border-b border-transparent focus:border-indigo-500 outline-none w-full py-0.5"
+                              className="text-[10px] font-mono text-slate-800 dark:text-slate-200 bg-transparent border-0 border-b border-transparent focus:border-indigo-500 outline-none w-full py-0.5"
                               placeholder="Nama parameter kustom..."
                             />
                             <div className="flex gap-1.5 items-center shrink-0">
@@ -2471,7 +2471,7 @@ export function UkesModule() {
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-[2rem] max-w-sm w-full p-8 shadow-2xl flex flex-col gap-6"
             >
-              <div className="flex items-center gap-4 text-red-650">
+              <div className="flex items-center gap-4 text-red-600">
                 <span className="p-3 bg-red-100 dark:bg-red-950/40 rounded-2xl text-2xl font-black">
                   ⚠️
                 </span>
@@ -2485,7 +2485,7 @@ export function UkesModule() {
                 </div>
               </div>
               
-              <p className="text-xs text-slate-500 dark:text-slate-450 font-sans tracking-wide leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-sans tracking-wide leading-relaxed">
                 Apakah Anda yakin ingin menghapus catatan laporan Uji Kesesuaian BAPETEN ini secara permanen dari basis data sistem?
               </p>
               
@@ -2546,7 +2546,7 @@ export function UkesModule() {
                 </div>
               </div>
               
-              <p className="text-xs text-slate-500 dark:text-slate-450 font-sans tracking-wide leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-sans tracking-wide leading-relaxed">
                 Apakah Anda yakin ingin menghapus **SEMESTINYA SELURUH CATATAN LAPORAN UKES** secara permanen dari Firestore database? Tindakan ini sangat kritis dan tidak dapat dikembalikan.
               </p>
               

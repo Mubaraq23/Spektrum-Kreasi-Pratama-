@@ -2725,9 +2725,9 @@ export function WorksheetEditor() {
             transition={{ duration: 0.2 }}
             className={cn(
               "fixed top-4 right-4 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl border w-full max-w-sm backdrop-blur-md",
-              toast.type === "success" && "bg-emerald-500/90 border-emerald-450 text-white shadow-emerald-500/10",
-              toast.type === "error" && "bg-rose-500/90 border-rose-450 text-white shadow-rose-500/10",
-              toast.type === "warning" && "bg-amber-500/90 border-amber-450 text-white shadow-amber-500/10",
+              toast.type === "success" && "bg-emerald-500/90 border-emerald-400 text-white shadow-emerald-500/10",
+              toast.type === "error" && "bg-rose-500/90 border-rose-400 text-white shadow-rose-500/10",
+              toast.type === "warning" && "bg-amber-500/90 border-amber-400 text-white shadow-amber-500/10",
               toast.type === "info" && "bg-blue-600/90 border-blue-500 text-white shadow-blue-500/10"
             )}
           >
@@ -2898,7 +2898,7 @@ export function WorksheetEditor() {
           <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-1.5">
               <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
-              <span className="text-[10px] font-black tracking-[0.2em] text-emerald-600 dark:text-emerald-450 uppercase font-mono">
+              <span className="text-[10px] font-black tracking-[0.2em] text-emerald-600 dark:text-emerald-400 uppercase font-mono">
                 Live Precision Protocol
               </span>
             </div>
@@ -2907,10 +2907,10 @@ export function WorksheetEditor() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-white dark:to-cyan-200 font-black">Kerja Digital</span>
             </h1>
             <div className="flex items-center gap-3 mt-2.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 font-mono uppercase">
-              <span className="bg-slate-100/80 dark:bg-[#0b132b]/80 border border-slate-200/50 dark:border-slate-800/50 px-2.5 py-0.5 rounded-lg text-slate-650 dark:text-slate-400 tracking-wider">
+              <span className="bg-slate-100/80 dark:bg-[#0b132b]/80 border border-slate-200/50 dark:border-slate-800/50 px-2.5 py-0.5 rounded-lg text-slate-600 dark:text-slate-400 tracking-wider">
                 ID: LK-{id?.slice(0, 8).toUpperCase()}
               </span>
-              <span className="text-blue-600 dark:text-cyan-550">/</span>
+              <span className="text-blue-600 dark:text-cyan-500">/</span>
               <span className="italic tracking-widest text-[#b38728] dark:text-amber-500">
                 {lk?.deviceName || "Inisialisasi..."}
               </span>
@@ -3239,7 +3239,7 @@ export function WorksheetEditor() {
                                 }
                               }
                             }}
-                            className="w-full bg-white dark:bg-[#070d19]/60 border border-slate-400 dark:border-cyan-500/25 rounded-xl px-4 py-3 text-xs text-black dark:text-white font-black uppercase tracking-tight focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-500/10 focus:border-blue-600 dark:focus:border-cyan-450 transition-all appearance-none cursor-pointer hover:bg-slate-50 dark:hover:bg-[#0e172a] shadow-sm"
+                            className="w-full bg-white dark:bg-[#070d19]/60 border border-slate-400 dark:border-cyan-500/25 rounded-xl px-4 py-3 text-xs text-black dark:text-white font-black uppercase tracking-tight focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-500/10 focus:border-blue-600 dark:focus:border-cyan-400 transition-all appearance-none cursor-pointer hover:bg-slate-50 dark:hover:bg-[#0e172a] shadow-sm"
                           >
                             <option value="" className="font-bold">
                               -- PILIH DARI INVENTARIS --
@@ -3273,7 +3273,7 @@ export function WorksheetEditor() {
                             value={identityData.methodId}
                             onChange={(e) => loadMethod(e.target.value)}
                             className={cn(
-                              "w-full bg-white dark:bg-[#070d19]/60 border rounded-xl px-4 py-3 text-xs text-black dark:text-white font-black focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-500/10 focus:border-blue-600 dark:focus:border-cyan-450 transition-all appearance-none cursor-pointer hover:bg-slate-50 dark:hover:bg-[#0e172a] uppercase tracking-wider",
+                              "w-full bg-white dark:bg-[#070d19]/60 border rounded-xl px-4 py-3 text-xs text-black dark:text-white font-black focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-500/10 focus:border-blue-600 dark:focus:border-cyan-400 transition-all appearance-none cursor-pointer hover:bg-slate-50 dark:hover:bg-[#0e172a] uppercase tracking-wider",
                               !identityData.methodId
                                 ? "border-red-400 dark:border-red-500/50"
                                 : "border-slate-400 dark:border-cyan-500/25",
@@ -3486,7 +3486,7 @@ export function WorksheetEditor() {
                         className={cn(
                           "p-5 rounded-2xl border transition-all cursor-pointer group select-none font-mono text-[10px]",
                           selectedCalibratorIds.includes(cal.id)
-                            ? "bg-cyan-500/10 dark:bg-cyan-950/20 border-cyan-500 dark:border-cyan-450 shadow-lg shadow-cyan-500/5"
+                            ? "bg-cyan-500/10 dark:bg-cyan-950/20 border-cyan-500 dark:border-cyan-400 shadow-lg shadow-cyan-500/5"
                             : "bg-slate-50/50 dark:bg-[#0c1220]/60 border-slate-200 dark:border-cyan-500/10 hover:border-cyan-500/40 dark:hover:border-cyan-500/30",
                         )}
                       >
@@ -3524,7 +3524,7 @@ export function WorksheetEditor() {
                     {calibrators.length === 0 && (
                       <div className="col-span-full py-12 text-center border-2 border-dashed border-slate-200 dark:border-cyan-500/10 rounded-3xl animate-pulse">
                         <Zap className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
-                        <p className="text-[10px] text-slate-500 dark:text-slate-450 italic">
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 italic">
                           Belum ada kalibrator terdaftar di Master Alat.
                         </p>
                       </div>
@@ -3580,7 +3580,7 @@ export function WorksheetEditor() {
                             [newKey]: "Baik",
                           });
                         }}
-                        className="flex items-center gap-2 text-[9px] font-black text-blue-600 dark:text-cyan-400 hover:text-blue-700 dark:hover:text-cyan-350 transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-cyan-500/20 shadow-sm hover:shadow-md"
+                        className="flex items-center gap-2 text-[9px] font-black text-blue-600 dark:text-cyan-400 hover:text-blue-700 dark:hover:text-cyan-300 transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-cyan-500/20 shadow-sm hover:shadow-md"
                       >
                         <Plus className="w-3 h-3" />
                         Item Baru
@@ -3642,7 +3642,7 @@ export function WorksheetEditor() {
                             [newKey]: "Baik",
                           });
                         }}
-                        className="flex items-center gap-2 text-[9px] font-black text-amber-600 dark:text-amber-400 hover:text-amber-750 dark:hover:text-[#e4be47] transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-amber-500/20 shadow-sm hover:shadow-md"
+                        className="flex items-center gap-2 text-[9px] font-black text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-[#e4be47] transition-all uppercase tracking-widest bg-white dark:bg-[#070d19]/80 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-amber-500/20 shadow-sm hover:shadow-md"
                       >
                         <Plus className="w-3 h-3" />
                         Item Baru
@@ -4301,7 +4301,7 @@ export function WorksheetEditor() {
                       <h2 className="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight italic uppercase mt-1 flex items-center gap-1.5">
                         <FileText className="w-5 h-5 text-[#b38728]" /> Lembar Pengukuran & Ketidakpastian
                       </h2>
-                      <p className="text-xs text-slate-550 dark:text-slate-400 mt-0.5 font-medium">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
                         Kelola titik uji metrologi secara instan dengan asisten verifikasi real-time & simulator otomatis.
                       </p>
                     </div>
@@ -4309,7 +4309,7 @@ export function WorksheetEditor() {
                     {/* Integrated quick statistics tracker */}
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="bg-white dark:bg-[#0c1221] border border-slate-200/80 dark:border-slate-800/80 px-4 py-2.5 rounded-2xl flex flex-col min-w-[100px] shadow-sm">
-                        <span className="text-[9px] text-slate-400 dark:text-slate-550 font-black uppercase tracking-wider font-mono">Status MPE</span>
+                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-wider font-mono">Status MPE</span>
                         {measurements.length === 0 ? (
                           <span className="text-xs font-bold text-slate-400 mt-1">Belum Ada Data</span>
                         ) : measurements.filter(m => m.tolerance && Math.abs(m.deviation) > Number(m.tolerance)).length === 0 ? (
@@ -4324,7 +4324,7 @@ export function WorksheetEditor() {
                       </div>
                       
                       <div className="bg-white dark:bg-[#0c1221] border border-slate-200/80 dark:border-slate-800/80 px-4 py-2.5 rounded-2xl flex flex-col min-w-[75px] shadow-sm">
-                        <span className="text-[9px] text-slate-400 dark:text-slate-550 font-black uppercase tracking-wider font-mono">Avg Deviasi</span>
+                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-wider font-mono">Avg Deviasi</span>
                         <span className="text-xs font-black text-slate-800 dark:text-slate-200 font-mono mt-1">
                           {measurements.length > 0 
                             ? (measurements.reduce((acc, current) => acc + Math.abs(current.deviation || 0), 0) / measurements.length).toFixed(4)
@@ -4334,7 +4334,7 @@ export function WorksheetEditor() {
                       </div>
 
                       <div className="bg-white dark:bg-[#0c1221] border border-slate-200/80 dark:border-slate-800/80 px-4 py-2.5 rounded-2xl flex flex-col min-w-[75px] shadow-sm">
-                        <span className="text-[9px] text-slate-400 dark:text-slate-550 font-black uppercase tracking-wider font-mono">Max U95</span>
+                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-wider font-mono">Max U95</span>
                         <span className="text-xs font-black text-blue-600 dark:text-blue-400 font-mono mt-1">
                           {measurements.length > 0 
                             ? Math.max(...measurements.map(m => m.uncertainty || 0)).toFixed(4)
@@ -4350,7 +4350,7 @@ export function WorksheetEditor() {
                     <button
                       type="button"
                       onClick={() => setIsAutomationOpen(!isAutomationOpen)}
-                      className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-150 dark:border-slate-800/80 hover:bg-slate-100/60 dark:hover:bg-slate-850 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
+                      className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800/80 hover:bg-slate-100/60 dark:hover:bg-slate-800 transition-colors font-mono font-black text-[10px] uppercase text-blue-600 dark:text-cyan-400 tracking-wider cursor-pointer"
                     >
                       <span className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
@@ -4371,7 +4371,7 @@ export function WorksheetEditor() {
                           <div className="p-5 space-y-6 bg-slate-50/20 dark:bg-slate-950/10">
                             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                               {/* WIDGET 1: THE INTELLIGENT COMPACT SIMULATOR (Left) */}
-                              <div className="xl:col-span-5 bg-gradient-to-r from-slate-900 to-[#101b33] p-5 rounded-3xl border border-slate-850 shadow-md relative overflow-hidden flex flex-col justify-between">
+                              <div className="xl:col-span-5 bg-gradient-to-r from-slate-900 to-[#101b33] p-5 rounded-3xl border border-slate-800 shadow-md relative overflow-hidden flex flex-col justify-between">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/[0.03] rounded-full filter blur-xl" />
                                 
                                 <div>
@@ -4430,7 +4430,7 @@ export function WorksheetEditor() {
                                         Generator Rentang Titik Otomatis
                                       </h4>
                                     </div>
-                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded-full">
+                                    <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase font-mono bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded-full">
                                       Rapid Grid Creator
                                     </span>
                                   </div>
@@ -4441,7 +4441,7 @@ export function WorksheetEditor() {
 
                                 <div className="flex flex-wrap lg:flex-nowrap items-stretch gap-2 mt-3 w-full">
                                   <div className="flex flex-col gap-1 w-full lg:w-auto lg:flex-[2.2] min-w-[90px]">
-                                    <label htmlFor="seq-parameter" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider">Parameter</label>
+                                    <label htmlFor="seq-parameter" className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase font-mono tracking-wider">Parameter</label>
                                     <input
                                       type="text"
                                       id="seq-parameter"
@@ -4453,7 +4453,7 @@ export function WorksheetEditor() {
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[1] min-w-[40px]">
-                                    <label htmlFor="seq-start" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Dari</label>
+                                    <label htmlFor="seq-start" className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase font-mono tracking-wider text-center">Dari</label>
                                     <input
                                       type="text"
                                       inputMode="decimal"
@@ -4466,7 +4466,7 @@ export function WorksheetEditor() {
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[1] min-w-[40px]">
-                                    <label htmlFor="seq-end" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Sampai</label>
+                                    <label htmlFor="seq-end" className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase font-mono tracking-wider text-center">Sampai</label>
                                     <input
                                       type="text"
                                       inputMode="decimal"
@@ -4479,7 +4479,7 @@ export function WorksheetEditor() {
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[1.2] min-w-[60px]">
-                                    <label htmlFor="seq-steps" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Jumlah</label>
+                                    <label htmlFor="seq-steps" className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase font-mono tracking-wider text-center">Jumlah</label>
                                     <input
                                       type="text"
                                       inputMode="numeric"
@@ -4492,7 +4492,7 @@ export function WorksheetEditor() {
                                     />
                                   </div>
                                   <div className="flex flex-col gap-1 w-[48%] lg:w-auto lg:flex-[0.8] min-w-[35px]">
-                                    <label htmlFor="seq-unit" className="text-[8px] font-bold text-slate-400 dark:text-slate-550 uppercase font-mono tracking-wider text-center">Satuan</label>
+                                    <label htmlFor="seq-unit" className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase font-mono tracking-wider text-center">Satuan</label>
                                     <input
                                       type="text"
                                       id="seq-unit"
@@ -4572,7 +4572,7 @@ export function WorksheetEditor() {
                       <button
                         type="button"
                         onClick={handleDownloadCSV}
-                        className="bg-emerald-55/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200/50 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-350 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                        className="bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200/50 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
                       >
                         <Download className="w-3.5 h-3.5" /> Unduh CSV
                       </button>
@@ -4629,7 +4629,7 @@ export function WorksheetEditor() {
                             <label htmlFor="identity-uncMethod" className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider font-mono cursor-pointer">
                               Metode Ketidakpastian
                             </label>
-                            <p className="text-[9px] text-slate-400 dark:text-slate-550 font-bold uppercase font-mono">
+                            <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase font-mono">
                               Acuan Buku KMK Terbaru
                             </p>
                           </div>
@@ -4910,7 +4910,7 @@ export function WorksheetEditor() {
                                   </svg>
                                 </div>
 
-                                <div className="text-[9px] text-slate-500 leading-relaxed bg-blue-50/50 p-2.5 rounded-xl border border-blue-150 text-left">
+                                <div className="text-[9px] text-slate-500 leading-relaxed bg-blue-50/50 p-2.5 rounded-xl border border-blue-200 text-left">
                                   <strong className="text-blue-700 uppercase block mb-0.5 font-black">Drift Analitik:</strong>
                                   Laju instabilitas jangka panjang rata-rata sebesar <strong className="text-slate-900 font-mono">{computedDrift.toFixed(5)} {paramUnit}/tahun</strong>. Klik tombol untuk otomatis meratakan komponen drift ke tabel.
                                 </div>
@@ -5165,7 +5165,7 @@ export function WorksheetEditor() {
 
                           {uniqueParamNames.length > 0 && (
                             <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-950/40 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 animate-fade-in">
-                              <div className="text-[9px] font-mono text-slate-450 dark:text-slate-300 uppercase font-bold">
+                              <div className="text-[9px] font-mono text-slate-400 dark:text-slate-300 uppercase font-bold">
                                 ⚡ BATCH AUTO-FILL SEMUA BARIS TABEL:
                               </div>
                               <div className="flex items-center gap-2">
@@ -5173,7 +5173,7 @@ export function WorksheetEditor() {
                                   id="batchTargetSelect"
                                   title="Batch Auto-Fill Target"
                                   aria-label="Batch Auto-Fill Target"
-                                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg px-2.5 py-1 text-[10px] text-slate-650 dark:text-slate-200 font-bold outline-none focus:border-emerald-500"
+                                  className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-lg px-2.5 py-1 text-[10px] text-slate-600 dark:text-slate-200 font-bold outline-none focus:border-emerald-500"
                                 >
                                   <option value="masterUnc">M.Unc (u₂)</option>
                                   <option value="drift">Drift (u₄)</option>
@@ -5216,7 +5216,7 @@ export function WorksheetEditor() {
 
                       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[9px] font-black text-slate-550 dark:text-slate-200 uppercase font-mono">
+                          <label className="text-[9px] font-black text-slate-500 dark:text-slate-200 uppercase font-mono">
                             Titik Acuan 1 (x₁)
                           </label>
                           <input
@@ -5436,7 +5436,7 @@ export function WorksheetEditor() {
                       <div className="bg-slate-950/80 border border-slate-800/80 dark:border-[#b38728]/15 px-4 py-2 rounded-2xl flex flex-col min-w-[75px] shadow-inner relative overflow-hidden group/m">
                         <span className="text-[8px] text-slate-500 font-bold uppercase tracking-wider font-mono">Row Count</span>
                         <span className="text-sm font-black text-slate-100 font-mono mt-0.5 flex items-baseline gap-1">
-                          {measurements.length} <span className="text-[8px] text-slate-550 font-normal">pts</span>
+                          {measurements.length} <span className="text-[8px] text-slate-500 font-normal">pts</span>
                         </span>
                         <div className="absolute top-0 right-0 w-1 h-full bg-slate-700" />
                       </div>
@@ -5449,7 +5449,7 @@ export function WorksheetEditor() {
                         <div className="absolute top-0 right-0 w-1 h-full bg-emerald-500" />
                       </div>
                       <div className="bg-slate-950/80 border border-slate-800/80 dark:border-rose-500/15 px-4 py-2 rounded-2xl flex flex-col min-w-[100px] shadow-inner relative overflow-hidden group/m">
-                        <span className="text-[8px] text-rose-450 font-bold uppercase tracking-wider font-mono">Failed MPE</span>
+                        <span className="text-[8px] text-rose-400 font-bold uppercase tracking-wider font-mono">Failed MPE</span>
                         <span className="text-sm font-black text-rose-500 font-mono mt-0.5 flex items-center gap-1.5">
                           {measurements.filter(m => m.tolerance && Math.abs(m.deviation) > Number(m.tolerance)).length > 0 && (
                             <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
@@ -5461,7 +5461,7 @@ export function WorksheetEditor() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 bg-slate-950/60 p-5 rounded-2xl border border-slate-850 relative z-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 bg-slate-950/60 p-5 rounded-2xl border border-slate-800 relative z-10">
                     {/* Resolution Bulk */}
                     <div className="space-y-2">
                       <label className="text-[9px] font-black text-[#b38728] uppercase tracking-[0.15em] font-mono block leading-none">
@@ -5474,7 +5474,7 @@ export function WorksheetEditor() {
                           value={bulkRes}
                           onChange={(e) => setBulkRes(e.target.value)}
                           placeholder="e.g., 0.01"
-                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-650"
+                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-600"
                         />
                         <button
                           type="button"
@@ -5489,7 +5489,7 @@ export function WorksheetEditor() {
                             setMeasurements(newM);
                             showToast("Resolusi berhasil diterapkan ke seluruh baris!", "success");
                           }}
-                          className="bg-gradient-to-r from-slate-850 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
+                          className="bg-gradient-to-r from-slate-800 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
                         >
                           Terapkan
                         </button>
@@ -5508,7 +5508,7 @@ export function WorksheetEditor() {
                           value={bulkMUnc}
                           onChange={(e) => setBulkMUnc(e.target.value)}
                           placeholder="e.g., 0.001"
-                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-650"
+                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-600"
                         />
                         <button
                           type="button"
@@ -5523,7 +5523,7 @@ export function WorksheetEditor() {
                             setMeasurements(newM);
                             showToast("Master Uncertainty berhasil diterapkan ke seluruh baris!", "success");
                           }}
-                          className="bg-gradient-to-r from-slate-850 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
+                          className="bg-gradient-to-r from-slate-800 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
                         >
                           Terapkan
                         </button>
@@ -5542,7 +5542,7 @@ export function WorksheetEditor() {
                           value={bulkDrift}
                           onChange={(e) => setBulkDrift(e.target.value)}
                           placeholder="e.g., 0.002"
-                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-650"
+                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-600"
                         />
                         <button
                           type="button"
@@ -5557,7 +5557,7 @@ export function WorksheetEditor() {
                             setMeasurements(newM);
                             showToast("Drift instabilitas berhasil diterapkan ke seluruh baris!", "success");
                           }}
-                          className="bg-gradient-to-r from-slate-850 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
+                          className="bg-gradient-to-r from-slate-800 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
                         >
                           Terapkan
                         </button>
@@ -5576,7 +5576,7 @@ export function WorksheetEditor() {
                           value={bulkTol}
                           onChange={(e) => setBulkTol(e.target.value)}
                           placeholder="e.g., 1.5"
-                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-650"
+                          className="bg-slate-900 border border-slate-800/80 focus:border-[#b38728]/50 rounded-xl px-3.5 py-2 text-xs font-black text-slate-100 font-mono focus:bg-slate-950 focus:ring-1 focus:ring-[#b38728]/20 outline-none w-full transition-all placeholder:text-slate-600"
                         />
                         <button
                           type="button"
@@ -5591,7 +5591,7 @@ export function WorksheetEditor() {
                             setMeasurements(newM);
                             showToast("Toleransi MPE berhasil diterapkan ke seluruh baris!", "success");
                           }}
-                          className="bg-gradient-to-r from-slate-850 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
+                          className="bg-gradient-to-r from-slate-800 to-slate-900 hover:from-[#b38728] hover:to-[#aa771c] hover:text-slate-950 border border-slate-800 hover:border-transparent text-slate-300 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 shrink-0 shadow-md active:scale-95"
                         >
                           Terapkan
                         </button>
@@ -5600,7 +5600,7 @@ export function WorksheetEditor() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-slate-800/80 text-xs text-slate-300 relative z-10">
-                    <span className="font-extrabold text-[11px] flex items-center gap-2 text-slate-450 font-mono">
+                    <span className="font-extrabold text-[11px] flex items-center gap-2 text-slate-400 font-mono">
                       <Info className="w-4 h-4 text-[#b38728]" />
                       Tips: Isi parameter pembagi di atas dan klik "Terapkan" atau "Terapkan Semua Sekaligus" di samping.
                     </span>
@@ -5626,7 +5626,7 @@ export function WorksheetEditor() {
                         setMeasurements(newM);
                         showToast("Seluruh komponen metrologi statis berhasil disebarkan secara massal!", "success");
                       }}
-                      className="bg-gradient-to-r from-amber-400 via-amber-550 to-[#b38728] hover:from-amber-500 hover:to-amber-600 text-slate-950 hover:text-white font-black text-[10px] uppercase tracking-[0.15em] px-7 py-3 rounded-2xl transition-all duration-300 shadow-[0_4px_20px_rgba(212,175,55,0.25)] hover:shadow-[0_8px_30px_rgba(212,175,55,0.4)] hover:scale-[1.02] active:scale-95"
+                      className="bg-gradient-to-r from-amber-400 via-amber-500 to-[#b38728] hover:from-amber-500 hover:to-amber-600 text-slate-950 hover:text-white font-black text-[10px] uppercase tracking-[0.15em] px-7 py-3 rounded-2xl transition-all duration-300 shadow-[0_4px_20px_rgba(212,175,55,0.25)] hover:shadow-[0_8px_30px_rgba(212,175,55,0.4)] hover:scale-[1.02] active:scale-95"
                     >
                       🔮 Terapkan Seluruh Metrologis
                     </button>
@@ -5647,9 +5647,9 @@ export function WorksheetEditor() {
                 )}
 
                 {/* Mobile Scroll Indicator Helper Badge */}
-                <div className="lg:hidden flex items-center justify-between bg-blue-500/10 dark:bg-cyan-500/5 border border-blue-500/20 dark:border-cyan-500/15 rounded-xl px-4 py-2.5 mb-3 text-[9px] font-mono font-bold text-blue-600 dark:text-cyan-450">
+                <div className="lg:hidden flex items-center justify-between bg-blue-500/10 dark:bg-cyan-500/5 border border-blue-500/20 dark:border-cyan-500/15 rounded-xl px-4 py-2.5 mb-3 text-[9px] font-mono font-bold text-blue-600 dark:text-cyan-400">
                   <span className="flex items-center gap-1.5 animate-pulse">
-                    <Activity className="w-3 h-3 text-blue-550 dark:text-cyan-400" />
+                    <Activity className="w-3 h-3 text-blue-500 dark:text-cyan-400" />
                     <span>TABEL DATA UKUR ISO/IEC 17025</span>
                   </span>
                   <span>Geser Kiri/Kanan ↔️</span>
@@ -5659,8 +5659,8 @@ export function WorksheetEditor() {
                   <table className={cn("table-data-ukur w-full text-left border-collapse", editMetrologyMode ? "min-w-[1600px] xl:min-w-[1850px]" : "min-w-[1100px] xl:min-w-[1300px]")}>
                     <thead className="text-[10.5px] uppercase tracking-[0.1em] font-extrabold font-mono bg-slate-50/80 dark:bg-[#040816] text-slate-600 dark:text-[#b38728] border-b border-slate-200/60 dark:border-slate-800/60">
                       {/* Premium Dual-Row Header Groups */}
-                      <tr className="bg-slate-100/50 dark:bg-slate-950/70 border-b border-slate-200/40 dark:border-slate-850/40 text-[9px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-slate-500 select-none">
-                        <th colSpan={editMetrologyMode ? 3 : 2} className="px-3 py-2 text-center border-r border-slate-200/40 dark:border-slate-850/40 bg-slate-50/20 dark:bg-slate-900/5">
+                      <tr className="bg-slate-100/50 dark:bg-slate-950/70 border-b border-slate-200/40 dark:border-slate-800/40 text-[9px] uppercase tracking-[0.15em] font-black text-slate-400 dark:text-slate-500 select-none">
+                        <th colSpan={editMetrologyMode ? 3 : 2} className="px-3 py-2 text-center border-r border-slate-200/40 dark:border-slate-800/40 bg-slate-50/20 dark:bg-slate-900/5">
                           📋 {editMetrologyMode ? "Spesifikasi & Resolusi" : "Spesifikasi Alat"}
                         </th>
                         {editMetrologyMode && (
@@ -5674,12 +5674,12 @@ export function WorksheetEditor() {
                               else base += 2;
                               return base;
                             })()} 
-                            className="px-3 py-2 text-center border-r border-slate-200/40 dark:border-slate-850/40 bg-[#b38728]/5 text-[#b38728]/80"
+                            className="px-3 py-2 text-center border-r border-slate-200/40 dark:border-slate-800/40 bg-[#b38728]/5 text-[#b38728]/80"
                           >
                             🔮 Parameter Kalibrator (Metrologi)
                           </th>
                         )}
-                        <th colSpan={editMetrologyMode ? 6 : 4} className="px-3 py-2 text-center border-r border-slate-200/40 dark:border-slate-850/40 bg-cyan-500/5 text-cyan-600 dark:text-cyan-400">
+                        <th colSpan={editMetrologyMode ? 6 : 4} className="px-3 py-2 text-center border-r border-slate-200/40 dark:border-slate-800/40 bg-cyan-500/5 text-cyan-600 dark:text-cyan-400">
                           ✨ Live Data Ukur & Hasil Akhir
                         </th>
                         <th className="px-3 py-2 text-center">
@@ -5953,7 +5953,7 @@ export function WorksheetEditor() {
                           >
 
                             {/* parameterName: always inline-editable – double-click/focus to rename */}
-                            <td className="px-2 py-1 w-[130px] min-w-[130px] max-w-[130px] border-r border-b border-slate-200/40 dark:border-slate-850/45 bg-slate-50/[0.05] dark:bg-slate-900/[0.02] group/pname">
+                            <td className="px-2 py-1 w-[130px] min-w-[130px] max-w-[130px] border-r border-b border-slate-200/40 dark:border-slate-800/45 bg-slate-50/[0.05] dark:bg-slate-900/[0.02] group/pname">
                               <input
                                 type="text"
                                 id={`input-parameterName-${idx}`}
@@ -6006,7 +6006,7 @@ export function WorksheetEditor() {
                                     newM[idx].unit = e.target.value;
                                     setMeasurements(newM);
                                   }}
-                                  className="!w-10 shrink-0 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs text-slate-650 dark:text-[#b38728]/90 font-black outline-none transition-all font-mono text-center"
+                                  className="!w-10 shrink-0 bg-transparent hover:bg-slate-50 focus:bg-white dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] border border-slate-200 focus:border-[#b38728] dark:border-slate-800/80 dark:focus:border-[#b38728] rounded-md px-0.5 py-0.5 text-xs text-slate-600 dark:text-[#b38728]/90 font-black outline-none transition-all font-mono text-center"
                                 />
                               </div>
                             </td>
@@ -7236,7 +7236,7 @@ export function WorksheetEditor() {
                                   ? "text-red-700 bg-red-50/50 border-red-300 focus:border-red-500 focus:ring-red-500/15 dark:text-red-400 dark:bg-red-950/30 dark:border-red-900/50 dark:focus:border-red-500/50 dark:focus:ring-red-500/10"
                                   : isValid
                                   ? "text-emerald-700 bg-emerald-50/30 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500/15 dark:text-emerald-400 dark:bg-emerald-950/30 dark:border-emerald-900/40 dark:focus:border-emerald-500/50 dark:focus:ring-emerald-500/10"
-                                  : "text-slate-900 bg-transparent hover:bg-slate-50 focus:bg-white border-slate-200 hover:border-slate-350 focus:border-[#b38728] dark:text-slate-200 dark:bg-transparent dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] dark:border-slate-800/80 dark:hover:border-slate-700 dark:focus:border-[#b38728]"
+                                  : "text-slate-900 bg-transparent hover:bg-slate-50 focus:bg-white border-slate-200 hover:border-slate-300 focus:border-[#b38728] dark:text-slate-200 dark:bg-transparent dark:hover:bg-slate-900/60 dark:focus:bg-[#040816] dark:border-slate-800/80 dark:hover:border-slate-700 dark:focus:border-[#b38728]"
                               )}
                             />
                           </td>
@@ -7288,7 +7288,7 @@ export function WorksheetEditor() {
                                     ? "border-red-300 focus:border-red-500 hover:bg-rose-50/30 dark:border-rose-900/50 dark:focus:border-red-500"
                                     : isValid
                                     ? "border-emerald-300 focus:border-emerald-500 hover:bg-emerald-50/30 dark:border-emerald-900/45 dark:focus:border-emerald-500"
-                                    : "border-slate-200 hover:border-slate-350 dark:border-slate-800/80 dark:hover:border-slate-700 focus:border-[#b38728] hover:bg-slate-50 focus:bg-white"
+                                    : "border-slate-200 hover:border-slate-300 dark:border-slate-800/80 dark:hover:border-slate-700 focus:border-[#b38728] hover:bg-slate-50 focus:bg-white"
                                 )}
                               />
                             </div>
@@ -7327,16 +7327,16 @@ export function WorksheetEditor() {
                                   <div className="flex flex-col items-center justify-center gap-0.5">
                                     {isBelowCmc ? (
                                       <>
-                                        <span className="bg-amber-150/70 dark:bg-amber-950/35 text-amber-800 dark:text-amber-300 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-amber-250/35" title="Ketidakpastian di bawah batas CMC, dilaporkan menggunakan nilai CMC">
+                                        <span className="bg-amber-200/70 dark:bg-amber-950/35 text-amber-800 dark:text-amber-300 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-amber-250/35" title="Ketidakpastian di bawah batas CMC, dilaporkan menggunakan nilai CMC">
                                           Clamped to CMC
                                         </span>
-                                        <span className="text-[9px] text-amber-600 dark:text-amber-450 font-bold" title="Batas CMC Lab">
+                                        <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold" title="Batas CMC Lab">
                                           ± {(cmcValue || 0.05).toFixed(4)}
                                         </span>
                                       </>
                                     ) : (
                                       <>
-                                        <span className="bg-emerald-150/60 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-emerald-250/25">
+                                        <span className="bg-emerald-200/60 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-emerald-250/25">
                                           Valid
                                         </span>
                                         <span className="text-[8px] text-slate-400 font-medium uppercase tracking-tight">
@@ -7369,7 +7369,7 @@ export function WorksheetEditor() {
                                     )}
                                     {b.tar !== undefined ? (
                                       <div className="flex flex-col items-center mt-0.5">
-                                        <span className="text-[9px] text-slate-450 dark:text-slate-500 font-semibold text-[8px]">
+                                        <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold text-[8px]">
                                           TAR: {b.tar.toFixed(1)}:1
                                         </span>
                                       </div>
@@ -7588,7 +7588,7 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
         "relative w-full text-left p-2.5 sm:p-4 rounded-xl sm:rounded-[1.25rem] transition-all duration-350 border select-none group/btn cursor-pointer",
         active
           ? "bg-blue-600/10 dark:bg-cyan-500/10 border-blue-600/80 dark:border-cyan-400/80 shadow-md shadow-blue-500/5"
-          : "bg-white/40 dark:bg-[#070b18]/45 border-slate-200/50 dark:border-slate-800/40 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#101b33]/40 hover:border-slate-350 dark:hover:border-slate-700/60"
+          : "bg-white/40 dark:bg-[#070b18]/45 border-slate-200/50 dark:border-slate-800/40 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#101b33]/40 hover:border-slate-300 dark:hover:border-slate-700/60"
       )}
     >
       <div className="flex items-center gap-2 sm:gap-3">
@@ -7607,7 +7607,7 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
             className={cn(
               "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] leading-none truncate font-sans transition-colors duration-250",
               active
-                ? "text-blue-600 dark:text-cyan-450 italic font-black"
+                ? "text-blue-600 dark:text-cyan-400 italic font-black"
                 : "text-slate-800 dark:text-slate-200 font-bold"
             )}
           >
@@ -7617,8 +7617,8 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
             className={cn(
               "text-[7.5px] sm:text-[8px] mt-1 font-bold italic truncate transition-colors duration-250 hidden sm:block",
               active
-                ? "text-blue-500/80 dark:text-cyan-450/70"
-                : "text-slate-450 dark:text-slate-500"
+                ? "text-blue-500/80 dark:text-cyan-400/70"
+                : "text-slate-400 dark:text-slate-500"
             )}
           >
             {desc}
@@ -7776,7 +7776,7 @@ function InputRow({ label, value, onChange, limit, isValid }: any) {
           type="text"
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          className="bg-white dark:bg-[#070d19] border border-slate-400 dark:border-cyan-500/25 rounded-xl px-5 py-2.5 text-right text-xs text-blue-700 dark:text-cyan-400 font-black focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-550/15 focus:outline-none w-32 shadow-inner font-mono"
+          className="bg-white dark:bg-[#070d19] border border-slate-400 dark:border-cyan-500/25 rounded-xl px-5 py-2.5 text-right text-xs text-blue-700 dark:text-cyan-400 font-black focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-500/15 focus:outline-none w-32 shadow-inner font-mono"
           placeholder="0.00"
         />
         <div
@@ -7786,7 +7786,7 @@ function InputRow({ label, value, onChange, limit, isValid }: any) {
               ? pass
                 ? "bg-emerald-600 text-white border-emerald-600"
                 : "bg-red-600 text-white border-red-600 animate-pulse"
-              : "bg-white dark:bg-[#070d19] border-slate-100 dark:border-[#152e4e]/40 text-slate-200 dark:text-slate-750 shadow-inner",
+              : "bg-white dark:bg-[#070d19] border-slate-100 dark:border-[#152e4e]/40 text-slate-200 dark:text-slate-700 shadow-inner",
           )}
         >
           {value ? (
@@ -7818,7 +7818,7 @@ function IdentityInput({ label, value, onChange }: any) {
         onChange={(e) => onChange(e.target.value)}
         title={label}
         placeholder={label}
-        className="w-full bg-slate-50/55 dark:bg-[#070d19]/65 border border-slate-350 dark:border-cyan-500/25 rounded-2xl px-5 py-4 text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-550/15 focus:border-blue-600 dark:focus:border-cyan-400 transition-all font-mono italic shadow-inner placeholder:text-slate-400 dark:placeholder:text-slate-600"
+        className="w-full bg-slate-50/55 dark:bg-[#070d19]/65 border border-slate-300 dark:border-cyan-500/25 rounded-2xl px-5 py-4 text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-cyan-500/15 focus:border-blue-600 dark:focus:border-cyan-400 transition-all font-mono italic shadow-inner placeholder:text-slate-400 dark:placeholder:text-slate-600"
       />
     </div>
   );

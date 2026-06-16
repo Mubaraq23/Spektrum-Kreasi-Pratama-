@@ -1192,7 +1192,7 @@ export function WorkOrders() {
                       />
                     </div>
                   ) : (
-                    <div className="bg-indigo-500/5 border border-indigo-500/15 p-4.5 rounded-2xl flex items-center gap-3 text-indigo-650 dark:text-cyan-400 font-mono text-[10px]">
+                    <div className="bg-indigo-500/5 border border-indigo-500/15 p-4.5 rounded-2xl flex items-center gap-3 text-indigo-600 dark:text-cyan-400 font-mono text-[10px]">
                       <Building className="w-5 h-5 shrink-0" />
                       <div>
                         <span className="block font-black text-slate-400 uppercase leading-none mb-1">AUTO-IDENTITAS KLIEN RS</span>
@@ -1255,7 +1255,7 @@ export function WorkOrders() {
                     <select 
                       value={newWO.priority}
                       onChange={(e) => setNewWO({ ...newWO, priority: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#070c1a] border border-slate-200 dark:border-slate-800 px-5 py-4 rounded-2xl text-xs font-black uppercase text-slate-850 dark:text-slate-200 tracking-widest outline-none"
+                      className="w-full bg-slate-50 dark:bg-[#070c1a] border border-slate-200 dark:border-slate-800 px-5 py-4 rounded-2xl text-xs font-black uppercase text-slate-800 dark:text-slate-200 tracking-widest outline-none"
                     >
                       <option value="low">RENDAH (LOW/ROUTINE CALIBRATION)</option>
                       <option value="medium">SEDANG (MEDIUM MAINTENANCE)</option>
@@ -1269,7 +1269,7 @@ export function WorkOrders() {
                     <select 
                       value={newWO.category}
                       onChange={(e) => setNewWO({ ...newWO, category: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#070c1a] border border-slate-200 dark:border-slate-800 px-5 py-4 rounded-2xl text-xs font-black uppercase text-slate-850 dark:text-slate-200 tracking-widest outline-none mb-1"
+                      className="w-full bg-slate-50 dark:bg-[#070c1a] border border-slate-200 dark:border-slate-800 px-5 py-4 rounded-2xl text-xs font-black uppercase text-slate-800 dark:text-slate-200 tracking-widest outline-none mb-1"
                     >
                       <option value="kalibrasi">KALIBRASI (CALIBRATION)</option>
                       <option value="ukes">UKES (UJI KESESUAIAN)</option>

@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;850;900&family=Geist+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: 'Outfit', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
@@ -22,11 +22,11 @@
   }
 
   body {
-    background-color: #f4f6fb;
+    background-color: #fafafc;
     background-image:
-      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59, 130, 246, 0.07) 0px, transparent 70%),
-      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(6, 182, 212, 0.04) 0px, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 0% 80%, rgba(99, 102, 241, 0.04) 0px, transparent 60%);
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99, 102, 241, 0.08) 0px, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(6, 182, 212, 0.05) 0px, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 0% 80%, rgba(244, 63, 94, 0.04) 0px, transparent 60%);
     background-attachment: fixed;
     @apply text-slate-900 antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
@@ -35,34 +35,35 @@
   }
 
   .dark body {
-    background-color: #040812 !important;
+    background-color: #06080e !important;
     background-image:
-      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(6, 182, 212, 0.08) 0px, transparent 70%),
-      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(29, 78, 216, 0.06) 0px, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 0% 80%, rgba(99, 102, 241, 0.05) 0px, transparent 60%) !important;
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99, 102, 241, 0.12) 0px, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 0% 80%, rgba(244, 63, 94, 0.07) 0px, transparent 60%) !important;
     background-attachment: fixed;
     @apply text-slate-100;
   }
 
   /* Refined scrollbar */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
+    background: rgba(99, 102, 241, 0.2);
     border-radius: 99px;
+    border: 1px solid transparent;
   }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.4); }
 
-  .dark ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.6); }
-  .dark ::-webkit-scrollbar-thumb:hover { background: rgba(71, 85, 105, 0.8); }
+  .dark ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.2); }
+  .dark ::-webkit-scrollbar-thumb:hover { background: rgba(6, 182, 212, 0.4); }
 
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); }
-  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.5); }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.15); }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.15); }
 
   .custom-scrollbar-hidden::-webkit-scrollbar { display: none; }
   .custom-scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
 
-  ::selection { @apply bg-blue-500/15 text-blue-700 dark:bg-cyan-500/20 dark:text-cyan-300; }
+  ::selection { @apply bg-indigo-500/15 text-indigo-700 dark:bg-rose-500/20 dark:text-rose-300; }
 }
 
 /* ====================================================
@@ -72,116 +73,139 @@
 
   /* ---- CARDS ---- */
   .card {
-    background: rgba(255, 255, 255, 0.70);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.60);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.65);
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 24px;
     box-shadow:
-      0 1px 2px rgba(0,0,0,0.03),
-      0 8px 24px -8px rgba(148, 163, 184, 0.12),
-      inset 0 1px 0 rgba(255,255,255,0.6);
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      0 1px 2px rgba(0,0,0,0.02),
+      0 12px 32px -8px rgba(99, 102, 241, 0.06),
+      inset 0 1px 0 rgba(255,255,255,0.7);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .card:hover {
-    background: rgba(255, 255, 255, 0.80);
-    border-color: rgba(59, 130, 246, 0.18);
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(99, 102, 241, 0.25);
     box-shadow:
-      0 1px 2px rgba(0,0,0,0.03),
-      0 16px 40px -12px rgba(59, 130, 246, 0.10),
-      inset 0 1px 0 rgba(255,255,255,0.7);
-    transform: translateY(-2px);
+      0 1px 2px rgba(0,0,0,0.02),
+      0 20px 48px -12px rgba(99, 102, 241, 0.12),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+    transform: translateY(-3px);
   }
 
   .dark .card {
-    background: rgba(14, 22, 44, 0.55);
-    -webkit-backdrop-filter: blur(28px);
-    backdrop-filter: blur(28px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(10, 14, 26, 0.45);
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    border-radius: 24px;
     box-shadow:
-      0 1px 3px rgba(0,0,0,0.15),
-      0 12px 36px -12px rgba(0,0,0,0.35),
-      inset 0 1px 0 rgba(255,255,255,0.03);
+      0 1px 3px rgba(0,0,0,0.2),
+      0 16px 48px -12px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.02);
   }
 
   .dark .card:hover {
-    background: rgba(16, 26, 52, 0.65);
-    border-color: rgba(6, 182, 212, 0.20);
+    background: rgba(12, 18, 34, 0.55);
+    border-color: rgba(99, 102, 241, 0.25);
     box-shadow:
-      0 0 0 1px rgba(6, 182, 212, 0.10),
-      0 20px 48px -12px rgba(0,0,0,0.45),
-      0 0 40px -8px rgba(6, 182, 212, 0.12),
-      inset 0 1px 0 rgba(6, 182, 212, 0.06);
-    transform: translateY(-2px);
+      0 0 0 1px rgba(99, 102, 241, 0.1),
+      0 24px 60px -12px rgba(0,0,0,0.6),
+      0 0 50px -8px rgba(6, 182, 212, 0.15),
+      inset 0 1px 0 rgba(99, 102, 241, 0.08);
+    transform: translateY(-3px);
   }
 
   /* Legacy aliases for backwards compatibility — copy the card properties directly
      since Tailwind v4 @apply cannot reference other @layer component classes */
   .immersive-card {
-    background: rgba(255, 255, 255, 0.70);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.60);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.65);
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 24px;
     box-shadow:
-      0 1px 2px rgba(0,0,0,0.03),
-      0 8px 24px -8px rgba(148, 163, 184, 0.12),
-      inset 0 1px 0 rgba(255,255,255,0.6);
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      0 1px 2px rgba(0,0,0,0.02),
+      0 12px 32px -8px rgba(99, 102, 241, 0.06),
+      inset 0 1px 0 rgba(255,255,255,0.7);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dark .immersive-card {
+    background: rgba(10, 14, 26, 0.45);
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    border-radius: 24px;
+    box-shadow:
+      0 1px 3px rgba(0,0,0,0.2),
+      0 16px 48px -12px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.02);
   }
   .luxury-card {
-    background: rgba(255, 255, 255, 0.70);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.60);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.65);
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 24px;
     box-shadow:
-      0 1px 2px rgba(0,0,0,0.03),
-      0 8px 24px -8px rgba(148, 163, 184, 0.12),
-      inset 0 1px 0 rgba(255,255,255,0.6);
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      0 1px 2px rgba(0,0,0,0.02),
+      0 12px 32px -8px rgba(99, 102, 241, 0.06),
+      inset 0 1px 0 rgba(255,255,255,0.7);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dark .luxury-card {
+    background: rgba(10, 14, 26, 0.45);
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    border-radius: 24px;
+    box-shadow:
+      0 1px 3px rgba(0,0,0,0.2),
+      0 16px 48px -12px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.02);
   }
 
   /* ---- GLASS ---- */
   .glass {
-    background: rgba(255, 255, 255, 0.60);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.50);
-    box-shadow: 0 4px 20px rgba(148, 163, 184, 0.06);
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(32px);
+    backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 24px rgba(99, 102, 241, 0.04);
   }
 
   .dark .glass {
-    background: rgba(10, 16, 32, 0.45);
-    -webkit-backdrop-filter: blur(28px);
-    backdrop-filter: blur(28px);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.30);
+    background: rgba(8, 10, 20, 0.45);
+    -webkit-backdrop-filter: blur(32px);
+    backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   .glass-dark {
-    background: rgba(8, 12, 28, 0.65);
-    -webkit-backdrop-filter: blur(32px);
-    backdrop-filter: blur(32px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.40);
+    background: rgba(6, 8, 16, 0.65);
+    -webkit-backdrop-filter: blur(36px);
+    backdrop-filter: blur(36px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
   }
 
   /* Keep luxury-glass alias — direct CSS copy since Tailwind v4 @apply cannot cross-reference component classes */
   .luxury-glass {
-    background: rgba(255, 255, 255, 0.60);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.50);
-    box-shadow: 0 4px 20px rgba(148, 163, 184, 0.06);
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(32px);
+    backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 24px rgba(99, 102, 241, 0.04);
   }
   .dark .luxury-glass {
-    background: rgba(10, 16, 32, 0.45);
-    -webkit-backdrop-filter: blur(28px);
-    backdrop-filter: blur(28px);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.30);
+    background: rgba(8, 10, 20, 0.45);
+    -webkit-backdrop-filter: blur(32px);
+    backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   /* ---- SIDEBAR & HEADER ---- */
@@ -543,7 +567,7 @@ textarea:not(.bg-transparent) {
 
 /* Border overrides */
 .dark .border-slate-100,
-.dark .border-slate-150,
+.dark .border-slate-200,
 .dark .border-slate-200,
 .dark .border-slate-200\/50,
 .dark .border-slate-200\/60,

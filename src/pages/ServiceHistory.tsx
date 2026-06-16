@@ -1328,7 +1328,7 @@ export function ServiceHistory() {
             <button
               onClick={handleDownloadHospitalReportPDF}
               disabled={downloadingHospitalReport}
-              className="px-6 py-4 bg-emerald-600 hover:bg-emerald-750 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-black uppercase text-[10px] tracking-widest rounded-[1.5rem] flex items-center justify-center gap-2 border border-emerald-500/10 cursor-pointer shadow-lg shadow-emerald-500/15 duration-300 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+              className="px-6 py-4 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-black uppercase text-[10px] tracking-widest rounded-[1.5rem] flex items-center justify-center gap-2 border border-emerald-500/10 cursor-pointer shadow-lg shadow-emerald-500/15 duration-300 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
             >
               {downloadingHospitalReport ? (
                 <>

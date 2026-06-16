@@ -40,9 +40,9 @@ const navItems = [
 ];
 
 const categoryColors: Record<string, string> = {
-  'UTAMA':             'text-blue-500 dark:text-blue-400',
-  'METROLOGI':         'text-cyan-500 dark:text-cyan-400',
-  'PEMELIHARAAN':      'text-violet-500 dark:text-violet-400',
+  'UTAMA':             'text-indigo-500 dark:text-indigo-400',
+  'METROLOGI':         'text-rose-500 dark:text-rose-400',
+  'PEMELIHARAAN':      'text-cyan-500 dark:text-cyan-400',
   'KECERDASAN BUATAN': 'text-amber-500 dark:text-amber-400',
   'ADMINISTRASI':      'text-slate-400 dark:text-slate-500',
 };
@@ -185,7 +185,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative group",
                       sidebarOpen ? "" : "justify-center",
                       isActive
-                        ? "bg-blue-600/[0.08] dark:bg-cyan-500/[0.08] text-blue-700 dark:text-cyan-300 font-semibold"
+                        ? "bg-indigo-600/[0.08] dark:bg-rose-500/[0.08] text-indigo-700 dark:text-rose-300 font-semibold"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-900/[0.04] dark:hover:bg-white/[0.04]"
                     )}
                   >
@@ -195,7 +195,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         {isActive && (
                           <motion.div
                             layoutId="sidebar-active-bar"
-                            className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-gradient-to-b from-blue-500 to-indigo-600 dark:from-cyan-400 dark:to-blue-500 rounded-r-full"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-gradient-to-b from-indigo-500 to-violet-600 dark:from-rose-400 dark:to-pink-500 rounded-r-full"
                           />
                         )}
 
@@ -204,7 +204,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                           "shrink-0 transition-all duration-200",
                           sidebarOpen ? "w-4 h-4" : "w-4.5 h-4.5",
                           isActive
-                            ? "text-blue-600 dark:text-cyan-400"
+                            ? "text-indigo-600 dark:text-rose-400"
                             : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                         )} />
 
@@ -236,7 +236,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {sidebarOpen ? (
             <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-100/60 dark:bg-slate-800/30 border border-slate-200/40 dark:border-slate-700/30 transition-all duration-300">
               {/* Avatar */}
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-cyan-500 p-px shrink-0 shadow-sm">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 via-violet-500 to-rose-500 p-px shrink-0 shadow-sm">
                 <div className="w-full h-full rounded-[7px] bg-slate-900 flex items-center justify-center font-bold text-white text-[10px]">
                   {avatarInitials}
                 </div>
@@ -260,7 +260,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 p-px shadow-sm">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-rose-500 p-px shadow-sm">
                 <div className="w-full h-full rounded-[6px] bg-slate-900 flex items-center justify-center font-bold text-white text-[9px]">
                   {avatarInitials}
                 </div>
@@ -307,7 +307,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     {activeNavItem.category}
                   </span>
                   <ChevronRight className="w-3 h-3 text-slate-300 dark:text-slate-600 shrink-0" />
-                  <span className="text-[12px] font-semibold text-blue-600 dark:text-cyan-400">
+                  <span className="text-[12px] font-semibold text-indigo-600 dark:text-rose-400">
                     {activeNavItem.label}
                   </span>
                 </div>
@@ -315,7 +315,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center gap-2 select-none">
                   <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">SISTEM</span>
                   <ChevronRight className="w-3 h-3 text-slate-300 dark:text-slate-600" />
-                  <span className="text-[12px] font-semibold text-blue-600 dark:text-cyan-400">SPEKTRUM</span>
+                  <span className="text-[12px] font-semibold text-indigo-600 dark:text-rose-400">SPEKTRUM</span>
                 </div>
               )}
             </div>
@@ -334,8 +334,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {/* Right */}
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Search — desktop only */}
-            <div className="hidden lg:flex items-center gap-2 bg-slate-100/60 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-700/40 px-3.5 py-2 rounded-xl group transition-all focus-within:ring-2 focus-within:ring-blue-500/15 focus-within:border-blue-500/30">
-              <Search className="w-3.5 h-3.5 text-slate-400 group-focus-within:text-blue-500 transition-colors shrink-0" />
+            <div className="hidden lg:flex items-center gap-2 bg-slate-100/60 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-700/40 px-3.5 py-2 rounded-xl group transition-all focus-within:ring-2 focus-within:ring-indigo-500/15 focus-within:border-indigo-500/30">
+              <Search className="w-3.5 h-3.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors shrink-0" />
               <input
                 type="text"
                 placeholder="Cari data..."
@@ -347,7 +347,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {/* Theme toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-500 hover:text-blue-600 dark:hover:text-amber-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 transition-all"
+              className="p-2 rounded-lg text-slate-500 hover:text-indigo-600 dark:hover:text-amber-400 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 transition-all"
               title={darkMode ? "Mode Terang" : "Mode Gelap"}
             >
               {darkMode
@@ -363,14 +363,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "relative p-2 rounded-lg border transition-all",
                   showNotifications
-                    ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
-                    : "text-slate-500 hover:text-blue-600 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 border-slate-200/50 dark:border-slate-700/50"
+                    ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20"
+                    : "text-slate-500 hover:text-indigo-600 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 border-slate-200/50 dark:border-slate-700/50"
                 )}
                 title="Notifikasi"
               >
                 <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center bg-blue-600 text-white text-[9px] font-bold font-mono rounded-full px-0.5 border-2 border-white dark:border-[#040812]">
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center bg-indigo-600 text-white text-[9px] font-bold font-mono rounded-full px-0.5 border-2 border-white dark:border-[#040812]">
                     {unreadCount}
                   </span>
                 )}
@@ -389,11 +389,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     >
                       <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/30">
                         <div className="flex items-center gap-2">
-                          <Bell className="w-3.5 h-3.5 text-blue-600 dark:text-cyan-400" />
+                          <Bell className="w-3.5 h-3.5 text-indigo-600 dark:text-rose-400" />
                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 font-mono">Notifikasi</span>
                         </div>
                         {unreadCount > 0 && (
-                          <span className="text-[9px] font-bold bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-mono">{unreadCount} baru</span>
+                          <span className="text-[9px] font-bold bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-mono">{unreadCount} baru</span>
                         )}
                       </div>
 
@@ -414,7 +414,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                 }}
                                 className={cn(
                                   "px-4 py-3.5 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/30 cursor-pointer flex gap-3 items-start",
-                                  !notif.read ? "bg-blue-50/40 dark:bg-blue-500/[0.05] border-l-[3px] border-l-blue-500" : ""
+                                  !notif.read ? "bg-indigo-50/40 dark:bg-indigo-500/[0.05] border-l-[3px] border-l-indigo-500" : ""
                                 )}
                               >
                                 <div className={cn(
@@ -422,14 +422,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                   notif.type === 'success' ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500" :
                                   notif.type === 'warning' ? "bg-amber-50 dark:bg-amber-500/10 text-amber-500" :
                                   notif.type === 'error'   ? "bg-red-50 dark:bg-red-500/10 text-red-500" :
-                                  "bg-blue-50 dark:bg-blue-500/10 text-blue-500"
+                                  "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500"
                                 )}>
                                   <Info className="w-3.5 h-3.5" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between mb-0.5">
                                     <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate pr-2">{notif.title}</p>
-                                    {!notif.read && <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />}
+                                    {!notif.read && <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full shrink-0" />}
                                   </div>
                                   <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">{notif.message}</p>
                                 </div>
@@ -452,9 +452,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
               <button
                 onClick={() => navigate('/settings')}
-                className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-cyan-500/10 dark:from-blue-500/[0.08] dark:to-cyan-500/[0.08] border border-slate-200/60 dark:border-slate-700/50 p-px shadow-sm hover:scale-105 transition-transform overflow-hidden"
+                className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/10 via-violet-500/10 to-rose-500/10 dark:from-indigo-500/[0.08] dark:to-rose-500/[0.08] border border-slate-200/60 dark:border-slate-700/50 p-px shadow-sm hover:scale-105 transition-transform overflow-hidden"
               >
-                <div className="w-full h-full rounded-[10px] bg-white dark:bg-slate-900 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-cyan-400 transition-colors">
+                <div className="w-full h-full rounded-[10px] bg-white dark:bg-slate-900 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-rose-400 transition-colors">
                   {profile?.displayName?.[0] || 'U'}
                 </div>
               </button>
@@ -468,9 +468,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Interactive3DCanvas density="low" opacity={0.12} interactive={true} />
 
           {/* Ambient glows */}
-          <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-blue-500/[0.06] to-transparent rounded-full blur-[160px] pointer-events-none -z-10" />
-          <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-cyan-500/[0.05] to-transparent rounded-full blur-[140px] pointer-events-none -z-10" />
-          <div className="fixed top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/15 dark:via-cyan-500/20 to-transparent pointer-events-none z-10" />
+          <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-indigo-500/[0.06] to-transparent rounded-full blur-[160px] pointer-events-none -z-10" />
+          <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-rose-500/[0.05] to-transparent rounded-full blur-[140px] pointer-events-none -z-10" />
+          <div className="fixed top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/15 dark:via-rose-500/20 to-transparent pointer-events-none z-10" />
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -537,7 +537,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             className={({ isActive }) => cn(
                               "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-150",
                               isActive
-                                ? "bg-blue-600/[0.08] dark:bg-cyan-500/[0.08] text-blue-700 dark:text-cyan-300 font-semibold"
+                                ? "bg-indigo-600/[0.08] dark:bg-rose-500/[0.08] text-indigo-700 dark:text-rose-300 font-semibold"
                                 : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-900/[0.04] dark:hover:bg-white/[0.04]"
                             )}
                           >
@@ -553,7 +553,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {/* Drawer user */}
                 <div className="shrink-0 p-4 border-t border-slate-200/50 dark:border-slate-800/40">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 p-px shadow-sm shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-rose-500 p-px shadow-sm shrink-0">
                       <div className="w-full h-full rounded-[10px] bg-slate-900 flex items-center justify-center font-bold text-white text-[11px]">
                         {avatarInitials}
                       </div>
@@ -591,7 +591,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 className={({ isActive }) => cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-1.5 px-1 rounded-xl transition-all duration-200 min-h-[52px]",
                   isActive
-                    ? "text-blue-600 dark:text-cyan-400"
+                    ? "text-indigo-600 dark:text-rose-400"
                     : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 )}
               >
@@ -599,7 +599,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <>
                     <div className={cn(
                       "w-9 h-8 flex items-center justify-center rounded-xl transition-all duration-200",
-                      isActive ? "bg-blue-600/10 dark:bg-cyan-400/10" : ""
+                      isActive ? "bg-indigo-600/10 dark:bg-rose-400/10" : ""
                     )}>
                       <Icon className="w-5 h-5" />
                     </div>

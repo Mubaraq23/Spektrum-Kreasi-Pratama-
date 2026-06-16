@@ -23,8 +23,8 @@ import { cn } from '../lib/utils';
 
 const FEATURES = [
   { icon: ShieldCheck, text: 'ISO/IEC 17025 Certified',   color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  { icon: Zap,         text: 'Auto-Calculate U95 (k=2)', color: 'text-cyan-400',    bg: 'bg-cyan-500/10' },
-  { icon: Activity,    text: 'Real-time Sync Database',  color: 'text-blue-400',    bg: 'bg-blue-500/10' },
+  { icon: Zap,         text: 'Auto-Calculate U95 (k=2)', color: 'text-rose-400',    bg: 'bg-rose-500/10' },
+  { icon: Activity,    text: 'Real-time Sync Database',  color: 'text-indigo-400',  bg: 'bg-indigo-500/10' },
 ];
 
 export function Login() {
@@ -129,9 +129,9 @@ export function Login() {
       <div className="hidden lg:flex flex-col w-[52%] xl:w-[56%] relative overflow-hidden bg-gradient-to-br from-[#050c28] via-[#071030] to-[#050e30]">
         {/* Animated bg orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-[200px] -left-[200px] w-[700px] h-[700px] bg-blue-600/12 rounded-full blur-[180px] animate-[pulse_8s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-[200px] -right-[100px] w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[160px] animate-[pulse_12s_ease-in-out_infinite]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-indigo-600/08 rounded-full blur-[140px]" />
+          <div className="absolute -top-[200px] -left-[200px] w-[700px] h-[700px] bg-indigo-600/12 rounded-full blur-[180px] animate-[pulse_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-[200px] -right-[100px] w-[600px] h-[600px] bg-rose-500/10 rounded-full blur-[160px] animate-[pulse_12s_ease-in-out_infinite]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-violet-600/08 rounded-full blur-[140px]" />
         </div>
 
         {/* Grid */}
@@ -149,7 +149,7 @@ export function Login() {
 
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-3 group w-fit mb-auto">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/20">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform bg-gradient-to-br from-indigo-500 to-rose-500 shadow-indigo-500/20">
               <Zap className="w-5 h-5 text-white fill-white" />
             </div>
             <span className="text-xl font-black text-white uppercase tracking-widest italic">SPEKTRUM</span>
@@ -158,17 +158,17 @@ export function Login() {
           {/* Hero text */}
           <div className="py-16 max-w-md">
             {/* Live badge */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-blue-500/25 bg-blue-500/10 mb-8">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/10 mb-8">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-400" />
               </span>
-              <span className="text-[9px] font-black text-cyan-400 uppercase tracking-[0.3em] font-mono">Enterprise Lab Console v4.5</span>
+              <span className="text-[9px] font-black text-rose-400 uppercase tracking-[0.3em] font-mono">Enterprise Lab Console v4.5</span>
             </div>
 
             <h1 className="text-4xl xl:text-5xl font-black text-white leading-[1.05] tracking-tight uppercase mb-6">
               Metrologi<br />
-              <span className="bg-gradient-to-r from-blue-450 via-cyan-400 to-cyan-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-500 via-rose-400 to-rose-300 bg-clip-text text-transparent">
                 Kalibrasi
               </span><br />
               Digital
@@ -287,7 +287,7 @@ export function Login() {
                   <input
                     type="text" placeholder="Nama Lengkap" value={fullName}
                     onChange={e => setFullName(e.target.value)} required
-                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/12 focus:border-blue-500/60 transition-all font-medium"
+                    className="w-full bg-slate-500 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
                   />
                 </div>
               )}
@@ -298,7 +298,7 @@ export function Login() {
                 <input
                   type="email" placeholder="Alamat Email" value={email}
                   onChange={e => setEmail(e.target.value)} required
-                  className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/12 focus:border-blue-500/60 transition-all font-medium"
+                  className="w-full bg-slate-500 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
                 />
               </div>
 
@@ -311,7 +311,7 @@ export function Login() {
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Kata Sandi" value={password}
                       onChange={e => setPassword(e.target.value)} required
-                      className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-12 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/12 focus:border-blue-500/60 transition-all font-medium"
+                      className="w-full bg-slate-500 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-12 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
                     />
                     <button
                       type="button"
@@ -340,7 +340,7 @@ export function Login() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full py-4 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all text-[13px] uppercase tracking-wide cursor-pointer hover:opacity-90 hover:-translate-y-px active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg bg-gradient-to-r from-blue-600 to-cyan-500 shadow-blue-500/20"
+                className="w-full py-4 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all text-[13px] uppercase tracking-wide cursor-pointer hover:opacity-90 hover:-translate-y-px active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg bg-gradient-to-r from-indigo-600 to-rose-500 shadow-indigo-500/20"
               >
                 {authLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -368,7 +368,7 @@ export function Login() {
                   <button
                     type="button"
                     onClick={() => { setIsRegistering(!isRegistering); setError(''); }}
-                    className="text-blue-600 dark:text-blue-400 font-bold hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
+                    className="text-indigo-600 dark:text-rose-400 font-bold hover:text-indigo-700 dark:hover:text-rose-300 transition-colors cursor-pointer"
                   >
                     {isRegistering ? 'Masuk di sini' : 'Daftar sekarang'}
                   </button>
@@ -412,9 +412,9 @@ export function Login() {
           {/* Footer note */}
           <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-8 leading-relaxed">
             Dengan masuk, Anda menyetujui{' '}
-            <span className="text-blue-500 cursor-pointer hover:underline">Kebijakan Privasi</span>
+            <span className="text-indigo-500 cursor-pointer hover:underline">Kebijakan Privasi</span>
             {' '}dan{' '}
-            <span className="text-blue-500 cursor-pointer hover:underline">Syarat Penggunaan</span>
+            <span className="text-indigo-500 cursor-pointer hover:underline">Syarat Penggunaan</span>
             {' '}PT Spektrum Kreasi Pratama.
           </p>
         </div>

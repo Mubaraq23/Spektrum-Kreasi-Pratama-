@@ -203,7 +203,7 @@ export function Settings() {
                 className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${
                   activeTab === 'profile'
                     ? 'bg-white dark:bg-[#080d22] text-blue-600 dark:text-cyan-400 shadow-sm border border-slate-200/50 dark:border-slate-800'
-                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                 }`}
               >
                 Profil Saya
@@ -214,7 +214,7 @@ export function Settings() {
                 className={`flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all ${
                   activeTab === 'landing_page'
                     ? 'bg-white dark:bg-[#080d22] text-blue-600 dark:text-cyan-400 shadow-sm border border-slate-200/50 dark:border-slate-800'
-                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-350'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                 }`}
               >
                 ⚙️ Landing Page & KAN
@@ -237,7 +237,7 @@ export function Settings() {
               ) : (
                 <form onSubmit={handleUpdateSettings} className="space-y-6">
                   {error && (
-                    <div className="p-4 bg-red-955/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
+                    <div className="p-4 bg-red-950/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
                       <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                       <span>{error}</span>
                     </div>
@@ -357,7 +357,7 @@ export function Settings() {
 
               <form onSubmit={handleUpdateProfile} className="space-y-6">
                 {error && (
-                  <div className="p-4 bg-red-955/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
+                  <div className="p-4 bg-red-950/20 border border-red-900/40 text-red-500 rounded-2xl flex items-start gap-3.5 text-xs font-bold leading-relaxed">
                     <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                     <span>{error}</span>
                   </div>
