@@ -19,10 +19,31 @@ import { Layout } from './components/Layout';
 import { Landing } from './pages/Landing';
 import { AuditLogs } from './pages/AuditLogs';
 import { Settings } from './pages/Settings';
-import { IPMModule } from './pages/IPMModule';
-import { UkesModule } from './pages/UkesModule';
 import { WorkOrders } from './pages/WorkOrders';
 import { ServiceHistory } from './pages/ServiceHistory';
+import { CalculationEngine } from './pages/CalculationEngine';
+import { KANScopeMatrix } from './pages/KANScopeMatrix';
+import { CustomProtocolBuilder } from './pages/CustomProtocolBuilder';
+import { MetadataManager } from './pages/MetadataManager';
+import { UkesRadiologyDashboard } from './pages/UkesRadiologyDashboard';
+import { UkesRadiologyWizard } from './pages/UkesRadiologyWizard';
+import { UkesRadiologyMasterRegulations } from './pages/UkesRadiologyMasterRegulations';
+import { UkesMasterModalityAdmin } from './pages/UkesMasterModalityAdmin';
+import { UkesBapetenReportingAdmin } from './pages/UkesBapetenReportingAdmin';
+import { UkesRadiologyInstruments } from './pages/UkesRadiologyInstruments';
+import { UkesRadiologyCertificateDetail } from './pages/UkesRadiologyCertificateDetail';
+import { IpmDashboard } from './pages/IpmDashboard';
+import { IpmWizard } from './pages/IpmWizard';
+import { IpmMasterTemplates } from './pages/IpmMasterTemplates';
+import { IpmSpareParts } from './pages/IpmSpareParts';
+import { IpmReportDetail } from './pages/IpmReportDetail';
+import { RepairDashboard } from './pages/RepairDashboard';
+import { RepairWizard } from './pages/RepairWizard';
+import { RepairMasterCatalog } from './pages/RepairMasterCatalog';
+import { RepairReportDetail } from './pages/RepairReportDetail';
+import { MasterUnifiedHub } from './pages/MasterUnifiedHub';
+import { ServiceRecap } from './pages/ServiceRecap';
+import { DailyRecap } from './pages/DailyRecap';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -127,6 +148,14 @@ export default function App() {
                 <Route path="/service-history" element={
                   <RoleRoute allowedRoles={allRoles}><ServiceHistory /></RoleRoute>
                 } />
+
+                <Route path="/service-recap" element={
+                  <RoleRoute allowedRoles={allRoles}><ServiceRecap /></RoleRoute>
+                } />
+
+                <Route path="/daily-recap" element={
+                  <RoleRoute allowedRoles={allRoles}><DailyRecap /></RoleRoute>
+                } />
                 
                 <Route path="/calibrators" element={
                   <RoleRoute allowedRoles={viewRoles}><Calibrators /></RoleRoute>
@@ -155,6 +184,22 @@ export default function App() {
                 <Route path="/methods" element={
                   <RoleRoute allowedRoles={techRoles}><WorkMethods /></RoleRoute>
                 } />
+
+                <Route path="/calculation-engine" element={
+                  <RoleRoute allowedRoles={techRoles}><CalculationEngine /></RoleRoute>
+                } />
+
+                <Route path="/scope-matrix" element={
+                  <RoleRoute allowedRoles={techRoles}><KANScopeMatrix /></RoleRoute>
+                } />
+
+                <Route path="/protocol-builder" element={
+                  <RoleRoute allowedRoles={viewRoles}><CustomProtocolBuilder /></RoleRoute>
+                } />
+
+                <Route path="/metadata-manager" element={
+                  <RoleRoute allowedRoles={['admin', 'supervisor']}><MetadataManager /></RoleRoute>
+                } />
                 
                 <Route path="/inventory" element={
                   <RoleRoute allowedRoles={viewRoles}><EquipmentInventory /></RoleRoute>
@@ -172,17 +217,93 @@ export default function App() {
                   <RoleRoute allowedRoles={operRoles}><CertificateExtractor /></RoleRoute>
                 } />
 
+                <Route path="/master-hub" element={
+                  <RoleRoute allowedRoles={techRoles}><MasterUnifiedHub /></RoleRoute>
+                } />
+
                 <Route path="/ipm" element={
-                  <RoleRoute allowedRoles={techRoles}><IPMModule /></RoleRoute>
+                  <RoleRoute allowedRoles={techRoles}><IpmDashboard /></RoleRoute>
+                } />
+
+                <Route path="/ipm/wizard" element={
+                  <RoleRoute allowedRoles={techRoles}><IpmWizard /></RoleRoute>
+                } />
+
+                <Route path="/ipm/wizard/:id" element={
+                  <RoleRoute allowedRoles={techRoles}><IpmWizard /></RoleRoute>
+                } />
+
+                <Route path="/ipm/templates" element={
+                  <RoleRoute allowedRoles={viewRoles}><IpmMasterTemplates /></RoleRoute>
+                } />
+
+                <Route path="/ipm/spare-parts" element={
+                  <RoleRoute allowedRoles={viewRoles}><IpmSpareParts /></RoleRoute>
+                } />
+
+                <Route path="/ipm/reports/:id" element={
+                  <RoleRoute allowedRoles={viewRoles}><IpmReportDetail /></RoleRoute>
                 } />
                 
-                <Route path="/ukes" element={
-                  <RoleRoute allowedRoles={techRoles}><UkesModule /></RoleRoute>
+                <Route path="/ukes" element={<Navigate to="/ukes-radiology" replace />} />
+
+                <Route path="/ukes-radiology" element={
+                  <RoleRoute allowedRoles={techRoles}><UkesRadiologyDashboard /></RoleRoute>
+                } />
+
+                <Route path="/ukes-radiology/wizard" element={
+                  <RoleRoute allowedRoles={techRoles}><UkesRadiologyWizard /></RoleRoute>
+                } />
+
+                <Route path="/ukes-radiology/wizard/:id" element={
+                  <RoleRoute allowedRoles={techRoles}><UkesRadiologyWizard /></RoleRoute>
+                } />
+
+                <Route path="/ukes-radiology/master-regulations" element={
+                  <RoleRoute allowedRoles={viewRoles}><UkesRadiologyMasterRegulations /></RoleRoute>
+                } />
+
+                <Route path="/ukes-radiology/master-modalities" element={
+                  <RoleRoute allowedRoles={viewRoles}><UkesMasterModalityAdmin /></RoleRoute>
+                } />
+
+                <Route path="/ukes-radiology/bapeten-reporting" element={
+                  <RoleRoute allowedRoles={viewRoles}><UkesBapetenReportingAdmin /></RoleRoute>
+                } />
+
+                <Route path="/ukes-radiology/instruments" element={
+                  <RoleRoute allowedRoles={viewRoles}><UkesRadiologyInstruments /></RoleRoute>
+                } />
+
+                <Route path="/ukes-radiology/reports/:id" element={
+                  <RoleRoute allowedRoles={viewRoles}><UkesRadiologyCertificateDetail /></RoleRoute>
+                } />
+
+                <Route path="/repair" element={
+                  <RoleRoute allowedRoles={techRoles}><RepairDashboard /></RoleRoute>
+                } />
+
+                <Route path="/repair/wizard" element={
+                  <RoleRoute allowedRoles={techRoles}><RepairWizard /></RoleRoute>
+                } />
+
+                <Route path="/repair/wizard/:id" element={
+                  <RoleRoute allowedRoles={techRoles}><RepairWizard /></RoleRoute>
+                } />
+
+                <Route path="/repair/master-catalog" element={
+                  <RoleRoute allowedRoles={viewRoles}><RepairMasterCatalog /></RoleRoute>
+                } />
+
+                <Route path="/repair/reports/:id" element={
+                  <RoleRoute allowedRoles={viewRoles}><RepairReportDetail /></RoleRoute>
                 } />
 
                 <Route path="/audit-logs" element={
                   <RoleRoute allowedRoles={['admin', 'supervisor']}><AuditLogs /></RoleRoute>
                 } />
+                
+                <Route path="/regulation-manager" element={<Navigate to="/ukes-radiology/master-regulations" replace />} />
                 
                 <Route path="/settings" element={
                   <RoleRoute allowedRoles={allRoles}><Settings /></RoleRoute>

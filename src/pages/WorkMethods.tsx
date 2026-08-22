@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { 
-  Plus, 
   BookOpen, 
   Search, 
   BrainCircuit, 
@@ -27,7 +27,7 @@ import { cn } from '../lib/utils';
 import { useAuth } from '../lib/AuthContext';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { jsPDF } from 'jspdf';
-import { translateToIndonesian } from './WorksheetEditor';
+import { translateToIndonesian } from '../lib/metrologyUtils';
 
 export function WorkMethods() {
   const { isAdmin } = useAuth();
@@ -473,36 +473,7 @@ export function WorkMethods() {
     }
   };
 
-  const addParameter = () => {
-    const newParam = { name: 'Parameter Baru', unit: '-', points: [0], tolerance: 0 };
-    setSelectedMethod({
-      ...selectedMethod,
-      parameters: [...(selectedMethod.parameters || []), newParam]
-    });
-  };
 
-  const updateParameter = (idx: number, field: string, value: any) => {
-    const newParams = [...(selectedMethod.parameters || [])];
-    const updatedParam = { ...newParams[idx] };
-    
-    if (field === 'points') {
-      // Handle comma separated points
-      if (typeof value === 'string') {
-        updatedParam[field] = value.split(',')
-          .map((v: string) => v.trim())
-          .filter(v => v !== '')
-          .map((v: string) => Number(v))
-          .filter((v: number) => !isNaN(v));
-      } else {
-        updatedParam[field] = value;
-      }
-    } else {
-      updatedParam[field] = value;
-    }
-    
-    newParams[idx] = updatedParam;
-    setSelectedMethod({ ...selectedMethod, parameters: newParams });
-  };
 
   const removeParameter = (idx: number) => {
     const newParams = (selectedMethod.parameters || []).filter((_: any, i: number) => i !== idx);

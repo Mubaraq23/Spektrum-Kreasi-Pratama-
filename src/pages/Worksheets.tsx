@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -10,7 +11,6 @@ import {
   Clock, 
   AlertCircle,
   BrainCircuit,
-  MessageSquare,
   CheckCircle,
   ChevronRight,
   Loader2,
@@ -19,7 +19,10 @@ import {
   Trash2,
   FileSpreadsheet,
   Camera,
-  QrCode
+  QrCode,
+  Calculator,
+  ShieldCheck,
+  Wrench
 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy, where, addDoc, serverTimestamp, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -28,20 +31,24 @@ import { cn } from '../lib/utils';
 import { useAuth } from '../lib/AuthContext';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { logAction, pushNotification } from '../lib/auditLogger';
-import { translateToIndonesian, getDeviceNameFromMethodTitle } from './WorksheetEditor';
+import { translateToIndonesian, getDeviceNameFromMethodTitle } from '../lib/metrologyUtils';
+import { CalculationEngine } from './CalculationEngine';
+import { KANScopeMatrix } from './KANScopeMatrix';
+import { CustomProtocolBuilder } from './CustomProtocolBuilder';
 import { QRScannerModal } from '../components/QRManager';
 import { LKLabelModal } from '../components/LKLabelModal';
 import { Tilt3D } from '../components/Tilt3D';
 
 export function Worksheets() {
-  const [worksheets, setWorksheets] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'worksheets' | 'calculator' | 'scope' | 'protocol'>('worksheets');
+  const [worksheets, setWorksheets] = useState<{ id: string; [key: string]: any }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExcelModalOpen, setIsExcelModalOpen] = useState(false);
   const [pastedText, setPastedText] = useState('');
   const [isImporting, setIsImporting] = useState(false);
   const [importStatus, setImportStatus] = useState('');
-  const [methods, setMethods] = useState<any[]>([]);
+  const [methods, setMethods] = useState<{ id: string; [key: string]: any }[]>([]);
   const [deviceName, setDeviceName] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('');
   const [creating, setCreating] = useState(false);
@@ -49,7 +56,7 @@ export function Worksheets() {
   const [inventoryNames, setInventoryNames] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showScanner, setShowScanner] = useState(false);
-  const [equipment, setEquipment] = useState<any[]>([]);
+  const [equipment, setEquipment] = useState<{ id: string; name?: string; brand?: string; model?: string; serialNumber?: string; [key: string]: any }[]>([]);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isMethodDropdownOpen, setIsMethodDropdownOpen] = useState(false);
   
@@ -285,6 +292,75 @@ export function Worksheets() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 relative p-1 pb-12 min-h-screen transition-all duration-300 font-sans">
       
+      {/* Master Metrology Tab Switcher Banner */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400">
+            <FileText className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+              Modul Terpadu Kalibrasi & Metrologi KAN
+            </h2>
+            <p className="text-[10px] text-slate-400 font-medium">Lembar Kerja Digital, Mesin Perhitungan u95, Lingkup KAN, & Builder Metode</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => setActiveTab('worksheets')}
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'worksheets'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 shadow-md shadow-amber-500/20'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <FileText className="w-4 h-4" /> Lembar Kerja
+          </button>
+
+          <button
+            onClick={() => setActiveTab('calculator')}
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'calculator'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md shadow-cyan-500/20'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Calculator className="w-4 h-4" /> Mesin Perhitungan u95
+          </button>
+
+          <button
+            onClick={() => setActiveTab('scope')}
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'scope'
+                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/20'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4" /> Lingkup KAN
+          </button>
+
+          <button
+            onClick={() => setActiveTab('protocol')}
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'protocol'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 shadow-md shadow-emerald-500/20'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Wrench className="w-4 h-4" /> Builder Metode
+          </button>
+        </div>
+      </div>
+
+      {activeTab === 'calculator' ? (
+        <CalculationEngine />
+      ) : activeTab === 'scope' ? (
+        <KANScopeMatrix />
+      ) : activeTab === 'protocol' ? (
+        <CustomProtocolBuilder />
+      ) : (
+        <>
       {/* Top Small Crisp Data Summary Panel */}
       <div className="w-full flex flex-wrap items-center justify-between gap-4 border-b border-sky-500/10 dark:border-cyan-500/10 pb-3 text-[10px] font-mono tracking-[0.2em] text-slate-400 dark:text-slate-500 select-none">
         <div className="flex items-center gap-4">
@@ -809,28 +885,30 @@ export function Worksheets() {
         {showScanner && (
           <QRScannerModal
             onClose={() => setShowScanner(false)}
-            equipmentList={equipment}
-            methods={methods}
+            equipmentList={equipment as any}
+            methods={methods as any}
           />
         )}
       </AnimatePresence>
+        </>
+      )}
     </div>
   );
 }
 
 interface WorksheetCardProps {
-  lk: any;
+  lk: { id: string; [key: string]: any };
   onDelete: () => void | Promise<void>;
-  key?: any;
+  key?: string | number;
 }
 
 function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
-  const { user, profile, isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const canDelete = isAdmin || (user?.uid === lk.technicianId && (lk.status === 'draft' || lk.status === 'revision'));
 
-  const statusColors: any = {
+  const statusColors: Record<string, string> = {
     draft: "bg-slate-100/50 text-slate-500 border-slate-200/20",
     pending: "bg-amber-500/10 text-amber-500 border-amber-500/20",
     revision: "bg-red-500/10 text-red-500 border-red-500/20",
@@ -838,7 +916,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
     completed: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   };
 
-  const statusLabels: any = {
+  const statusLabels: Record<string, string> = {
     draft: "SISTEM DRAF",
     pending: "MENUNGGU",
     revision: "REVISI",
@@ -846,7 +924,7 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
     completed: "TERTUTUP",
   };
 
-  const statusIcons: any = {
+  const statusIcons: Record<string, React.ReactNode> = {
     draft: <Clock className="w-3.5 h-3.5" />,
     pending: <Activity className="w-3.5 h-3.5 animate-pulse" />,
     revision: <AlertCircle className="w-3.5 h-3.5" />,

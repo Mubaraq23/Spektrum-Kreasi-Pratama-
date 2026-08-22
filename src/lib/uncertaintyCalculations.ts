@@ -35,10 +35,10 @@ export interface UncertaintyBreakdown {
  */
 export function calculateInstrumentUncertainty(
   category: string,
-  resolution: any = 0.01,
-  masterUnc: any = 0.001,
-  drift: any = 0,
-  m: any = {}
+  resolution: unknown = 0.01,
+  masterUnc: unknown = 0.001,
+  drift: unknown = 0,
+  m: Record<string, unknown> = {}
 ): UncertaintyBreakdown {
   const methodUsed = category || 'standard';
   const k = 2; // coverage factor at 95% Confidence Level
@@ -282,3 +282,241 @@ export function calculateInstrumentUncertainty(
     tar,
   } as UncertaintyBreakdown;
 }
+
+/**
+ * Budget component interface for detailed ISO GUM Uncertainty Budget
+ */
+export interface UncertaintyBudgetRow {
+  id: string;
+  sourceName: string;
+  symbol: string;
+  value: number;            // Component magnitude / value (x_i or a)
+  distribution: 'normal' | 'rectangular' | 'triangular' | 'u-shaped';
+  divisor: number;          // e.g., 1, 2, sqrt(3), sqrt(6), sqrt(2)
+  standardUncertainty: number; // u(x_i) = value / divisor
+  sensitivityCoefficient: number; // c_i = df/dx_i
+  degreesOfFreedom: number;   // nu_i (e.g. n-1 or infinity)
+  varianceContribution: number; // (c_i * u(x_i))^2
+  contributionPercentage: number; // % contribution to u_c^2
+}
+
+/**
+ * Calculates Welch-Satterthwaite effective degrees of freedom (nu_eff)
+ */
+export function calculateWelchSatterthwaite(rows: UncertaintyBudgetRow[], uCombined: number): number {
+  if (!uCombined || uCombined === 0 || rows.length === 0) return Infinity;
+  const uc4 = Math.pow(uCombined, 4);
+  let sumDenominator = 0;
+
+  for (const row of rows) {
+    const ui = row.sensitivityCoefficient * row.standardUncertainty;
+    const df = row.degreesOfFreedom || Infinity;
+    if (df > 0 && isFinite(df)) {
+      sumDenominator += Math.pow(ui, 4) / df;
+    }
+  }
+
+  if (sumDenominator === 0) return Infinity;
+  const nuEff = uc4 / sumDenominator;
+  return Math.max(1, Math.round(nuEff * 100) / 100);
+}
+
+/**
+ * Interpolates Student's t coverage factor (k) for 95.45% or 95% Confidence Level based on nu_eff
+ */
+export function getCoverageFactorK(nuEff: number, confidence: number = 0.95): number {
+  if (nuEff >= 100 || !isFinite(nuEff)) return 2.00;
+  
+  // Student-t table at 95% (two-tailed) for degrees of freedom 1..30 and selected values
+  const tTable95: Record<number, number> = {
+    1: 12.71, 2: 4.30, 3: 3.18, 4: 2.78, 5: 2.57,
+    6: 2.45,  7: 2.36, 8: 2.31, 9: 2.26, 10: 2.23,
+    11: 2.20, 12: 2.18, 13: 2.16, 14: 2.14, 15: 2.13,
+    16: 2.12, 17: 2.11, 18: 2.10, 19: 2.09, 20: 2.09,
+    25: 2.06, 30: 2.04, 40: 2.02, 50: 2.01, 60: 2.00
+  };
+
+  const roundedNu = Math.floor(nuEff);
+  if (tTable95[roundedNu]) return tTable95[roundedNu];
+
+  if (roundedNu > 30 && roundedNu < 40) return 2.03;
+  if (roundedNu > 40 && roundedNu < 50) return 2.01;
+  if (roundedNu > 50) return 2.00;
+
+  return 2.00;
+}
+
+/**
+ * Conformity Assessment & ILAC G8 Decision Rule Evaluation
+ */
+export interface ILACDecisionResult {
+  decision: 'PASS' | 'FAIL' | 'INCONCLUSIVE';
+  upperTolerance: number;
+  lowerTolerance: number;
+  guardBand: number;
+  acceptanceLimitUpper: number;
+  acceptanceLimitLower: number;
+  tur: number;
+  explanation: string;
+}
+
+export function evaluateILACDecision(
+  measuredValue: number,
+  nominalValue: number,
+  expandedUncertainty: number,
+  toleranceAbs: number,
+  guardBandMultiplier: number = 1.0 // Simple acceptance guard band w = 1 * U
+): ILACDecisionResult {
+  const upperTol = nominalValue + toleranceAbs;
+  const lowerTol = nominalValue - toleranceAbs;
+  
+  const guardBand = expandedUncertainty * guardBandMultiplier;
+  const acceptUpper = upperTol - guardBand;
+  const acceptLower = lowerTol + guardBand;
+
+  const tur = expandedUncertainty > 0 ? (toleranceAbs / expandedUncertainty) : 0;
+
+  let decision: 'PASS' | 'FAIL' | 'INCONCLUSIVE';
+  let explanation = '';
+
+  if (measuredValue >= acceptLower && measuredValue <= acceptUpper) {
+    decision = 'PASS';
+    explanation = 'Nilai terukur berada di dalam batas penerimaan (Acceptance Zone) setelah mempertimbangkan pita pelindung (Guard Band) ketidakpastian.';
+  } else if (measuredValue > upperTol || measuredValue < lowerTol) {
+    decision = 'FAIL';
+    explanation = 'Nilai terukur berada di luar batas toleransi maksimum spesifikasi (Out of Specification).';
+  } else {
+    decision = 'INCONCLUSIVE';
+    explanation = 'Nilai terukur berada dalam zona abu-abu (Guard Band Zone). Hasil tidak dapat disimpulkan Lulus secara pasti pada tingkat kepercayaan 95%.';
+  }
+
+  return {
+    decision,
+    upperTolerance: upperTol,
+    lowerTolerance: lowerTol,
+    guardBand,
+    acceptanceLimitUpper: acceptUpper,
+    acceptanceLimitLower: acceptLower,
+    tur: Math.round(tur * 100) / 100,
+    explanation,
+  };
+}
+
+/**
+ * Safe Mathematical Expression Evaluator for Dynamic Calibration Formulas
+ */
+export function evaluateCustomFormula(expression: string, variables: Record<string, number>): { result: number; error?: string } {
+  try {
+    let expr = expression.trim();
+    if (!expr) return { result: 0, error: 'Ekspresi kosong' };
+
+    // Substitute variables in descending length order to avoid replacing substrings of longer var names
+    const sortedVarKeys = Object.keys(variables).sort((a, b) => b.length - a.length);
+    for (const key of sortedVarKeys) {
+      const val = variables[key];
+      const regex = new RegExp(`\\b${key}\\b`, 'g');
+      expr = expr.replace(regex, `(${val !== undefined && !isNaN(val) ? val : 0})`);
+    }
+
+    // Sanitize formula characters (only numbers, operators, parens, Math functions)
+    const sanitized = expr
+      .replace(/sqrt/g, 'Math.sqrt')
+      .replace(/abs/g, 'Math.abs')
+      .replace(/pow/g, 'Math.pow')
+      .replace(/sin/g, 'Math.sin')
+      .replace(/cos/g, 'Math.cos')
+      .replace(/tan/g, 'Math.tan')
+      .replace(/log/g, 'Math.log10')
+      .replace(/ln/g, 'Math.log')
+      .replace(/\^/g, '**');
+
+    // Strict validation to prevent code execution
+    if (/[^0-9.+\-*/(),\s\w*]/g.test(sanitized)) {
+      const invalid = sanitized.match(/[^0-9.+\-*/(),\s\w*]/g);
+      return { result: NaN, error: `Karakter tidak valid dalam formula: ${invalid?.join(', ')}` };
+    }
+
+    // Function constructor safe evaluation
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    const evalFunc = new Function(`return (${sanitized});`);
+    const val = evalFunc();
+
+    if (typeof val !== 'number' || isNaN(val)) {
+      return { result: NaN, error: 'Hasil kalkulasi bukan angka valid (NaN)' };
+    }
+
+    return { result: val };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Gagal mengevaluasi formula';
+    return { result: NaN, error: errorMsg };
+  }
+}
+
+/**
+ * Calibration Unit Converter Utility Engine
+ */
+export const UNIT_CONVERSIONS: Record<string, Record<string, number>> = {
+  suhu: {
+    '°C': 1,
+    '°F': 1, // special formula handles F & K
+    'K': 1,
+  },
+  tekanan: {
+    'bar': 1,
+    'mbar': 0.001,
+    'psi': 0.0689476,
+    'kPa': 0.01,
+    'MPa': 10,
+    'mmHg': 0.00133322,
+    'inHg': 0.0338639,
+    'kg/cm²': 0.980665,
+  },
+  massa: {
+    'kg': 1000,
+    'g': 1,
+    'mg': 0.001,
+    'μg': 0.000001,
+    'lb': 453.592,
+  },
+  flow: {
+    'L/min': 1,
+    'mL/min': 0.001,
+    'mL/h': 1 / 60000,
+    'm³/h': 1000 / 60,
+    'L/h': 1 / 60,
+  },
+  listrik: {
+    'V': 1,
+    'mV': 0.001,
+    'μV': 0.000001,
+    'kV': 1000,
+    'A': 1,
+    'mA': 0.001,
+    'μA': 0.000001,
+    'Ω': 1,
+    'kΩ': 1000,
+    'MΩ': 1000000,
+  }
+};
+
+export function convertCalibrationUnit(val: number, category: string, fromUnit: string, toUnit: string): number {
+  if (fromUnit === toUnit) return val;
+
+  if (category === 'suhu') {
+    let celsius = val;
+    if (fromUnit === '°F') celsius = (val - 32) * (5 / 9);
+    if (fromUnit === 'K') celsius = val - 273.15;
+
+    if (toUnit === '°C') return celsius;
+    if (toUnit === '°F') return (celsius * 9 / 5) + 32;
+    if (toUnit === 'K') return celsius + 273.15;
+    return val;
+  }
+
+  const catMap = UNIT_CONVERSIONS[category];
+  if (!catMap || !catMap[fromUnit] || !catMap[toUnit]) return val;
+
+  const baseValue = val * catMap[fromUnit];
+  return baseValue / catMap[toUnit];
+}
+

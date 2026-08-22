@@ -287,7 +287,7 @@ export function Login() {
                   <input
                     type="text" placeholder="Nama Lengkap" value={fullName}
                     onChange={e => setFullName(e.target.value)} required
-                    className="w-full bg-slate-500 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
+                    className="w-full bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
                   />
                 </div>
               )}
@@ -298,7 +298,7 @@ export function Login() {
                 <input
                   type="email" placeholder="Alamat Email" value={email}
                   onChange={e => setEmail(e.target.value)} required
-                  className="w-full bg-slate-500 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
+                  className="w-full bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-5 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
                 />
               </div>
 
@@ -311,7 +311,7 @@ export function Login() {
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Kata Sandi" value={password}
                       onChange={e => setPassword(e.target.value)} required
-                      className="w-full bg-slate-500 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-12 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
+                      className="w-full bg-white/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl !pl-11 !pr-12 !py-4 text-[13px] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/12 focus:border-indigo-500/60 transition-all font-medium"
                     />
                     <button
                       type="button"

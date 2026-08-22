@@ -1,24 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { 
   ClipboardList, 
   Wrench, 
   Clock, 
   CheckCircle2, 
-  AlertTriangle, 
   Search, 
   Plus, 
   X, 
-  Filter, 
   User, 
-  Calendar, 
   Building, 
   Check, 
   Loader2, 
   Activity, 
-  FileText,
   AlertCircle,
   Truck,
-  Users,
   Eye,
   CheckCircle,
   FileSpreadsheet
@@ -34,17 +30,19 @@ import {
   where, 
   orderBy, 
   onSnapshot, 
-  serverTimestamp,
-  getDoc
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
+import { useNavigate } from 'react-router-dom';
 import { logAction, pushNotification } from '../lib/auditLogger';
 
 export function WorkOrders() {
   const { profile, user, isAdmin, isSupervisor, isTechnician } = useAuth();
+  const navigate = useNavigate();
+  const [startingCalibration, setStartingCalibration] = useState(false);
   const [workOrders, setWorkOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -82,11 +80,6 @@ export function WorkOrders() {
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [filterPriority, setFilterPriority] = useState('ALL');
 
-  useEffect(() => {
-    if (profile?.hospitalName && !newWO.hospitalName) {
-      setNewWO(prev => ({ ...prev, hospitalName: profile.hospitalName }));
-    }
-  }, [profile]);
 
   useEffect(() => {
     if (!user) return;
@@ -141,6 +134,87 @@ export function WorkOrders() {
 
     return () => unsubscribe();
   }, [user, profile]);
+
+  const handleStartCalibration = async (wo: any) => {
+    if (!user) return;
+    setStartingCalibration(true);
+    try {
+      // Check if a worksheet already exists for this work order
+      const q = query(collection(db, 'worksheets'), where('workOrderId', '==', wo.id));
+      const snap = await getDocs(q);
+      
+      if (!snap.empty) {
+        // Direct to existing worksheet
+        const existingId = snap.docs[0].id;
+        setSelectedWO(null);
+        navigate(`/worksheets/${existingId}/edit`);
+        return;
+      }
+
+      // Find if there is a matching work method for this device
+      const methodsSnap = await getDocs(collection(db, 'methods'));
+      const methodsList: any[] = methodsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+      // Look for a method matching the device name or category
+      const matchedMethod = methodsList.find((m: any) => 
+        (m.title && typeof m.title === 'string' && m.title.toLowerCase().includes(wo.deviceName.toLowerCase())) ||
+        (m.deviceCategory && typeof m.deviceCategory === 'string' && m.deviceCategory.toLowerCase().includes(wo.deviceName.toLowerCase()))
+      ) || methodsList[0]; // fallback to first method if no match
+
+      // Create new worksheet
+      const wsRef = await addDoc(collection(db, 'worksheets'), {
+        workOrderId: wo.id,
+        deviceId: 'wo-' + wo.id,
+        deviceName: wo.deviceName,
+        brand: wo.brand || '',
+        model: wo.model || '',
+        serialNumber: wo.serialNumber || '',
+        fasyankesName: wo.hospitalName || '',
+        location: '',
+        methodId: matchedMethod?.id || '',
+        methodName: matchedMethod?.title || 'Metode Kalibrasi Standar',
+        technicianId: user.uid,
+        technicianName: profile?.displayName || user.email || 'Teknisi',
+        status: 'draft',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        inspections: {
+          physical: {},
+          functional: {},
+          electrical: { enabled: false, results: {} }
+        },
+        measurements: [],
+        results: {
+          pass: false,
+          notes: 'Dibuat otomatis dari SPK / Work Order.'
+        }
+      });
+
+      // Update work order status to in_progress and log it
+      await updateDoc(doc(db, 'work_orders', wo.id), {
+        status: 'in_progress',
+        startedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        technicianId: user.uid,
+        technicianName: profile?.displayName || user.email || 'Teknisi'
+      });
+
+      await logAction(
+        `Memulai Kalibrasi dari SPK: ${wo.deviceName}`,
+        'worksheets',
+        `Alat: ${wo.deviceName}, ID SPK: ${wo.id}, ID LK: ${wsRef.id}`,
+        'info'
+      );
+
+      setSelectedWO(null);
+      navigate(`/worksheets/${wsRef.id}/edit`);
+    } catch (err) {
+      console.error("Gagal memulai kalibrasi dari SPK:", err);
+      alert("Gagal membuat lembar kerja dari SPK.");
+    } finally {
+      setStartingCalibration(false);
+    }
+  };
 
   const handleCreateWO = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -993,6 +1067,24 @@ export function WorkOrders() {
                         Selesai pada: {new Date(selectedWO.completedAt?.seconds * 1000).toLocaleString('id-ID')}
                       </p>
                     )}
+                  </div>
+                )}
+
+                {/* Action button to Start Calibration */}
+                {selectedWO.status !== 'completed' && selectedWO.status !== 'cancelled' && (
+                  <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      onClick={() => handleStartCalibration(selectedWO)}
+                      disabled={startingCalibration}
+                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#725bff] to-[#56b3e6] text-white font-mono font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {startingCalibration ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Wrench className="w-4 h-4 animate-pulse" />
+                      )}
+                      {startingCalibration ? 'Membuat Lembar Kerja...' : 'Mulai Kalibrasi Alat'}
+                    </button>
                   </div>
                 )}
 

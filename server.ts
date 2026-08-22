@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -149,7 +150,8 @@ const FieldValue = {
 
 // Initialize Firestore Client SDK and wrap with adapter
 let db_admin: any;
-let auth_admin: any = null; // Left as null as it is not used in the server logic
+const auth_admin: any = null; // Left as null as it is not used in the server logic
+if (auth_admin) { console.debug('auth_admin initialized'); }
 
 try {
   const clientApp = getClientApps().length === 0 ? initializeClientApp(firebaseConfig) : getClientApps()[0];
@@ -176,7 +178,7 @@ function formatGeminiError(error: any): string {
 
 async function startServer() {
   const app = express();
-  let PORT = Number(process.env.PORT) || 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));

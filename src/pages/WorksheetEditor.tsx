@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import {
   Plus,
-  Search,
-  Filter,
   Zap,
   Save,
   ChevronRight,
@@ -16,7 +15,6 @@ import {
   FileText,
   CheckCircle2,
   AlertCircle,
-  Camera,
   Trash2,
   Table as TableIcon,
   BrainCircuit,
@@ -26,14 +24,12 @@ import {
   X,
   AlertTriangle,
   Info,
-  Moon,
-  Sun,
   Award,
   Sparkles,
-  RotateCcw,
-  Play,
   Download,
-  QrCode
+  QrCode,
+  Calculator,
+  Copy,
 } from "lucide-react";
 import {
   doc,
@@ -43,13 +39,11 @@ import {
   getDocs,
   serverTimestamp,
   deleteDoc,
-  setDoc,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { calculateInstrumentUncertainty } from "../lib/uncertaintyCalculations";
 import {
   analyzeWorksheet,
-  generateCertificateNarrative,
 } from "../services/geminiService";
 import { motion, AnimatePresence } from "motion/react";
 import { logAction, pushNotification } from "../lib/auditLogger";
@@ -58,90 +52,11 @@ import { useAuth } from "../lib/AuthContext";
 import { handleFirestoreError, OperationType } from "../lib/firestoreUtils";
 import { CertificatePreview } from "../components/CertificatePreview";
 import { LKLabelModal } from "../components/LKLabelModal";
-
-export function translateToIndonesian(text: string): string {
-  if (!text) return "";
-  let translated = text;
-
-  const mapping: { [key: string]: string } = {
-    "Infusion Pump": "Pompa Infus",
-    "Syringe Pump": "Pompa Syringe",
-    "Defibrillator": "Defibrilator",
-    "Electrocardiograph": "Elektrokardiograf (EKG)",
-    "Patient Monitor": "Monitor Pasien",
-    "Baby Incubator": "Inkubator Bayi",
-    "Fetal Monitor": "Monitor Janin (CTG)",
-    "Anesthesia Machine": "Mesin Anestesi",
-    "Ventilator": "Ventilator",
-    "Pulse Oximeter": "Oksimeter Denyut",
-    "Suction Pump": "Pompa Hisap",
-    "Baby Warmer": "Penghangat Bayi",
-    "Infant Warmer": "Penghangat Bayi",
-    "Centrifuge": "Sentrifus",
-    "Autoclave": "Autoklaf",
-    "Thermometer": "Termometer",
-    "Hygrometer": "Higrometer",
-    "Sphygmomanometer": "Tensimeter",
-    "Traction": "Alat Traksi",
-    "Oxygen Concentrator": "Konsentrator Oksigen",
-    "Electrosurgical Unit": "ESU (Electrosurgical Unit)",
-    "Nebulizer": "Nebuliser",
-    "Dental Unit": "Dental Unit",
-    "Phototherapy": "Fototerapi",
-    "X-Ray": "Sinar-X / Rontgen",
-    "General Standard": "Standar Umum"
-  };
-
-  for (const [english, indonesian] of Object.entries(mapping)) {
-    const regex = new RegExp(english, "gi");
-    if (regex.test(translated)) {
-      translated = translated.replace(regex, indonesian);
-    }
-  }
-
-  translated = translated.replace(/Calibration\s+Method\s+for\s+/gi, "Metode Kerja Kalibrasi ");
-  translated = translated.replace(/Calibration\s+Procedure\s+for\s+/gi, "Prosedur Kalibrasi ");
-  translated = translated.replace(/Method\s+of\s+Calibration\s+for\s+/gi, "Metode Kerja Kalibrasi ");
-  translated = translated.replace(/Method\s+for\s+/gi, "Metode Kerja ");
-
-  return translated;
-}
-
-export function getDeviceNameFromMethodTitle(title: string): string {
-  if (!title) return "";
-  let clean = title;
-  
-  const prefixes = [
-    /Calibration\s+Method\s+for\s+/gi,
-    /Calibration\s+Procedure\s+for\s+/gi,
-    /Method\s+of\s+Calibration\s+for\s+/gi,
-    /Method\s+for\s+/gi,
-    /Calibration\s+of\s+/gi,
-    /Metode\s+Kerja\s+Kalibrasi\s+/gi,
-    /Prosedur\s+Kalibrasi\s+/gi,
-    /Metode\s+Kerja\s+/gi,
-    /Metode\s+Kalibrasi\s+/gi,
-    /Metodologi\s+Kalibrasi\s+/gi,
-    /Metologi\s+Kalibrasi\s+/gi,
-    /Metrologi\s+Kalibrasi\s+/gi,
-    /Metrologi\s+/gi,
-    /Metologi\s+/gi,
-    /Pelayanan\s+Kalibrasi\s+/gi,
-    /Instruksi\s+Kerja\s+Kalibrasi\s+/gi,
-    /Instruksi\s+Kerja\s+/gi
-  ];
-  
-  for (const regex of prefixes) {
-    clean = clean.replace(regex, "");
-  }
-  
-  clean = clean.trim();
-  
-  // Strip common suffixes or metadata if any
-  clean = clean.replace(/\s*-\s*V\d+.*$/i, ""); // Remove version suffix if present e.g. " - V1"
-  
-  return translateToIndonesian(clean).trim();
-}
+import { KANWorksheetAuditorModal } from "../components/KANWorksheetAuditorModal";
+import { KANUncertaintyBudgetModal } from "../components/KANUncertaintyBudgetModal";
+import { CalculationEngine } from "./CalculationEngine";
+import { saveOfflineWorksheet } from "../lib/offlineStore";
+import { translateToIndonesian, getDeviceNameFromMethodTitle } from "../lib/metrologyUtils";
 
 const PHYSICAL_CHECKLIST = [
   "Badan & Permukaan",
@@ -1107,6 +1022,7 @@ export function WorksheetEditor() {
   const [cmcValue, setCmcValue] = useState<number>(0.05);
   const [justificationText, setJustificationText] = useState<string>("");
   const [isJustificationSaved, setIsJustificationSaved] = useState<boolean>(false);
+  const [verifiedDocuments, setVerifiedDocuments] = useState<Record<string, boolean>>({});
 
   // Auto-Save Mechanisms and Draft Restore Hooks
   const stateRef = React.useRef({
@@ -1155,8 +1071,10 @@ export function WorksheetEditor() {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && parsed.timestamp) {
-          setDraftData(parsed);
-          setShowDraftBanner(true);
+          queueMicrotask(() => {
+            setDraftData(parsed);
+            setShowDraftBanner(true);
+          });
         }
       }
     } catch (e) {
@@ -1252,6 +1170,8 @@ export function WorksheetEditor() {
   );
   const [interpWarning, setInterpWarning] = useState<string>("");
   const [showFormulaModal, setShowFormulaModal] = useState<boolean>(false);
+  const [isKanAuditorOpen, setIsKanAuditorOpen] = useState<boolean>(false);
+  const [budgetModalPoint, setBudgetModalPoint] = useState<any | null>(null);
 
   const selectedCalibratorParams = useMemo(() => {
     const params: any[] = [];
@@ -1271,12 +1191,32 @@ export function WorksheetEditor() {
   const uniqueParamNames = useMemo(() => {
     const names = new Set<string>();
     selectedCalibratorParams.forEach((p) => {
-      if (p.parameterName) {
-        names.add(p.parameterName);
+      if (p.parameterName) names.add(p.parameterName);
+      else if (p.name) names.add(p.name);
+    });
+    calibrators.forEach((cal) => {
+      if (selectedCalibratorIds.includes(cal.id)) {
+        if (cal.parameter) names.add(cal.parameter);
+        if (cal.parameterName) names.add(cal.parameterName);
+        if (cal.parameters && Array.isArray(cal.parameters)) {
+          cal.parameters.forEach((p: any) => {
+            if (p.parameterName) names.add(p.parameterName);
+            else if (p.name) names.add(p.name);
+          });
+        }
+        if (cal.calibrationPoints && Array.isArray(cal.calibrationPoints)) {
+          cal.calibrationPoints.forEach((p: any) => {
+            if (p.parameterName) names.add(p.parameterName);
+            else if (p.parameter) names.add(p.parameter);
+          });
+        }
       }
     });
+    if (names.size === 0) {
+      ["Tekanan", "Temperatur / Suhu", "Kelembaban", "Tegangan Listrik", "Arus Listrik", "Daya", "Laju Alir / Flow", "Frekuensi", "Kecepatan Putar (RPM)", "Energi", "Dosis Radiasi"].forEach(n => names.add(n));
+    }
     return Array.from(names);
-  }, [selectedCalibratorParams]);
+  }, [selectedCalibratorParams, calibrators, selectedCalibratorIds]);
 
   // Unified Calibrator Historical Drift Analysis & Stability Trend
   const calibratorHistories = useMemo(() => {
@@ -1300,15 +1240,44 @@ export function WorksheetEditor() {
     return historiesMap;
   }, [calibrators, selectedCalibratorIds]);
 
+  // Aggregate requirements (measurement repeats and required documents) from selected calibrators
+  const activeCalibratorRequirements = useMemo(() => {
+    const selectedCals = calibrators.filter(c => selectedCalibratorIds.includes(c.id));
+    const allDocs = new Set<string>();
+    let maxRepeats = 3;
+    selectedCals.forEach(c => {
+      const reps = Number(c.measurementRepeats) || 3;
+      if (reps > maxRepeats) maxRepeats = reps;
+      const docs: string[] = Array.isArray(c.requiredDocuments) && c.requiredDocuments.length > 0
+        ? c.requiredDocuments
+        : ["Sertifikat Kalibrasi KAN/NIST", "Manual Pengoperasian / SOP Alat"];
+      docs.forEach(d => allDocs.add(d));
+    });
+    return {
+      selectedCals,
+      repeats: maxRepeats,
+      requiredDocuments: Array.from(allDocs),
+      allDocsVerified: Array.from(allDocs).every(d => verifiedDocuments[d])
+    };
+  }, [calibrators, selectedCalibratorIds, verifiedDocuments]);
+
   // Robust AI Warnings & Validations
   const aiWarnings = useMemo(() => {
     const warnings: string[] = [];
 
-    // 1. Data pengulangan kurang (n < 3)
+    // 1. Data pengulangan kurang (n < required)
+    const requiredN = activeCalibratorRequirements.repeats || 3;
     measurements.forEach((m, idx) => {
-      const n = typeof m.n === "number" ? m.n : 3;
-      if (n < 3) {
-        warnings.push(`Baris ${idx + 1}: Data pengulangan kurang (${n} kali), standar ISO GUM minimal menetapkan 3 atau 5 pengulangan.`);
+      const n = typeof m.n === "number" ? m.n : requiredN;
+      if (n < requiredN) {
+        warnings.push(`Baris ${idx + 1}: Data pengulangan (${n}x) kurang dari standar Master Kalibrator (${requiredN}x).`);
+      }
+    });
+
+    // 2. Dokumen wajib belum terverifikasi
+    activeCalibratorRequirements.requiredDocuments.forEach(docName => {
+      if (!verifiedDocuments[docName]) {
+        warnings.push(`Dokumen acuan "${docName}" belum diverifikasi di Tab Master Kalibrator.`);
       }
     });
 
@@ -1379,19 +1348,23 @@ export function WorksheetEditor() {
           typeof p.point === "number" &&
           !isNaN(p.point),
       );
-      if (matchedPoints.length === 0) {
-        setInterpWarning(
-          "Notifikasi: Tidak ada data titik acuan kalibrator untuk parameter terpilih ini.",
-        );
-      } else if (matchedPoints.length < 2) {
-        setInterpWarning(
-          "Notifikasi: Jumlah data titik acuan kalibrator tidak mencukupi untuk interpolasi (minimal dibutuhkan 2 titik data).",
-        );
-      } else {
-        setInterpWarning("");
-      }
+      queueMicrotask(() => {
+        if (matchedPoints.length === 0) {
+          setInterpWarning(
+            "Notifikasi: Tidak ada data titik acuan kalibrator untuk parameter terpilih ini.",
+          );
+        } else if (matchedPoints.length < 2) {
+          setInterpWarning(
+            "Notifikasi: Jumlah data titik acuan kalibrator tidak mencukupi untuk interpolasi (minimal dibutuhkan 2 titik data).",
+          );
+        } else {
+          setInterpWarning("");
+        }
+      });
     } else {
-      setInterpWarning("");
+      queueMicrotask(() => {
+        setInterpWarning("");
+      });
     }
   }, [interpSource, selectedInterpParam, selectedCalibratorParams]);
 
@@ -1452,14 +1425,19 @@ export function WorksheetEditor() {
       const hasChanged = JSON.stringify(newM.map(m => ({ u: m.masterUnc, un: m.unit, dev: m.deviation, unc: m.uncertainty }))) !== 
                          JSON.stringify(measurements.map(m => ({ u: m.masterUnc, un: m.unit, dev: m.deviation, unc: m.uncertainty })));
       if (hasChanged) {
-        setMeasurements(newM);
+        queueMicrotask(() => {
+          setMeasurements(newM);
+        });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCalibratorParams, measurements.length]);
 
   useEffect(() => {
     if (uniqueParamNames.length > 0 && !selectedInterpParam) {
-      setSelectedInterpParam(uniqueParamNames[0]);
+      queueMicrotask(() => {
+        setSelectedInterpParam(uniqueParamNames[0]);
+      });
     }
   }, [uniqueParamNames, selectedInterpParam]);
 
@@ -1525,7 +1503,9 @@ export function WorksheetEditor() {
           setFunctionalData(fData);
 
           setElectricalData(
-            data.inspections?.electrical || { enabled: false, results: {} },
+            data.inspections?.electrical && typeof data.inspections.electrical.enabled === 'boolean'
+              ? data.inspections.electrical
+              : { enabled: true, results: { standard: "IEC 62353", classType: "Class I", appliedPart: "Type BF", leakageMethod: "Direct" } },
           );
           setMeasurements(data.measurements || []);
           setSelectedCalibratorIds(data.calibratorIds || []);
@@ -1682,12 +1662,12 @@ export function WorksheetEditor() {
     }
   };
 
-  const calculateUncertainty = (
+  function calculateUncertainty(
     resolution: number = 0.01,
     masterUnc: number = 0.001,
     drift: number = 0,
-    m: any = {},
-  ) => {
+    m: Record<string, unknown> = {},
+  ) {
     const category = identityData.uncMethod || "standard";
     const breakdown = calculateInstrumentUncertainty(
       category,
@@ -1697,14 +1677,14 @@ export function WorksheetEditor() {
       { ...m, cmcValue: cmcValue },
     );
     return breakdown.reportedUncertainty || breakdown.uExpanded;
-  };
+  }
 
-  const calculateUncertaintyFull = (
+  function calculateUncertaintyFull(
     resolution: number = 0.01,
     masterUnc: number = 0.001,
     drift: number = 0,
-    m: any = {},
-  ) => {
+    m: Record<string, unknown> = {},
+  ) {
     const category = identityData.uncMethod || "standard";
     const breakdown = calculateInstrumentUncertainty(
       category,
@@ -1718,7 +1698,7 @@ export function WorksheetEditor() {
       uCombined: breakdown.uCombined,
       uExpanded: breakdown.uExpanded,
     };
-  };
+  }
 
   const autoFillFromCalibrator = (
     newM: any[],
@@ -2121,6 +2101,73 @@ export function WorksheetEditor() {
     showToast(`Berhasil men-generate ${steps} titik ukur otomatis!`, "success");
   };
 
+  const handleSortMeasurements = () => {
+    if (measurements.length === 0) return;
+    const sorted = [...measurements].sort((a, b) => (Number(a.point) || 0) - (Number(b.point) || 0));
+    setMeasurements(sorted);
+    showToast("Titik ukur berhasil diurutkan secara menaik (Kecil → Besar)!", "success");
+  };
+
+  const handleDuplicateRow = (idx: number) => {
+    if (idx < 0 || idx >= measurements.length) return;
+    const itemToDup = { ...measurements[idx] };
+    const nextM = [...measurements];
+    nextM.splice(idx + 1, 0, itemToDup);
+    setMeasurements(nextM);
+    showToast(`Baris ${idx + 1} berhasil diduplikasi!`, "info");
+  };
+
+  const handleLoadFromCalibrators = () => {
+    if (selectedCalibratorParams.length === 0) {
+      showToast("Pilih minimal satu Master Kalibrator yang memiliki titik ukur acuan di Tab Master Kalibrator!", "warning");
+      return;
+    }
+    const newPoints = selectedCalibratorParams.map((p) => {
+      const pt = typeof p.point === "number" ? p.point : (Number(p.point) || 0);
+      const res = Number(bulkRes) || 0.01;
+      const mUnc = typeof p.uncertainty === "number" ? p.uncertainty : (Number(bulkMUnc) || 0.001);
+      const dr = Number(bulkDrift) || 0;
+      return {
+        parameterName: p.parameterName || p.name || (uniqueParamNames[0] || "Parameter MK"),
+        point: pt,
+        actual: pt,
+        deviation: 0,
+        unit: p.unit || "V",
+        resolution: res,
+        masterUnc: mUnc,
+        drift: dr,
+        uncertainty: calculateUncertainty(res, mUnc, dr),
+        tolerance: bulkTol !== "" ? Number(bulkTol) : undefined,
+      };
+    });
+    setMeasurements(newPoints);
+    showToast(`Berhasil memuat ${newPoints.length} titik ukur langsung dari Master Kalibrator!`, "success");
+  };
+
+  const TAB_SEQUENCE: Array<"identity" | "calibrators_tab" | "inspections" | "electrical" | "measurements"> = [
+    "identity",
+    "calibrators_tab",
+    "inspections",
+    "electrical",
+    "measurements"
+  ];
+
+  const handleNextStep = () => {
+    const currentIndex = TAB_SEQUENCE.indexOf(activeTab);
+    if (currentIndex < TAB_SEQUENCE.length - 1) {
+      handleTabChange(TAB_SEQUENCE[currentIndex + 1]);
+      window.scrollTo({ top: 100, behavior: "smooth" });
+    }
+  };
+
+  const handlePrevStep = () => {
+    const currentIndex = TAB_SEQUENCE.indexOf(activeTab);
+    if (currentIndex > 0) {
+      handleTabChange(TAB_SEQUENCE[currentIndex - 1]);
+      window.scrollTo({ top: 100, behavior: "smooth" });
+    }
+  };
+
   // Real-time automatic recalculation of U95 when measurements array or its parameters change
   useEffect(() => {
     let hasUpdated = false;
@@ -2147,8 +2194,11 @@ export function WorksheetEditor() {
     });
 
     if (hasUpdated) {
-      setMeasurements(updated);
+      queueMicrotask(() => {
+        setMeasurements(updated);
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [measurements, identityData.uncMethod, cmcValue]);
 
   const getStatusModule = () => {
@@ -2209,7 +2259,7 @@ export function WorksheetEditor() {
         if (appliedPart !== "None") {
           const applLeakageVal = parseFloat(results.appliedPartLeakage);
           if (!isNaN(applLeakageVal)) {
-            let maxLimit = 1000;
+            let maxLimit: number;
             if (appliedPart === "Type CF") {
               maxLimit = leakageMethod === "Alternative" ? 100 : 50;
             } else {
@@ -2352,6 +2402,28 @@ export function WorksheetEditor() {
       if (isSubmitting) {
         updateData.status = "completed";
         updateData.issuedAt = serverTimestamp();
+      }
+
+      // Check if online, if not, save to offline IndexedDB
+      if (!navigator.onLine) {
+        const offlineData = {
+          id,
+          deviceName: identityData.deviceName || "",
+          brand: identityData.brand || "",
+          serialNumber: identityData.serialNumber || "",
+          status: isSubmitting ? "completed" : "draft",
+          data: {
+            ...updateData,
+            updatedAt: new Date().toISOString(),
+            ...(isSubmitting ? { issuedAt: new Date().toISOString() } : {})
+          },
+          timestamp: Date.now(),
+          synced: false
+        };
+        await saveOfflineWorksheet(offlineData);
+        showToast("PWA: Tersimpan offline pada perangkat Anda.", "success");
+        navigate("/worksheets");
+        return;
       }
 
       await updateDoc(doc(db, "worksheets", id), updateData);
@@ -2595,7 +2667,7 @@ export function WorksheetEditor() {
       const xVal = Number(m.point);
       if (isNaN(xVal)) return m;
 
-      let interpolatedY = 0;
+      let interpolatedY: number;
 
       if (matchedPoints.length === 1) {
         interpolatedY = matchedPoints[0].y;
@@ -2777,6 +2849,34 @@ export function WorksheetEditor() {
               ...identityData,
             }}
             onClose={() => setShowLabelModal(false)}
+          />
+        )}
+
+        {isKanAuditorOpen && (
+          <KANWorksheetAuditorModal
+            isOpen={isKanAuditorOpen}
+            onClose={() => setIsKanAuditorOpen(false)}
+            worksheetData={{
+              id: id || "",
+              identityData,
+              measurements,
+              calibrators,
+              selectedCalibratorIds,
+              physicalData,
+              functionalData,
+              electricalData,
+              signatures: lk?.signatures || {},
+              cmcValue,
+            }}
+          />
+        )}
+
+        {budgetModalPoint && (
+          <KANUncertaintyBudgetModal
+            isOpen={!!budgetModalPoint}
+            onClose={() => setBudgetModalPoint(null)}
+            pointData={budgetModalPoint}
+            cmcValue={cmcValue}
           />
         )}
 
@@ -2992,6 +3092,13 @@ export function WorksheetEditor() {
             Label & QR
           </button>
           <button
+            onClick={() => setIsKanAuditorOpen(true)}
+            className="px-5 py-2.5 bg-amber-50/80 dark:bg-amber-950/25 backdrop-blur border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:shadow-md hover:shadow-amber-500/10 transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Audit KAN ISO 17025
+          </button>
+          <button
             onClick={() => handleSave(true)}
             className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 text-white font-black text-[9px] rounded-xl uppercase tracking-[0.15em] hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/25 dark:shadow-blue-500/20 italic active:scale-[0.98] flex items-center gap-2"
           >
@@ -3058,7 +3165,7 @@ export function WorksheetEditor() {
                 onClick={() => handleTabChange("identity")}
                 icon={FileText}
                 label="IDENTITAS ALAT"
-                desc="Data teknis & instansi"
+                desc="Data teknis & lingkungan"
               />
             </div>
             <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
@@ -3066,8 +3173,8 @@ export function WorksheetEditor() {
                 active={activeTab === "calibrators_tab"}
                 onClick={() => handleTabChange("calibrators_tab")}
                 icon={Zap}
-                label="MASTER ALAT"
-                desc="Kalibrator yang digunakan"
+                label="MASTER KALIBRATOR"
+                desc="Standar acuan rujukan"
               />
             </div>
             <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
@@ -3076,7 +3183,7 @@ export function WorksheetEditor() {
                 onClick={() => handleTabChange("inspections")}
                 icon={Stethoscope}
                 label="FISIK & FUNGSI"
-                desc="Visual & operasional"
+                desc="Inspeksi visual & operasi"
               />
             </div>
             <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
@@ -3085,7 +3192,7 @@ export function WorksheetEditor() {
                 onClick={() => handleTabChange("electrical")}
                 icon={ShieldCheck}
                 label="KESELAMATAN LISTRIK"
-                desc="Leakage & grounding"
+                desc="Uji kelistrikan (ESA)"
               />
             </div>
             <div className="min-w-[135px] sm:min-w-[180px] lg:min-w-0 shrink-0 snap-start">
@@ -3094,7 +3201,7 @@ export function WorksheetEditor() {
                 onClick={() => handleTabChange("measurements")}
                 icon={TableIcon}
                 label="DATA PENGUKURAN"
-                desc="Metrologi & Kalkulasi"
+                desc="Metrologi & toleransi"
               />
             </div>
           </div>
@@ -3446,6 +3553,14 @@ export function WorksheetEditor() {
                       </p>
                     </div>
                   </div>
+                  <StepNavFooter
+                    currentStepIndex={0}
+                    totalSteps={5}
+                    onNext={handleNextStep}
+                    nextLabel="Lanjut ke Master Kalibrator"
+                    onSave={() => handleSave(false)}
+                    saving={saving}
+                  />
                 </div>
               </TabContent>
             )}
@@ -3505,6 +3620,14 @@ export function WorksheetEditor() {
                             <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mt-0.5 truncate font-mono">
                               {cal.brand} • {cal.serialNumber}
                             </p>
+                            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                              <span className="text-[8.5px] px-2 py-0.5 rounded-md font-mono font-bold bg-blue-50 dark:bg-cyan-500/10 text-blue-700 dark:text-cyan-400 border border-blue-200/40 dark:border-cyan-500/20">
+                                ⚡ n = {cal.measurementRepeats || 3}x Ukur
+                              </span>
+                              <span className="text-[8.5px] px-2 py-0.5 rounded-md font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                📄 {(cal.requiredDocuments || ["Sertifikat KAN", "SOP"]).length} Dokumen
+                              </span>
+                            </div>
                           </div>
                           <div
                             className={cn(
@@ -3530,6 +3653,106 @@ export function WorksheetEditor() {
                       </div>
                     )}
                   </div>
+
+                  {/* Selected Calibrator Intelligence & Documents Requirements Panel */}
+                  {selectedCalibratorIds.length > 0 && (
+                    <div className="mt-6 p-6 rounded-3xl bg-slate-900 border border-cyan-500/25 text-white shadow-xl space-y-6 animate-fade-in">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl text-cyan-400">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-black text-white uppercase tracking-wider font-mono flex items-center gap-2">
+                              Matriks Persyaratan Standar Terhubung ke LK
+                              <span className="text-[9px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
+                                Auto-Sync Active
+                              </span>
+                            </h3>
+                            <p className="text-xs text-slate-400">
+                              Konfigurasi siklus pengulangan ({activeCalibratorRequirements.repeats}x) & dokumen acuan dari {activeCalibratorRequirements.selectedCals.length} standar terpilih.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2">
+                            <span className="text-[9px] text-slate-400 uppercase font-mono font-bold">Pengulangan Ukur:</span>
+                            <span className="text-xs font-black text-cyan-400 font-mono">{activeCalibratorRequirements.repeats}x Siklus (n = {activeCalibratorRequirements.repeats})</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Required Documents Checklist */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[10px] font-black text-slate-300 uppercase tracking-widest font-mono">
+                            Verifikasi Kelengkapan Dokumen Acuan Kalibrasi:
+                          </h4>
+                          <span className="text-[9px] text-slate-400 font-mono">
+                            {Object.values(verifiedDocuments).filter(Boolean).length} / {activeCalibratorRequirements.requiredDocuments.length} Terverifikasi
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {activeCalibratorRequirements.requiredDocuments.map((docName, dIdx) => {
+                            const isChecked = !!verifiedDocuments[docName];
+                            return (
+                              <div
+                                key={dIdx}
+                                onClick={() => {
+                                  setVerifiedDocuments({
+                                    ...verifiedDocuments,
+                                    [docName]: !isChecked
+                                  });
+                                }}
+                                className={cn(
+                                  "p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 select-none",
+                                  isChecked
+                                    ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300 shadow-sm"
+                                    : "bg-slate-800/40 border-slate-700/60 text-slate-400 hover:border-slate-600 hover:text-slate-200"
+                                )}
+                              >
+                                <span className="text-xs font-bold font-sans truncate">{docName}</span>
+                                <div className={cn(
+                                  "w-5 h-5 rounded-lg border flex items-center justify-center shrink-0 transition-colors",
+                                  isChecked ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-600 bg-slate-800"
+                                )}>
+                                  {isChecked && <CheckCircle2 className="w-3.5 h-3.5" />}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Connected Parameters Preview */}
+                      {uniqueParamNames.length > 0 && (
+                        <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center gap-2">
+                          <span className="text-[9px] font-mono text-slate-400 uppercase font-black">
+                            Parameter Terkoneksi ke Data Pengukuran:
+                          </span>
+                          {uniqueParamNames.map((p, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2.5 py-1 rounded-lg text-[9px] font-bold bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono"
+                            >
+                              {p}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <StepNavFooter
+                    currentStepIndex={1}
+                    totalSteps={5}
+                    onPrev={handlePrevStep}
+                    onNext={handleNextStep}
+                    prevLabel="Identitas Alat"
+                    nextLabel="Lanjut ke Fisik & Fungsi"
+                    onSave={() => handleSave(false)}
+                    saving={saving}
+                  />
                 </div>
               </TabContent>
             )}
@@ -3674,6 +3897,16 @@ export function WorksheetEditor() {
                       ))}
                     </div>
                   </section>
+                  <StepNavFooter
+                    currentStepIndex={2}
+                    totalSteps={5}
+                    onPrev={handlePrevStep}
+                    onNext={handleNextStep}
+                    prevLabel="Master Kalibrator"
+                    nextLabel="Lanjut ke Keselamatan Listrik"
+                    onSave={() => handleSave(false)}
+                    saving={saving}
+                  />
                 </div>
               </TabContent>
             )}
@@ -3751,13 +3984,11 @@ export function WorksheetEditor() {
                       !isNaN(equipLeakageVal) &&
                       equipLeakageVal <= equipLeakageLimit;
 
-                    let appPartLeakageLimit = 1000;
-                    if (appliedPart === "Type CF") {
-                      appPartLeakageLimit =
-                        leakageMethod === "Alternative" ? 100 : 50;
+                    let appPartLeakageLimit: number;
+                    if (classType === "Class II") {
+                      appPartLeakageLimit = 100;
                     } else {
-                      appPartLeakageLimit =
-                        leakageMethod === "Alternative" ? 5000 : 1000;
+                      appPartLeakageLimit = appliedPart === "Type CF" ? 50 : 5000;
                     }
                     const appPartLeakageVal = parseFloat(
                       results.appliedPartLeakage,
@@ -3827,10 +4058,10 @@ export function WorksheetEditor() {
                     return (
                       <div className="space-y-8">
                         {/* Selector Controls for Standard & Classifications */}
-                        <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-6 space-y-6">
-                          <div className="flex items-center gap-2 border-b border-slate-200/60 pb-3">
+                        <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 space-y-6">
+                          <div className="flex items-center gap-2 border-b border-slate-200/60 dark:border-slate-800/60 pb-3">
                             <Zap className="w-5 h-5 text-blue-600 animate-pulse" />
-                            <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest font-mono">
+                            <h3 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest font-mono">
                               Klasifikasi Modul ESA sesuai IEC / SNI
                             </h3>
                           </div>
@@ -3856,7 +4087,7 @@ export function WorksheetEditor() {
                                       },
                                     });
                                   }}
-                                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-bold text-black focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer"
+                                  className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer"
                                 >
                                   <option value="IEC 62353">
                                     IEC 62353 (Recurrent)
@@ -3889,7 +4120,7 @@ export function WorksheetEditor() {
                                       },
                                     });
                                   }}
-                                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-bold text-black focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer"
+                                  className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer"
                                 >
                                   <option value="Class I">
                                     Class I (Earthed)
@@ -3922,7 +4153,7 @@ export function WorksheetEditor() {
                                       },
                                     });
                                   }}
-                                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-bold text-black focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer"
+                                  className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer"
                                 >
                                   <option value="Type BF">
                                     Type BF (Body Float)
@@ -3962,7 +4193,7 @@ export function WorksheetEditor() {
                                     });
                                   }}
                                   disabled={standard !== "IEC 62353"}
-                                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs font-bold text-black focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 appearance-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <option value="Direct">
                                     Direct Method (Langsung)
@@ -4282,6 +4513,16 @@ export function WorksheetEditor() {
                     );
                   })()
                 )}
+                <StepNavFooter
+                  currentStepIndex={3}
+                  totalSteps={5}
+                  onPrev={handlePrevStep}
+                  onNext={handleNextStep}
+                  prevLabel="Fisik & Fungsi"
+                  nextLabel="Lanjut ke Data Pengukuran"
+                  onSave={() => handleSave(false)}
+                  saving={saving}
+                />
               </TabContent>
             )}
 
@@ -4551,14 +4792,16 @@ export function WorksheetEditor() {
                       <button
                         type="button"
                         onClick={() => {
+                          const lastParam = measurements.length > 0 ? measurements[measurements.length - 1].parameterName : (uniqueParamNames[0] || "");
+                          const lastUnit = measurements.length > 0 ? measurements[measurements.length - 1].unit : "";
                           setMeasurements([
                             ...measurements,
                             {
-                              parameterName: "",
+                              parameterName: lastParam,
                               point: 0,
                               actual: 0,
                               deviation: 0,
-                              unit: "",
+                              unit: lastUnit,
                               resolution: Number(bulkRes) || 0.01,
                               masterUnc: Number(bulkMUnc) || 0.001,
                               drift: Number(bulkDrift) || 0,
@@ -4567,7 +4810,23 @@ export function WorksheetEditor() {
                         }}
                         className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3.5 rounded-lg transition-all border border-slate-250 dark:border-slate-700 shadow-sm cursor-pointer active:scale-95"
                       >
-                        Tambah Satu Baris
+                        + Tambah Satu Baris
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleLoadFromCalibrators}
+                        className="bg-amber-50/90 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900 border border-amber-300/60 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-sm"
+                        title="Muat titik ukur langsung dari Master Kalibrator terpilih"
+                      >
+                        <Zap className="w-3 h-3 text-amber-500" /> Muat dari MK
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSortMeasurements}
+                        className="bg-indigo-50/80 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200/50 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300 font-extrabold text-[9px] uppercase tracking-widest py-1.5 px-3 rounded-lg transition-all flex items-center gap-1 cursor-pointer active:scale-95"
+                        title="Urutkan titik ukur dari terkecil ke terbesar"
+                      >
+                        ↕ Urutkan Titik
                       </button>
                       <button
                         type="button"
@@ -4838,7 +5097,7 @@ export function WorksheetEditor() {
                             }
                           }
                           
-                          const points = sorted.map((m, idx) => {
+                          const points = sorted.map((m) => {
                             const dateStr = m.calibrationDate || m.calibration_date || "N/A";
                             const avgCorrection = m.parameters ? (m.parameters.reduce((sum: number, p: any) => sum + (p.correction || 0), 0) / (m.parameters.length || 1)) : 0;
                             return {
@@ -5952,24 +6211,33 @@ export function WorksheetEditor() {
                             )}
                           >
 
-                            {/* parameterName: always inline-editable – double-click/focus to rename */}
-                            <td className="px-2 py-1 w-[130px] min-w-[130px] max-w-[130px] border-r border-b border-slate-200/40 dark:border-slate-800/45 bg-slate-50/[0.05] dark:bg-slate-900/[0.02] group/pname">
-                              <input
-                                type="text"
-                                id={`input-parameterName-${idx}`}
-                                aria-label={`Nama Parameter Baris ${idx + 1}`}
-                                onKeyDown={(e) => handleTableKeyDown(e, idx, 'parameterName')}
-                                value={m.parameterName || ""}
-                                placeholder="Nama parameter..."
-                                title="Klik untuk mengganti nama parameter"
-                                onChange={(e) => {
-                                  const newM = [...measurements];
-                                  newM[idx].parameterName = e.target.value;
-                                  autoFillFromCalibrator(newM, idx, newM[idx].point, e.target.value);
-                                  setMeasurements(newM);
-                                }}
-                                className="w-full !bg-transparent focus:!bg-white dark:focus:!bg-[#040816] !border-transparent hover:!border-slate-200 focus:!border-[#b38728] dark:focus:!border-[#b38728] !rounded-lg !px-2 !py-0.5 !text-xs !font-semibold !text-slate-800 dark:!text-slate-200 !outline-none !transition-all placeholder:text-slate-400 !font-sans !text-left !shadow-none cursor-pointer focus:cursor-text"
-                              />
+                            {/* parameterName: linked with Master Kalibrator parameters via datalist + fully editable & addable */}
+                            <td className="px-2 py-1 w-[145px] min-w-[145px] max-w-[145px] border-r border-b border-slate-200/40 dark:border-slate-800/45 bg-slate-50/[0.05] dark:bg-slate-900/[0.02] group/pname">
+                              <div className="relative flex items-center">
+                                <input
+                                  type="text"
+                                  list={`calibrator-params-${idx}`}
+                                  id={`input-parameterName-${idx}`}
+                                  aria-label={`Nama Parameter Baris ${idx + 1}`}
+                                  onKeyDown={(e) => handleTableKeyDown(e, idx, 'parameterName')}
+                                  value={m.parameterName || ""}
+                                  placeholder={uniqueParamNames[0] || "Parameter..."}
+                                  title="Pilih parameter langsung dari Master Kalibrator atau ketik/edit/tambah kustom"
+                                  onChange={(e) => {
+                                    const newM = [...measurements];
+                                    newM[idx].parameterName = e.target.value;
+                                    autoFillFromCalibrator(newM, idx, newM[idx].point, e.target.value);
+                                    setMeasurements(newM);
+                                  }}
+                                  className="w-full !bg-transparent focus:!bg-white dark:focus:!bg-[#040816] !border-transparent hover:!border-slate-200 focus:!border-[#b38728] dark:focus:!border-[#b38728] !rounded-lg !px-2 !py-0.5 !text-xs !font-semibold !text-slate-800 dark:!text-slate-200 !outline-none !transition-all placeholder:text-slate-400 !font-sans !text-left !shadow-none cursor-pointer focus:cursor-text pr-5"
+                                />
+                                <datalist id={`calibrator-params-${idx}`}>
+                                  {uniqueParamNames.map((pName, pIdx) => (
+                                    <option key={pIdx} value={pName} />
+                                  ))}
+                                </datalist>
+                                <ChevronDown className="w-3 h-3 text-slate-400 pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 opacity-40 group-hover/pname:opacity-100 transition-opacity" />
+                              </div>
                             </td>
 
                             <td className="px-1 py-1 border-r border-b border-slate-200/60 dark:border-slate-800/55 bg-white/40 dark:bg-slate-900/30">
@@ -7302,9 +7570,13 @@ export function WorksheetEditor() {
                               <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium leading-none" title="Ketidakpastian Baku Gabungan (u_c)">
                                 u<sub>c</sub>: {m.uCombined ? m.uCombined.toFixed(4) : (m.uncertainty ? (m.uncertainty / 2).toFixed(4) : "0.0000")}
                               </span>
-                              <span className="text-[7.5px] text-[#b38728]/70 dark:text-[#b38728]/50 font-semibold uppercase tracking-widest mt-0.5 animate-pulse">
-                                k=2 (95%)
-                              </span>
+                              <button
+                                onClick={() => setBudgetModalPoint({ ...m, category: identityData.uncMethod, unit: m.unit })}
+                                className="mt-1 px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 border border-cyan-500/30 text-[8px] font-bold uppercase tracking-wider transition-all"
+                                title="Lihat Budget Ketidakpastian KAN (ISO GUM)"
+                              >
+                                Budget KAN
+                              </button>
                             </div>
                           </td>
 
@@ -7381,19 +7653,30 @@ export function WorksheetEditor() {
                           })()}
 
                           <td className="px-2 py-1.5 bg-white/40 dark:bg-slate-900/30 border-b border-slate-200/60 dark:border-slate-800/55 text-center">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setMeasurements(
-                                  measurements.filter((_, i) => i !== idx),
-                                )
-                              }
-                              title={`Hapus Baris ${idx + 1}`}
-                              aria-label={`Hapus Baris ${idx + 1}`}
-                              className="p-1 px-1.5 bg-transparent hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-transparent hover:border-rose-200 dark:hover:border-[#f43f5e]/30 text-slate-400 hover:text-rose-500 rounded-md transition-all"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                            <div className="flex items-center justify-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => handleDuplicateRow(idx)}
+                                title={`Duplikat Baris ${idx + 1}`}
+                                aria-label={`Duplikat Baris ${idx + 1}`}
+                                className="p-1 px-1.5 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/30 border border-transparent hover:border-blue-200 dark:hover:border-blue-500/30 text-slate-400 hover:text-blue-500 rounded-md transition-all cursor-pointer"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setMeasurements(
+                                    measurements.filter((_, i) => i !== idx),
+                                  )
+                                }
+                                title={`Hapus Baris ${idx + 1}`}
+                                aria-label={`Hapus Baris ${idx + 1}`}
+                                className="p-1 px-1.5 bg-transparent hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-transparent hover:border-rose-200 dark:hover:border-[#f43f5e]/30 text-slate-400 hover:text-rose-500 rounded-md transition-all cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -7571,11 +7854,44 @@ export function WorksheetEditor() {
                     </div>
                   </div>
                 </div>
+                <StepNavFooter
+                  currentStepIndex={4}
+                  totalSteps={5}
+                  onPrev={handlePrevStep}
+                  prevLabel="Keselamatan Listrik"
+                  onSave={() => handleSave(false)}
+                  saving={saving}
+                />
               </TabContent>
             )}
           </AnimatePresence>
         </div>
       </div>
+
+      <KANWorksheetAuditorModal
+        isOpen={isKanAuditorOpen}
+        onClose={() => setIsKanAuditorOpen(false)}
+        worksheetData={{
+          id,
+          identityData,
+          measurements,
+          calibrators,
+          selectedCalibratorIds,
+          physicalData,
+          functionalData,
+          electricalData,
+          cmcValue: cmcValue || 0.05
+        }}
+      />
+
+      {budgetModalPoint && (
+        <KANUncertaintyBudgetModal
+          isOpen={!!budgetModalPoint}
+          onClose={() => setBudgetModalPoint(null)}
+          pointData={budgetModalPoint}
+          cmcValue={cmcValue || 0.05}
+        />
+      )}
     </div>
   );
 }
@@ -7585,27 +7901,27 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "relative w-full text-left p-2.5 sm:p-4 rounded-xl sm:rounded-[1.25rem] transition-all duration-350 border select-none group/btn cursor-pointer",
+        "relative w-full text-left p-3 sm:p-4 rounded-xl sm:rounded-[1.25rem] transition-all duration-350 border select-none group/btn cursor-pointer",
         active
           ? "bg-blue-600/10 dark:bg-cyan-500/10 border-blue-600/80 dark:border-cyan-400/80 shadow-md shadow-blue-500/5"
           : "bg-white/40 dark:bg-[#070b18]/45 border-slate-200/50 dark:border-slate-800/40 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#101b33]/40 hover:border-slate-300 dark:hover:border-slate-700/60"
       )}
     >
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-3">
         <div
           className={cn(
-            "w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm shrink-0",
+            "w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm shrink-0",
             active
               ? "bg-blue-600 text-white dark:bg-cyan-500 dark:text-slate-950 shadow-md shadow-blue-500/10 dark:shadow-cyan-500/10 rotate-3"
               : "bg-slate-100 dark:bg-[#0b132b]/80 border border-slate-200/40 dark:border-slate-800/40 text-slate-500 dark:text-slate-500 group-hover/btn:bg-slate-50 dark:group-hover/btn:bg-[#142347] group-hover/btn:text-blue-600 dark:group-hover/btn:text-cyan-400 group-hover/btn:-rotate-3"
           )}
         >
-          <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <Icon className="w-4 h-4" />
         </div>
         <div className="min-w-0 flex-1">
           <p
             className={cn(
-              "text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] leading-none truncate font-sans transition-colors duration-250",
+              "text-[9.5px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.12em] leading-none truncate font-sans transition-colors duration-250",
               active
                 ? "text-blue-600 dark:text-cyan-400 italic font-black"
                 : "text-slate-800 dark:text-slate-200 font-bold"
@@ -7615,7 +7931,7 @@ function NavBtn({ active, onClick, icon: Icon, label, desc }: any) {
           </p>
           <p
             className={cn(
-              "text-[7.5px] sm:text-[8px] mt-1 font-bold italic truncate transition-colors duration-250 hidden sm:block",
+              "text-[8px] mt-1 font-bold italic truncate transition-colors duration-250 hidden sm:block",
               active
                 ? "text-blue-500/80 dark:text-cyan-400/70"
                 : "text-slate-400 dark:text-slate-500"
@@ -7650,6 +7966,67 @@ function TabContent({
   );
 }
 
+function StepNavFooter({
+  currentStepIndex,
+  totalSteps = 6,
+  onPrev,
+  onNext,
+  onSave,
+  prevLabel = "Langkah Sebelumnya",
+  nextLabel = "Lanjut ke Tahap Berikutnya",
+  saving = false
+}: {
+  currentStepIndex: number;
+  totalSteps?: number;
+  onPrev?: () => void;
+  onNext?: () => void;
+  onSave?: () => void;
+  prevLabel?: string;
+  nextLabel?: string;
+  saving?: boolean;
+}) {
+  return (
+    <div className="mt-12 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        {currentStepIndex > 0 && onPrev ? (
+          <button
+            type="button"
+            onClick={onPrev}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95"
+          >
+            <ChevronLeft className="w-4 h-4" /> {prevLabel}
+          </button>
+        ) : (
+          <div />
+        )}
+      </div>
+
+      <div className="flex items-center gap-3">
+        {onSave && (
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-250 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition-all cursor-pointer active:scale-95"
+          >
+            <Save className="w-3.5 h-3.5" /> Simpan Draf
+          </button>
+        )}
+
+        {currentStepIndex < totalSteps - 1 && onNext && (
+          <button
+            type="button"
+            onClick={onNext}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-cyan-500 dark:to-blue-600 hover:from-blue-700 hover:to-indigo-700 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white dark:text-slate-950 text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-blue-500/20 dark:shadow-cyan-500/20 cursor-pointer active:scale-95"
+          >
+            {nextLabel} <ChevronRight className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function CheckItem({ label, value, onChange, onLabelChange, onDelete, variant = "blue" }: any) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempLabel, setTempLabel] = useState(label);
@@ -7657,7 +8034,9 @@ function CheckItem({ label, value, onChange, onLabelChange, onDelete, variant = 
   // Sync tempLabel when the label prop changes externally
   useEffect(() => {
     if (!isEditing) {
-      setTempLabel(label);
+      queueMicrotask(() => {
+        setTempLabel(label);
+      });
     }
   }, [label, isEditing]);
 

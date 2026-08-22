@@ -5,7 +5,6 @@ import {
   Stethoscope, 
   Calendar, 
   Hash, 
-  Tag, 
   Database,
   ArrowRight,
   Loader2,
@@ -17,30 +16,31 @@ import {
   Trash2,
   AlertTriangle,
   QrCode,
-  Camera
+  Camera,
+  Sparkles
 } from 'lucide-react';
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
-import { format } from 'date-fns';
 import { handleFirestoreError, OperationType, safeDate } from '../lib/firestoreUtils';
-import { translateToIndonesian } from './WorksheetEditor';
-import { QRGeneratorModal, QRScannerModal } from '../components/QRManager';
+import { translateToIndonesian } from '../lib/metrologyUtils';
+import { QRGeneratorModal, QRScannerModal, EquipmentItem } from '../components/QRManager';
 import { Tilt3D } from '../components/Tilt3D';
+import { MEDICAL_DEVICES_CATALOG } from '../data/medicalDeviceCatalog';
 
 export default function EquipmentInventory() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [equipment, setEquipment] = useState<any[]>([]);
-  const [methods, setMethods] = useState<any[]>([]);
+  const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
+  const [methods, setMethods] = useState<Record<string, unknown>[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
-  const [selectedQRItem, setSelectedQRItem] = useState<any | null>(null);
+  const [selectedQRItem, setSelectedQRItem] = useState<EquipmentItem | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
   
@@ -66,7 +66,9 @@ export default function EquipmentInventory() {
     if (scanVal && equipment.length > 0) {
       const matched = equipment.find(eq => eq.serialNumber?.toLowerCase().trim() === scanVal.toLowerCase().trim() || eq.id === scanVal);
       if (matched) {
-        setSelectedQRItem(matched);
+        queueMicrotask(() => {
+          setSelectedQRItem(matched);
+        });
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
       }
@@ -90,7 +92,7 @@ export default function EquipmentInventory() {
         id: doc.id,
         ...doc.data()
       }));
-      setEquipment(data);
+      setEquipment(data as unknown as EquipmentItem[]);
     }, (error) => {
       handleFirestoreError(error, OperationType.LIST, 'medicalEquipment');
     });
@@ -101,7 +103,7 @@ export default function EquipmentInventory() {
     };
   }, [user]);
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: EquipmentItem) => {
     setEditingId(item.id);
     setFormData({
       name: item.name || '',
@@ -119,7 +121,7 @@ export default function EquipmentInventory() {
       await deleteDoc(doc(db, 'medicalEquipment', id));
       showToast("Aset alat medis berhasil dihapus secara permanen.", "success");
       setItemToDelete(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error deleting equipment:", err);
       showToast("Gagal menghapus aset alat medis.", "error");
     }
@@ -165,9 +167,9 @@ export default function EquipmentInventory() {
         setSuccess(false);
         setShowAddForm(false);
       }, 1500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error saving equipment:", err);
-      setError(err.message || "Gagal menyimpan data alat.");
+      setError((err as Error).message || "Gagal menyimpan data alat.");
     } finally {
       setLoading(false);
     }
@@ -338,8 +340,8 @@ export default function EquipmentInventory() {
                     <span className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest font-mono leading-none mb-1">Metode Hub</span>
                     <span className="text-[10px] text-slate-700 dark:text-slate-300 font-extrabold uppercase tracking-tighter truncate max-w-[120px]">
                       {(() => {
-                        const m = methods.find(m => m.id === item.defaultMethodId);
-                        return m ? translateToIndonesian(m.title) : "Belum Terhubung";
+                        const m = methods.find(m => String(m.id || '') === item.defaultMethodId);
+                        return m ? translateToIndonesian(String(m.title || '')) : "Belum Terhubung";
                       })()}
                     </span>
                   </div>
@@ -425,6 +427,33 @@ export default function EquipmentInventory() {
               </div>
 
               <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-auto custom-scrollbar max-h-[70vh]">
+                <div className="md:col-span-2 space-y-3 bg-cyan-500/10 p-4 rounded-2xl border border-cyan-500/20 mb-2">
+                  <label className="text-[10px] font-black text-cyan-600 dark:text-cyan-400 uppercase tracking-widest font-mono flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" /> Auto-Fill dari Katalog Standar Alat Kesehatan (20 Alat Medis)
+                  </label>
+                  <select
+                    onChange={(e) => {
+                      const found = MEDICAL_DEVICES_CATALOG.find(d => d.id === e.target.value);
+                      if (found) {
+                        setFormData({
+                          ...formData,
+                          name: found.nameEn || found.name,
+                          maintenanceSchedule: 'Tahunan (12 Bulan)'
+                        });
+                      }
+                    }}
+                    className="w-full bg-white dark:bg-slate-950 border border-cyan-500/30 rounded-xl px-4 py-3 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
+                    title="Auto-Fill dari Katalog Standar Alkes"
+                  >
+                    <option value="">-- Pilih dari Katalog Alkes Standar Permenkes / KAN --</option>
+                    {MEDICAL_DEVICES_CATALOG.map(d => (
+                      <option key={d.id} value={d.id}>
+                        {d.name} [{d.category}] - {d.codeIK}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 font-mono">Nama Alat</label>
@@ -475,8 +504,10 @@ export default function EquipmentInventory() {
                       title="Pilih Metode Kalibrasi Standar"
                     >
                        <option value="">Pilih Metode Kerja (Opsional)</option>
-                       {methods.map(m => (
-                         <option key={m.id} value={m.id}>MK-{translateToIndonesian(m.title)} ({m.deviceCategory})</option>
+                       {methods.map((m, idx) => (
+                         <option key={String(m.id || idx)} value={String(m.id || '')}>
+                           MK-{translateToIndonesian(String(m.title || ''))} ({String(m.deviceCategory || 'General')})
+                         </option>
                        ))}
                     </select>
                   </div>

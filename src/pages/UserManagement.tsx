@@ -3,14 +3,10 @@ import {
   UserPlus, 
   Search, 
   Shield, 
-  Mail, 
   Trash2, 
   Loader2, 
   CheckCircle2, 
   AlertCircle,
-  User as UserIcon,
-  ToggleLeft,
-  ToggleRight,
   Copy,
   Check,
   X,
@@ -69,8 +65,18 @@ function PasswordCell({ password }: { password?: string }) {
   );
 }
 
+export interface UserProfile {
+  id: string;
+  uid?: string;
+  email?: string;
+  displayName?: string;
+  role?: string;
+  hospitalName?: string;
+  password?: string;
+}
+
 export function UserManagement() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [copied, setCopied] = useState(false);
@@ -141,6 +147,7 @@ export function UserManagement() {
       );
       setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
     } catch (error) {
+      console.error(error);
       alert("Gagal merubah role user.");
     }
   };
@@ -297,7 +304,21 @@ export function UserManagement() {
   );
 }
 
-function AddUserModal({ isOpen, onClose, onCopy, copied, onRefresh }: any) {
+export interface GcpErrorPayload {
+  message: string;
+  activationUrl: string;
+  details?: string;
+}
+
+interface AddUserModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCopy: () => void;
+  copied: boolean;
+  onRefresh: () => void;
+}
+
+function AddUserModal({ isOpen, onClose, onCopy, copied, onRefresh }: AddUserModalProps) {
   const [activeTab, setActiveTab] = useState<'invite' | 'manual'>('invite');
   const [formData, setFormData] = useState({
     email: '',
@@ -309,7 +330,7 @@ function AddUserModal({ isOpen, onClose, onCopy, copied, onRefresh }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [gcpError, setGcpError] = useState<any>(null);
+  const [gcpError, setGcpError] = useState<GcpErrorPayload | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -365,10 +386,11 @@ function AddUserModal({ isOpen, onClose, onCopy, copied, onRefresh }: any) {
         onClose();
         setFormData({ email: '', password: '', displayName: '', role: 'technician', hospitalName: '' });
       }, 2500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      let errMsg = err.message || String(err);
-      if (err.code === 'permission-denied') {
+      const e = err as { message?: string; code?: string };
+      let errMsg = e?.message || String(err);
+      if (e?.code === 'permission-denied') {
         errMsg = 'Akses Ditolak: Aturan Firestore melarang pembuatan user ini. Harap periksa file firestore.rules Anda untuk memastikan akun administrator diizinkan membuat user baru.';
       }
       setError(errMsg);

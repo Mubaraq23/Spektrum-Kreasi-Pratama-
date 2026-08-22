@@ -1,0 +1,16 @@
+{
+  "short_name": "CalibraPro",
+  "name": "Spektrum CalibraPro - Sistem Kalibrasi Alat Kesehatan PWA",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#030612",
+  "theme_color": "#030612",
+  "display": "standalone",
+  "orientation": "portrait"
+}

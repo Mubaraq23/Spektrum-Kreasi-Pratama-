@@ -2,56 +2,71 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  LayoutDashboard, Stethoscope, Zap, FileText, BookOpen, Settings, LogOut,
-  Menu, X, Bell, Search, ChevronRight, Award, BarChart3, Wifi, WifiOff,
+  LayoutDashboard, Stethoscope, Zap, FileText, BookOpen, LogOut,
+  Menu, X, Bell, Search, ChevronRight, Award, BarChart3,
   Users, Wand2, BrainCircuit, ShieldCheck, Info, Sun, Moon, Wrench,
-  Atom, ClipboardList, History, ChevronLeft
+  Atom, ClipboardList, History, ChevronLeft, Database, Compass, Layers, CalendarDays
 } from 'lucide-react';
 import { useAuth } from '../lib/AuthContext';
 import { useTheme } from '../lib/ThemeContext';
-import { auth, db } from '../lib/firebase';
+import { db } from '../lib/firebase';
 import { cn } from '../lib/utils';
 import { Chat } from './Chat';
 import { AIAssistant } from './AIAssistant';
 import { Logo } from './Logo';
 import { Interactive3DCanvas } from './Interactive3DCanvas';
+import { OfflineSyncBar } from './OfflineSyncBar';
 import { collection, query, onSnapshot, where, orderBy, doc, updateDoc } from 'firebase/firestore';
 
+interface NotificationItem {
+  id: string;
+  title?: string;
+  message?: string;
+  read?: boolean;
+  type?: 'info' | 'success' | 'warning' | 'error';
+  link?: string;
+}
+
 const navItems = [
-  { path: '/dashboard',      label: 'Dashboard',              icon: LayoutDashboard, roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA' },
+  { path: '/dashboard',      label: 'Dashboard Utama',        icon: LayoutDashboard, roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA' },
+  { path: '/master-hub',     label: 'Pusat Operasi Terpadu',  icon: Compass,         roles: ['admin','supervisor','technician'], category: 'UTAMA' },
+  { path: '/daily-recap',    label: 'Rekapan Harian Alat',    icon: CalendarDays,    roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA' },
+  { path: '/service-recap',  label: 'Rekapan Layanan Terpadu',icon: Layers,          roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA' },
   { path: '/work-orders',    label: 'Work Orders',            icon: ClipboardList,   roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA' },
-  { path: '/service-history',label: 'Service History',        icon: History,         roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA' },
+  { path: '/service-history',label: 'Service History 360°',    icon: History,         roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA' },
 
-  { path: '/worksheets',     label: 'Lembar Kerja',           icon: FileText,        roles: ['admin','supervisor','technician'], category: 'METROLOGI' },
-  { path: '/calibrators',    label: 'Standar & Kalibrator',   icon: Zap,             roles: ['admin','supervisor'],             category: 'METROLOGI' },
-  { path: '/inventory',      label: 'Inventaris Alat',        icon: Stethoscope,     roles: ['admin','supervisor'],             category: 'METROLOGI' },
-  { path: '/certificates',   label: 'Arsip Sertifikat',       icon: Award,           roles: ['admin','supervisor'],             category: 'METROLOGI' },
-  { path: '/methods',        label: 'Metode Kerja',           icon: BookOpen,        roles: ['admin','supervisor','technician'], category: 'METROLOGI' },
+  { path: '/worksheets',     label: 'Lembar Kerja (LK) & Kalibrasi', icon: FileText,      roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI & METROLOGI' },
+  { path: '/calibrators',    label: 'Standar & Kalibrator',   icon: Zap,             roles: ['admin','supervisor'],             category: 'KALIBRASI & METROLOGI' },
+  { path: '/inventory',      label: 'Inventaris Alat Kesehatan', icon: Stethoscope,  roles: ['admin','supervisor'],             category: 'KALIBRASI & METROLOGI' },
+  { path: '/certificates',   label: 'Arsip Sertifikat',       icon: Award,           roles: ['admin','supervisor'],             category: 'KALIBRASI & METROLOGI' },
+  { path: '/methods',        label: 'Metode Kerja & IK',      icon: BookOpen,        roles: ['admin','supervisor','technician'], category: 'KALIBRASI & METROLOGI' },
 
-  { path: '/ipm',            label: 'Pemeliharaan IPM',       icon: Wrench,          roles: ['admin','supervisor','technician'], category: 'PEMELIHARAAN' },
-  { path: '/ukes',           label: 'Uji Kesesuaian (Ukes)',  icon: Atom,            roles: ['admin','supervisor','technician'], category: 'PEMELIHARAAN' },
+  { path: '/ipm',            label: 'Pemeliharaan IPM (Preventif)', icon: Wrench,    roles: ['admin','supervisor','technician'], category: 'PEMELIHARAAN' },
+  { path: '/ukes-radiology',  label: 'Uji Kesesuaian (UKES)',  icon: Atom,            roles: ['admin','supervisor','technician'], category: 'PEMELIHARAAN' },
+  { path: '/repair',         label: 'Perbaikan (Corrective Repair)', icon: Wrench,    roles: ['admin','supervisor','technician'], category: 'PEMELIHARAAN' },
 
   { path: '/ik-assistant',   label: 'Asisten MK AI',          icon: Wand2,           roles: ['admin','supervisor','technician'], category: 'KECERDASAN BUATAN' },
   { path: '/extractor',      label: 'Ekstraktor AI',          icon: BrainCircuit,    roles: ['admin','supervisor','technician'], category: 'KECERDASAN BUATAN' },
 
   { path: '/reports',        label: 'Laporan Kinerja',        icon: BarChart3,       roles: ['admin','supervisor','management'], category: 'ADMINISTRASI' },
+  { path: '/ukes-radiology/master-regulations', label: 'Master Regulasi BAPETEN', icon: ShieldCheck, roles: ['admin','supervisor'], category: 'ADMINISTRASI' },
+  { path: '/metadata-manager',label: 'Manajer Metadata',       icon: Database,        roles: ['admin','supervisor'],             category: 'ADMINISTRASI' },
   { path: '/audit-logs',     label: 'Audit Aktivitas',        icon: ShieldCheck,     roles: ['admin','supervisor'],             category: 'ADMINISTRASI' },
   { path: '/users',          label: 'Manajemen User',         icon: Users,           roles: ['admin'],                          category: 'ADMINISTRASI' },
 ];
 
 const categoryColors: Record<string, string> = {
-  'UTAMA':             'text-indigo-500 dark:text-indigo-400',
-  'METROLOGI':         'text-rose-500 dark:text-rose-400',
-  'PEMELIHARAAN':      'text-cyan-500 dark:text-cyan-400',
-  'KECERDASAN BUATAN': 'text-amber-500 dark:text-amber-400',
-  'ADMINISTRASI':      'text-slate-400 dark:text-slate-500',
+  'UTAMA':                'text-indigo-500 dark:text-indigo-400',
+  'KALIBRASI & METROLOGI':'text-amber-500 dark:text-amber-400',
+  'PEMELIHARAAN':         'text-cyan-500 dark:text-cyan-400',
+  'KECERDASAN BUATAN':    'text-fuchsia-500 dark:text-fuchsia-400',
+  'ADMINISTRASI':         'text-slate-400 dark:text-slate-500',
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen]         = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isOnline, setIsOnline]               = useState(navigator.onLine);
-  const [notifications, setNotifications]     = useState<any[]>([]);
+  const [notifications, setNotifications]     = useState<NotificationItem[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const { theme, toggleTheme }                = useTheme();
   const darkMode                              = theme === 'dark';
@@ -65,17 +80,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 
   React.useEffect(() => {
-    const handleOnline  = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online',  handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online',  handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  React.useEffect(() => {
     if (!profile?.uid) return;
     const q = query(
       collection(db, 'notifications'),
@@ -85,14 +89,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
     let unsubscribe = () => {};
     try {
       unsubscribe = onSnapshot(q, (snapshot) => {
-        const list = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+        const list = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() } as NotificationItem));
         setNotifications(list);
       }, (error) => {
         if (error.code === 'permission-denied' || error.message?.includes('permission')) {
           setNotifications([]);
         }
       });
-    } catch (e) {}
+    } catch (err) {
+      console.warn('Notification listener initialization error:', err);
+    }
     return () => unsubscribe();
   }, [profile?.uid]);
 
@@ -100,7 +106,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
     try {
       const docRef = doc(db, 'notifications', notificationId);
       await updateDoc(docRef, { read: true });
-    } catch (err) {}
+    } catch (error) {
+      console.error('Gagal memperbarui notifikasi:', error);
+    }
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -164,7 +172,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Nav */}
         <nav className="flex-1 overflow-auto custom-scrollbar py-4 px-3 space-y-5">
-          {['UTAMA', 'METROLOGI', 'PEMELIHARAAN', 'KECERDASAN BUATAN', 'ADMINISTRASI'].map((category) => {
+          {['UTAMA', 'KALIBRASI & METROLOGI', 'PEMELIHARAAN', 'KECERDASAN BUATAN', 'ADMINISTRASI'].map((category) => {
             const items = filteredNavItems.filter(item => item.category === category);
             if (items.length === 0) return null;
             return (
@@ -185,7 +193,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative group",
                       sidebarOpen ? "" : "justify-center",
                       isActive
-                        ? "bg-indigo-600/[0.08] dark:bg-rose-500/[0.08] text-indigo-700 dark:text-rose-300 font-semibold"
+                        ? "bg-indigo-600/[0.08] dark:bg-rose-500/[0.08] text-indigo-700 dark:text-rose-300 font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] dark:shadow-none"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-900/[0.04] dark:hover:bg-white/[0.04]"
                     )}
                   >
@@ -201,7 +209,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
                         {/* Icon */}
                         <item.icon className={cn(
-                          "shrink-0 transition-all duration-200",
+                          "shrink-0 transition-all duration-200 group-hover:scale-110",
                           sidebarOpen ? "w-4 h-4" : "w-4.5 h-4.5",
                           isActive
                             ? "text-indigo-600 dark:text-rose-400"
@@ -217,9 +225,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
                         {/* Collapsed tooltip */}
                         {!sidebarOpen && (
-                          <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-semibold rounded-lg opacity-0 group-hover:opacity-100 whitespace-nowrap z-50 transition-all duration-150 translate-x-1 group-hover:translate-x-0 pointer-events-none shadow-xl">
+                          <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-md text-white text-[10px] font-semibold rounded-lg opacity-0 group-hover:opacity-100 whitespace-nowrap z-50 transition-all duration-150 translate-x-1 group-hover:translate-x-0 pointer-events-none shadow-xl border border-slate-200/10">
                             {item.label}
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-900 dark:bg-slate-800 rotate-45" />
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-900/95 dark:bg-slate-800/95 rotate-45 border-l border-b border-slate-200/10" />
                           </div>
                         )}
                       </>
@@ -385,7 +393,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.96 }}
                       transition={{ duration: 0.15, ease: [0.16,1,0.3,1] }}
-                      className="absolute right-0 top-11 w-80 bg-white dark:bg-[#0d1426] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[420px]"
+                      className="absolute right-0 top-11 w-80 bg-white/90 dark:bg-[#0d1426]/90 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[420px]"
                     >
                       <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/30">
                         <div className="flex items-center gap-2">
@@ -484,6 +492,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <Chat />
         <AIAssistant />
+        <OfflineSyncBar />
 
         {/* ===================== MOBILE DRAWER ===================== */}
         <AnimatePresence>
@@ -518,7 +527,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
                 {/* Drawer nav */}
                 <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-4 custom-scrollbar">
-                  {['UTAMA', 'METROLOGI', 'PEMELIHARAAN', 'KECERDASAN BUATAN', 'ADMINISTRASI'].map((category) => {
+                  {['UTAMA', 'KALIBRASI & METROLOGI', 'PEMELIHARAAN', 'KECERDASAN BUATAN', 'ADMINISTRASI'].map((category) => {
                     const items = filteredNavItems.filter(item => item.category === category);
                     if (items.length === 0) return null;
                     return (

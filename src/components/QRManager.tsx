@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import QRCode from 'qrcode';
-import { Html5QrcodeScanner, Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
-// @ts-ignore
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import JsBarcode from 'jsbarcode';
 import { 
   QrCode, 
@@ -23,34 +22,35 @@ import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'fire
 import { db } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
-import { translateToIndonesian } from '../pages/WorksheetEditor';
+import { translateToIndonesian } from '../lib/metrologyUtils';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Interfaces
-interface EquipmentItem {
+export interface EquipmentItem {
   id: string;
   name: string;
   brand: string;
   model: string;
   serialNumber: string;
+  status?: string;
   maintenanceSchedule?: string;
   defaultMethodId?: string;
-  createdAt?: any;
+  createdAt?: Record<string, unknown>;
 }
 
 interface QRGeneratorProps {
   item: EquipmentItem;
-  methods: any[];
+  methods: Record<string, unknown>[];
   onClose: () => void;
 }
 
 interface QRScannerProps {
   onClose: () => void;
   equipmentList: EquipmentItem[];
-  methods: any[];
+  methods: Record<string, unknown>[];
 }
 
-export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
+export function QRGeneratorModal({ item, onClose }: QRGeneratorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const barcodeCanvasRef = useRef<HTMLCanvasElement>(null);
   const [downloadUrl, setDownloadUrl] = useState<string>('');
@@ -83,7 +83,6 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
 
     if (barcodeCanvasRef.current) {
       try {
-        // @ts-ignore
         JsBarcode(barcodeCanvasRef.current, item.serialNumber, {
           format: "CODE128",
           width: 1.5,
@@ -327,14 +326,14 @@ export function QRGeneratorModal({ item, methods, onClose }: QRGeneratorProps) {
   );
 }
 
-export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerProps) {
+export function QRScannerModal({ onClose, equipmentList }: QRScannerProps) {
   const [activeTab, setActiveTab] = useState<'camera' | 'manual'>('camera');
   const [cameraPermission, setCameraPermission] = useState<boolean | null>(null);
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [scannedItem, setScannedItem] = useState<EquipmentItem | null>(null);
   const [worksheetsCount, setWorksheetsCount] = useState<number>(0);
-  const [lastWorksheet, setLastWorksheet] = useState<any | null>(null);
-  const [createdWorksheetId, setCreatedWorksheetId] = useState<string | null>(null);
+  const [lastWorksheet, setLastWorksheet] = useState<any>(null);
+  const [methods, setMethods] = useState<Record<string, any>[]>([]);
   const [checking, setChecking] = useState<boolean>(false);
   const [manualSearch, setManualSearch] = useState('');
   const [scannerActive, setScannerActive] = useState(false);
@@ -344,8 +343,87 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
   const navigate = useNavigate();
   const scannerRef = useRef<Html5Qrcode | null>(null);
 
+  useEffect(() => {
+    const fetchMethods = async () => {
+      try {
+        const snap = await getDocs(collection(db, 'methods'));
+        setMethods(snap.docs.map(d => ({ id: d.id, ...d.data() as Record<string, any> })));
+      } catch (e) {
+        console.error('Error fetching methods in scanner:', e);
+      }
+    };
+    fetchMethods();
+  }, []);
+
+  const stopCamera = useCallback(async () => {
+    if (scannerRef.current && scannerRef.current.isScanning) {
+      try {
+        await scannerRef.current.stop();
+      } catch (err) {
+        console.error('Stop scanner error:', err);
+      }
+    }
+    scannerRef.current = null;
+    setScannerActive(false);
+  }, []);
+
+  const handleSuccessScan = useCallback(async (decodedText: string) => {
+    try {
+      await stopCamera();
+    } catch {
+      /* ignore */
+    }
+
+    setScanResult(decodedText);
+    setChecking(true);
+
+    // Extract serial number or handle straight S/N
+    let snSearch = decodedText;
+    if (decodedText.includes('?scan=')) {
+      const url = new URL(decodedText);
+      snSearch = url.searchParams.get('scan') || decodedText;
+    }
+
+    // Lookup item in equipmentList
+    const matched = equipmentList.find(
+      (eq) => 
+        eq.serialNumber?.toLowerCase().trim() === snSearch.toLowerCase().trim() ||
+        eq.id === snSearch ||
+        eq.name?.toLowerCase().trim() === snSearch.toLowerCase().trim()
+    );
+
+    if (matched) {
+      setScannedItem(matched);
+      // Fetch worksheet stats from firestore
+      try {
+        const q = query(
+          collection(db, 'worksheets'),
+          where('serialNumber', '==', matched.serialNumber)
+        );
+        const querySnapshot = await getDocs(q);
+        setWorksheetsCount(querySnapshot.size);
+        
+        let newest: any = null;
+        querySnapshot.forEach((docSnap) => {
+          const docData: any = { id: docSnap.id, ...docSnap.data() };
+          const newestSeconds = newest?.createdAt?.seconds || 0;
+          const currentSeconds = docData?.createdAt?.seconds || 0;
+          if (!newest || currentSeconds > newestSeconds) {
+            newest = docData;
+          }
+        });
+        setLastWorksheet(newest);
+      } catch (err) {
+        console.error('Worksheets lookup error:', err);
+      }
+    } else {
+      setScannedItem(null);
+    }
+    setChecking(false);
+  }, [equipmentList, stopCamera]);
+
   // Restart camera helper
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     setScanningStatus('Sedang mengakses webcam...');
     const element = document.getElementById('qr-reader-target');
     if (!element) return;
@@ -354,7 +432,9 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
       if (scannerRef.current) {
         try {
           await scannerRef.current.stop();
-        } catch (_) {}
+        } catch {
+          /* ignore */
+        }
       }
 
       const html5QrCode = new Html5Qrcode('qr-reader-target', {
@@ -392,90 +472,27 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
           // Silent scan error
         }
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn('Camera failed to start:', err);
       setCameraPermission(false);
       setScannerActive(false);
       setScanningStatus('Kamera tidak dapat diakses (mungkin diblokir oleh iframe browser). Silakan gunakan tab "Simulasi Scan"!');
     }
-  };
+  }, [handleSuccessScan]);
 
   useEffect(() => {
     if (activeTab === 'camera') {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         startCamera();
       }, 200);
+      return () => {
+        clearTimeout(timer);
+        stopCamera();
+      };
     } else {
       stopCamera();
     }
-
-    return () => {
-      stopCamera();
-    };
-  }, [activeTab]);
-
-  const stopCamera = async () => {
-    if (scannerRef.current && scannerRef.current.isScanning) {
-      try {
-        await scannerRef.current.stop();
-      } catch (err) {
-        console.error('Stop scanner error:', err);
-      }
-    }
-    scannerRef.current = null;
-    setScannerActive(false);
-  };
-
-  const handleSuccessScan = async (decodedText: string) => {
-    try {
-      await stopCamera();
-    } catch (_) {}
-
-    setScanResult(decodedText);
-    setChecking(true);
-
-    // Extract serial number or handle straight S/N
-    let snSearch = decodedText;
-    if (decodedText.includes('?scan=')) {
-      const url = new URL(decodedText);
-      snSearch = url.searchParams.get('scan') || decodedText;
-    }
-
-    // Lookup item in equipmentList
-    const matched = equipmentList.find(
-      (eq) => 
-        eq.serialNumber?.toLowerCase().trim() === snSearch.toLowerCase().trim() ||
-        eq.id === snSearch ||
-        eq.name?.toLowerCase().trim() === snSearch.toLowerCase().trim()
-    );
-
-    if (matched) {
-      setScannedItem(matched);
-      // Fetch worksheet stats from firestore
-      try {
-        const q = query(
-          collection(db, 'worksheets'),
-          where('serialNumber', '==', matched.serialNumber)
-        );
-        const querySnapshot = await getDocs(q);
-        setWorksheetsCount(querySnapshot.size);
-        
-        let newest: any = null;
-        querySnapshot.forEach((doc) => {
-          const docData = { id: doc.id, ...doc.data() as any };
-          if (!newest || (docData.createdAt?.seconds > newest.createdAt?.seconds)) {
-            newest = docData;
-          }
-        });
-        setLastWorksheet(newest);
-      } catch (err) {
-        console.error('Worksheets lookup error:', err);
-      }
-    } else {
-      setScannedItem(null);
-    }
-    setChecking(false);
-  };
+  }, [activeTab, startCamera, stopCamera]);
 
   const createWorksheetForMatched = async () => {
     if (!scannedItem || !user) return;
@@ -511,7 +528,6 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
         }
       });
 
-      setCreatedWorksheetId(docRef.id);
       navigate(`/worksheets/${docRef.id}/edit`);
       onClose();
     } catch (err) {
@@ -736,7 +752,7 @@ export function QRScannerModal({ onClose, equipmentList, methods }: QRScannerPro
                         >
                           <span className="flex items-center gap-2.5">
                             <FileText className="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform" />
-                            Buka Lembar Kerja Terakhir ({lastWorksheet.status})
+                            Buka Lembar Kerja Terakhir ({String(lastWorksheet.status || 'draft')})
                           </span>
                           <ArrowRight className="w-4 h-4 text-slate-400" />
                         </button>

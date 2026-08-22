@@ -173,7 +173,10 @@ export function Landing() {
       </div>
 
       {/* Futuristic Mesh Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293706_1px,transparent_1px),linear-gradient(to_bottom,#1f293706_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f29370a_1px,transparent_1px),linear-gradient(to_bottom,#1f29370a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293708_1px,transparent_1px),linear-gradient(to_bottom,#1f293708_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f29370a_1px,transparent_1px),linear-gradient(to_bottom,#1f29370a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
+
+      {/* Subtle Hero Radial Top Gradient for Light mode contrast */}
+      <div className="absolute top-0 left-0 right-0 h-[600px] bg-gradient-to-b from-indigo-500/[0.04] via-transparent to-transparent dark:from-transparent pointer-events-none z-0" />
 
       {/* ══════════════════════════════════════════
           NAVBAR
@@ -259,7 +262,7 @@ export function Landing() {
                   : <Link to="/login"     onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border border-rose-500/20 bg-slate-950/40 w-full"><Lock className="w-4 h-4 text-rose-400" /> Akses Portal</Link>
                 }
                 <a href="/spektrum-kalibrasi.apk" download onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 w-full">
-                  <Download className="w-4 h-4 text-rose-400" /> Unduh Aplikasi (APK)
+                  <Download className="w-4.5 h-4.5 text-rose-400" /> Unduh Aplikasi (APK)
                 </a>
               </div>
             </nav>
@@ -290,7 +293,7 @@ export function Landing() {
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-tight leading-[1.08] uppercase">
               <span className="block text-slate-900 dark:text-white opacity-95">{settings.heroTitle.split(' ').slice(0,3).join(' ')}</span>
-              <span className="block my-2.5 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-rose-500 to-violet-500 dark:from-rose-400 dark:via-indigo-400 dark:to-violet-400 drop-shadow-[0_0_20px_rgba(99,102,241,0.1)] dark:drop-shadow-[0_0_20px_rgba(244,63,94,0.15)]">
+              <span className="block my-2.5 text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-rose-600 to-violet-700 dark:from-rose-400 dark:via-indigo-400 dark:to-violet-400 drop-shadow-[0_0_20px_rgba(99,102,241,0.1)] dark:drop-shadow-[0_0_20px_rgba(244,63,94,0.15)]">
                 {settings.heroTitle.split(' ').slice(3,6).join(' ')}
               </span>
               <span className="block text-slate-700 dark:text-slate-300">{settings.heroTitle.split(' ').slice(6).join(' ')}</span>

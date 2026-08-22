@@ -505,6 +505,39 @@ export function Dashboard() {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-10 p-1 pb-12 bg-[#f8fafc] dark:bg-[#070d19] min-h-screen transition-colors duration-300 font-sans grid-bg">
+        <div className="w-full flex items-center justify-between border-b border-sky-500/10 dark:border-cyan-500/10 pb-3">
+          <div className="h-4 w-48 rounded skeleton-shimmer" />
+          <div className="h-4 w-32 rounded skeleton-shimmer" />
+        </div>
+        <div className="flex flex-col md:flex-row justify-between gap-6">
+          <div className="space-y-3">
+            <div className="h-10 w-64 rounded-xl skeleton-shimmer" />
+            <div className="h-4 w-96 rounded skeleton-shimmer" />
+          </div>
+          <div className="h-12 w-32 rounded-xl skeleton-shimmer" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="p-6 rounded-3xl bg-white dark:bg-[#10192d] border border-slate-100 dark:border-slate-800 flex items-center gap-5 shadow-xl shadow-slate-200/40 dark:shadow-none">
+              <div className="w-12 h-12 rounded-2xl shrink-0 skeleton-shimmer" />
+              <div className="space-y-2 flex-1">
+                <div className="h-3 w-16 rounded skeleton-shimmer" />
+                <div className="h-6 w-24 rounded skeleton-shimmer" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-96 bg-white dark:bg-[#10192d] border border-slate-100 dark:border-slate-800 rounded-[2rem] p-6 shadow-xl skeleton-shimmer" />
+          <div className="h-96 bg-white dark:bg-[#10192d] border border-slate-100 dark:border-slate-800 rounded-[2rem] p-6 shadow-xl skeleton-shimmer" />
+        </div>
+      </div>
+    );
+  }
+
   if (profile?.role === 'client') {
     const isDark = document.documentElement.classList.contains('dark');
     const hospitalName = profile?.hospitalName || 'Rumah Sakit Client';

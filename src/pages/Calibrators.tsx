@@ -31,6 +31,15 @@ import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { useAuth } from '../lib/AuthContext';
 import { logAction, pushNotification } from '../lib/auditLogger';
 
+export const STANDARD_CALIBRATOR_DOCUMENTS = [
+  "Sertifikat Kalibrasi KAN/NIST",
+  "Manual Pengoperasian / SOP Alat",
+  "Bagan Ketertelusuran (Traceability)",
+  "Lembar Riwayat Drift Kalibrator",
+  "Buku Standar Metode KMK",
+  "Catatan Verifikasi Antara"
+];
+
 interface UploadQueueItem {
   id: string;
   fileName: string;
@@ -309,6 +318,11 @@ export function Calibrators() {
       certificateNumber: calibrator.certificateNumber,
       calibrationDate: calibrator.calibrationDate,
       expiryDate: calibrator.expiryDate,
+      measurementRepeats: calibrator.measurementRepeats || 3,
+      requiredDocuments: calibrator.requiredDocuments || [
+        "Sertifikat Kalibrasi KAN/NIST",
+        "Manual Pengoperasian / SOP Alat"
+      ],
       parameters: calibrator.parameters || []
     });
     setEditingId(calibrator.id);
@@ -634,14 +648,14 @@ export function Calibrators() {
                    </div>
                  </div>
 
-                 <div className="grid grid-cols-2 gap-6 py-6 border-y border-slate-100 dark:border-slate-800/80">
+                 <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-slate-800/80">
                     <div>
-                       <p className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Identitas S/N</p>
-                       <p className="text-xs text-slate-900 dark:text-white font-black tracking-tight">{item.serialNumber || '-'}</p>
+                       <p className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest mb-1 font-mono">Pengulangan Ukur (n)</p>
+                       <p className="text-xs text-blue-600 dark:text-cyan-400 font-black tracking-tight font-mono">{item.measurementRepeats || 3}x Siklus</p>
                     </div>
                     <div>
-                       <p className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest mb-2 font-mono">Nomor Sertifikat</p>
-                       <p className="text-xs text-slate-900 dark:text-white font-black truncate tracking-tight">{item.certificateNumber || '-'}</p>
+                       <p className="text-[8px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest mb-1 font-mono">Dokumen Wajib</p>
+                       <p className="text-xs text-slate-900 dark:text-white font-black truncate tracking-tight">{(item.requiredDocuments || ["Sertifikat KAN", "SOP"]).length} Dokumen Terkait</p>
                     </div>
                  </div>
 
@@ -928,6 +942,104 @@ export function Calibrators() {
                         />
                       </div>
                     </div>
+
+                    {/* Measurement Repetitions & Required Documents Configuration */}
+                    <div className="bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-6">
+                      <div className="flex items-center gap-2.5 border-b border-slate-200/60 dark:border-slate-800/60 pb-3">
+                        <FileCheck className="w-5 h-5 text-blue-600 dark:text-cyan-400" />
+                        <div>
+                          <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest font-mono">
+                            Konfigurasi Pengulangan & Dokumen Standar (Koneksi ke LK)
+                          </h4>
+                          <p className="text-[9px] text-slate-400 font-bold uppercase font-mono">
+                            Data ini akan terhubung otomatis saat alat dipilih di Lembar Kerja (LK)
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                        {/* Number of Measurement Repetitions */}
+                        <div className="md:col-span-4 space-y-2">
+                          <label className="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest block font-mono">
+                            Jumlah Pengulangan (n)
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min={1}
+                              max={30}
+                              value={extractedData.measurementRepeats || 3}
+                              onChange={(e) => setExtractedData({
+                                ...extractedData,
+                                measurementRepeats: Math.max(1, parseInt(e.target.value) || 3)
+                              })}
+                              className="w-20 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-black text-slate-900 dark:text-slate-100 font-mono text-center focus:border-blue-600"
+                            />
+                            <div className="flex flex-wrap gap-1">
+                              {[3, 5, 6, 10].map((preset) => (
+                                <button
+                                  key={preset}
+                                  type="button"
+                                  onClick={() => setExtractedData({ ...extractedData, measurementRepeats: preset })}
+                                  className={cn(
+                                    "px-2 py-1 rounded-lg text-[9px] font-bold font-mono transition-all",
+                                    (extractedData.measurementRepeats || 3) === preset
+                                      ? "bg-blue-600 text-white shadow-sm"
+                                      : "bg-slate-200/70 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300"
+                                  )}
+                                >
+                                  {preset}x
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-[8.5px] text-slate-400 leading-tight">
+                            Terhubung otomatis ke perhitungan repeatability u3 = SD / √n di LK.
+                          </p>
+                        </div>
+
+                        {/* Required Documents Multi-Select */}
+                        <div className="md:col-span-8 space-y-2">
+                          <label className="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest block font-mono">
+                            Dokumen yang Diperlukan (Checklist LK)
+                          </label>
+                          <div className="flex flex-wrap gap-2">
+                            {STANDARD_CALIBRATOR_DOCUMENTS.map((docName) => {
+                              const currentDocs: string[] = extractedData.requiredDocuments || [
+                                "Sertifikat Kalibrasi KAN/NIST",
+                                "Manual Pengoperasian / SOP Alat"
+                              ];
+                              const isSelected = currentDocs.includes(docName);
+                              return (
+                                <button
+                                  key={docName}
+                                  type="button"
+                                  onClick={() => {
+                                    const nextDocs = isSelected
+                                      ? currentDocs.filter(d => d !== docName)
+                                      : [...currentDocs, docName];
+                                    setExtractedData({
+                                      ...extractedData,
+                                      requiredDocuments: nextDocs
+                                    });
+                                  }}
+                                  className={cn(
+                                    "px-3 py-1.5 rounded-xl text-[9.5px] font-bold border transition-all flex items-center gap-1.5 cursor-pointer select-none",
+                                    isSelected
+                                      ? "bg-cyan-500/15 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 shadow-sm"
+                                      : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300"
+                                  )}
+                                >
+                                  <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-cyan-500" : "bg-slate-300")} />
+                                  {docName}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="bg-slate-50/50 border border-slate-200 rounded-[2rem] p-6 space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
