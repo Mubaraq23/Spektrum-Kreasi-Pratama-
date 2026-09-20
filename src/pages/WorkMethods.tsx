@@ -1,23 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
   Search, 
   BrainCircuit, 
   ChevronRight, 
-  ChevronDown,
+  ChevronDown, 
   Info, 
-  ShieldCheck,
-  Loader2,
-  Sparkles,
-  ListChecks,
-  X,
-  Trash2,
-  Save,
-  PlusCircle,
-  Database,
-  CheckCircle2,
-  Printer
+  ShieldCheck, 
+  Loader2, 
+  Sparkles, 
+  ListChecks, 
+  X, 
+  Trash2, 
+  Save, 
+  PlusCircle, 
+  Database, 
+  CheckCircle2, 
+  Printer,
+  Sliders,
+  ArrowUpRight,
+  RefreshCw
 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy, addDoc, serverTimestamp, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -28,6 +32,7 @@ import { useAuth } from '../lib/AuthContext';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { jsPDF } from 'jspdf';
 import { translateToIndonesian } from '../lib/metrologyUtils';
+import { MEDICAL_DEVICES_CATALOG } from '../data/medicalDeviceCatalog';
 
 export function WorkMethods() {
   const { isAdmin } = useAuth();
@@ -45,6 +50,7 @@ export function WorkMethods() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [showUncBudgetRef, setShowUncBudgetRef] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
 
 
   // Real-time Uncertainty Budget Calculator State (ISO/IEC 17025 conformity)
@@ -157,6 +163,45 @@ export function WorkMethods() {
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'methods');
       showToast('Gagal menyimpan metode kerja baru ke database.', 'error');
+    }
+  };
+
+  const handleSeedStandardMethods = async () => {
+    setIsSeeding(true);
+    try {
+      let addedCount = 0;
+      for (const item of MEDICAL_DEVICES_CATALOG) {
+        const existing = methods.find(m => 
+          m.title?.toLowerCase().includes(item.name.toLowerCase()) ||
+          m.codeIK === item.codeIK
+        );
+        if (!existing) {
+          await addDoc(collection(db, 'methods'), {
+            title: item.name,
+            codeIK: item.codeIK,
+            deviceCategory: item.category,
+            standardReference: item.standardRef,
+            calibrationIntervalMonths: item.calibrationIntervalMonths || 12,
+            description: item.description,
+            objectives: `Memverifikasi ketelitian, keselamatan operasional, dan kepatuhan metrologis pada instrumen ${item.name} sesuai acuan ${item.standardRef}.`,
+            inspections: item.inspections,
+            parameters: item.parameters,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+          addedCount++;
+        }
+      }
+      if (addedCount > 0) {
+        showToast(`Berhasil menyinkronkan ${addedCount} metode kerja standar KAN baru!`, 'success');
+      } else {
+        showToast('Seluruh 18+ metode standar KAN sudah tersinkronisasi di database.', 'info');
+      }
+    } catch (err: any) {
+      console.error('Seeding error:', err);
+      showToast('Gagal menyinkronkan metode standar.', 'error');
+    } finally {
+      setIsSeeding(false);
     }
   };
 
@@ -504,13 +549,32 @@ export function WorkMethods() {
           </div>
           <p className="text-slate-400 dark:text-slate-300 text-[10px] font-black uppercase tracking-[0.3em] ml-1">Basis Data Standardisasi Pengujian & Kalibrasi Global</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-5 rounded-2xl flex items-center gap-4 transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase tracking-widest text-[11px]"
-        >
-          <BrainCircuit className="w-6 h-6 transition-transform group-hover:rotate-12" />
-          Generate Strategi AI
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            to="/method-builder"
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-black px-6 py-4 rounded-2xl flex items-center gap-2.5 transition-all shadow-lg shadow-indigo-600/20 active:scale-95 uppercase tracking-widest text-[11px]"
+          >
+            <Sliders className="w-4 h-4" />
+            Studio Visual MK
+          </Link>
+
+          <button
+            onClick={handleSeedStandardMethods}
+            disabled={isSeeding}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-4 rounded-2xl flex items-center gap-2.5 transition-all shadow-lg shadow-emerald-600/20 active:scale-95 uppercase tracking-widest text-[11px] disabled:opacity-50 cursor-pointer"
+          >
+            {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
+            Sinkronisasi Standar KAN
+          </button>
+
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-4 rounded-2xl flex items-center gap-2.5 transition-all shadow-lg shadow-blue-600/20 active:scale-95 uppercase tracking-widest text-[11px] cursor-pointer"
+          >
+            <BrainCircuit className="w-4 h-4 transition-transform group-hover:rotate-12" />
+            Generate AI
+          </button>
+        </div>
       </header>
 
       {/* Search and Filters */}

@@ -39,6 +39,7 @@ import { CustomProtocolBuilder } from './CustomProtocolBuilder';
 import { QRScannerModal } from '../components/QRManager';
 import { LKLabelModal } from '../components/LKLabelModal';
 import { Tilt3D } from '../components/Tilt3D';
+import { MEDICAL_DEVICES_CATALOG } from '../data/medicalDeviceCatalog';
 
 export function Worksheets() {
   const [activeTab, setActiveTab] = useState<'worksheets' | 'calculator' | 'scope' | 'protocol'>('worksheets');
@@ -130,6 +131,46 @@ export function Worksheets() {
     try {
       const method = methods.find(m => m.id === selectedMethod);
 
+      // Match device from catalog if method parameters are not yet populated
+      const catalogMatch = MEDICAL_DEVICES_CATALOG.find(d => 
+        d.name.toLowerCase().includes(deviceName.toLowerCase()) ||
+        deviceName.toLowerCase().includes(d.name.toLowerCase()) ||
+        d.id === selectedMethod ||
+        d.codeIK === method?.codeIK
+      );
+
+      // Pre-populate measurements from method or catalog
+      let initialMeasurements: any[] = [];
+      const paramsSource = method?.parameters || catalogMatch?.parameters;
+      if (paramsSource && Array.isArray(paramsSource)) {
+        initialMeasurements = paramsSource.map((p: any) => ({
+          parameterName: p.name,
+          unit: p.unit || '',
+          tolerance: p.tolerance || 5,
+          points: (p.points || []).map((nominal: number) => ({
+            nominal: nominal,
+            readings: [nominal, nominal, nominal],
+            average: nominal,
+            correction: 0,
+            uncertainty: 0
+          }))
+        }));
+      }
+
+      // Pre-populate inspections
+      const physicalList = method?.inspections?.physical || catalogMatch?.inspections?.physical || [
+        'Badan & Permukaan', 'Layar / Display', 'Tombol / Kontrol', 'Kabel & Konektor', 'Catu Daya / Baterai'
+      ];
+      const functionalList = method?.inspections?.functional || catalogMatch?.inspections?.functional || [
+        'Self-Test Booting', 'Fungsi Utama', 'Sistem Alarm'
+      ];
+
+      const initialPhysical: Record<string, boolean> = {};
+      physicalList.forEach((k: string) => { initialPhysical[k] = true; });
+
+      const initialFunctional: Record<string, boolean> = {};
+      functionalList.forEach((k: string) => { initialFunctional[k] = true; });
+
       const docRef = await addDoc(collection(db, 'worksheets'), {
         deviceId: 'manual-' + Date.now(),
         deviceName: deviceName,
@@ -138,19 +179,20 @@ export function Worksheets() {
         serialNumber: '',
         fasyankesName: '',
         location: '',
-        methodId: selectedMethod,
-        methodName: translateToIndonesian(method?.title || method?.name || 'No Method Selected'),
+        methodId: selectedMethod || (catalogMatch ? catalogMatch.id : ''),
+        methodName: translateToIndonesian(method?.title || method?.name || catalogMatch?.name || 'Metode Standar KAN'),
+        codeIK: method?.codeIK || catalogMatch?.codeIK || 'IK-SPK-GEN-01',
         technicianId: user.uid,
         technicianName: profile?.displayName || user.email,
         status: 'draft',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         inspections: {
-          physical: {},
-          functional: {},
-          electrical: { enabled: false, results: {} }
+          physical: initialPhysical,
+          functional: initialFunctional,
+          electrical: { enabled: true, results: { grounding: '0.08', insulation: '150', leakage: '42' } }
         },
-        measurements: [],
+        measurements: initialMeasurements,
         results: {
           pass: false,
           notes: ''
@@ -164,7 +206,7 @@ export function Worksheets() {
       );
       await pushNotification(
         'Lembar Kerja Baru Dibuat',
-        `Lembar kerja untuk ${deviceName} telah berhasil dibuat dalam draf.`,
+        `Lembar kerja untuk ${deviceName} telah berhasil dibuat dalam draf dengan parameter pengukuran terinisialisasi.`,
         'success',
         'all',
         `/worksheets/${docRef.id}/edit`
