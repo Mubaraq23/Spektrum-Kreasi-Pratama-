@@ -44,6 +44,29 @@ import { RepairReportDetail } from './pages/RepairReportDetail';
 import { MasterUnifiedHub } from './pages/MasterUnifiedHub';
 import { ServiceRecap } from './pages/ServiceRecap';
 import { DailyRecap } from './pages/DailyRecap';
+import { SatuSehatBridgingHub } from './pages/SatuSehatBridgingHub';
+import { ThermalStickerStudio } from './pages/ThermalStickerStudio';
+import { BapetenSiIntanDispatcher } from './pages/BapetenSiIntanDispatcher';
+import { MetrologicalValidationWorkspace } from './pages/MetrologicalValidationWorkspace';
+import { CustomerPortal } from './pages/CustomerPortal';
+import { UniversalWorkspace } from './pages/UniversalWorkspace';
+import { DigitalAssetPassport } from './pages/DigitalAssetPassport';
+import { LiveMeasurementConsole } from './pages/LiveMeasurementConsole';
+import { UncertaintyLab } from './pages/UncertaintyLab';
+import { ScopeCommandCenter } from './pages/ScopeCommandCenter';
+import { CalibratorHealthCenter } from './pages/CalibratorHealthCenter';
+import { ExecutiveIntelligenceDashboard } from './pages/ExecutiveIntelligenceDashboard';
+import { OneClickAuditPackage } from './pages/OneClickAuditPackage';
+import { PublicQRVerification } from './pages/PublicQRVerification';
+import { FieldTechnicianMode } from './pages/FieldTechnicianMode';
+import { SmartWorkOrderEngine } from './pages/SmartWorkOrderEngine';
+import { DigitalTraceabilityGraph } from './pages/DigitalTraceabilityGraph';
+import { QualityCommandCenter } from './pages/QualityCommandCenter';
+import { MethodBuilderVisual } from './pages/MethodBuilderVisual';
+import { IncidentManagementCenter } from './pages/IncidentManagementCenter';
+
+
+
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
@@ -182,19 +205,19 @@ export default function App() {
                 } />
                 
                 <Route path="/methods" element={
-                  <RoleRoute allowedRoles={techRoles}><WorkMethods /></RoleRoute>
+                  <RoleRoute allowedRoles={allRoles}><WorkMethods /></RoleRoute>
                 } />
 
                 <Route path="/calculation-engine" element={
-                  <RoleRoute allowedRoles={techRoles}><CalculationEngine /></RoleRoute>
+                  <RoleRoute allowedRoles={allRoles}><CalculationEngine /></RoleRoute>
                 } />
 
                 <Route path="/scope-matrix" element={
-                  <RoleRoute allowedRoles={techRoles}><KANScopeMatrix /></RoleRoute>
+                  <RoleRoute allowedRoles={allRoles}><KANScopeMatrix /></RoleRoute>
                 } />
 
                 <Route path="/protocol-builder" element={
-                  <RoleRoute allowedRoles={viewRoles}><CustomProtocolBuilder /></RoleRoute>
+                  <RoleRoute allowedRoles={allRoles}><CustomProtocolBuilder /></RoleRoute>
                 } />
 
                 <Route path="/metadata-manager" element={
@@ -220,6 +243,93 @@ export default function App() {
                 <Route path="/master-hub" element={
                   <RoleRoute allowedRoles={techRoles}><MasterUnifiedHub /></RoleRoute>
                 } />
+
+                <Route path="/satusehat-hub" element={
+                  <RoleRoute allowedRoles={techRoles}><SatuSehatBridgingHub /></RoleRoute>
+                } />
+
+                <Route path="/thermal-sticker-studio" element={
+                  <RoleRoute allowedRoles={techRoles}><ThermalStickerStudio /></RoleRoute>
+                } />
+
+                <Route path="/siintan-dispatcher" element={
+                  <RoleRoute allowedRoles={techRoles}><BapetenSiIntanDispatcher /></RoleRoute>
+                } />
+
+                <Route path="/metrological-validation" element={
+                  <RoleRoute allowedRoles={['admin', 'supervisor']}><MetrologicalValidationWorkspace /></RoleRoute>
+                } />
+
+                <Route path="/customer-portal" element={
+                  <RoleRoute allowedRoles={allRoles}><CustomerPortal /></RoleRoute>
+                } />
+
+                <Route path="/universal-workspace" element={
+
+                  <RoleRoute allowedRoles={allRoles}><UniversalWorkspace /></RoleRoute>
+                } />
+
+                <Route path="/asset-passport/:id" element={
+                  <RoleRoute allowedRoles={allRoles}><DigitalAssetPassport /></RoleRoute>
+                } />
+
+                <Route path="/asset-passport" element={
+                  <RoleRoute allowedRoles={allRoles}><DigitalAssetPassport /></RoleRoute>
+                } />
+
+                <Route path="/live-console" element={
+                  <RoleRoute allowedRoles={techRoles}><LiveMeasurementConsole /></RoleRoute>
+                } />
+
+                <Route path="/uncertainty-lab" element={
+                  <RoleRoute allowedRoles={viewRoles}><UncertaintyLab /></RoleRoute>
+                } />
+
+                <Route path="/scope-command-center" element={
+                  <RoleRoute allowedRoles={viewRoles}><ScopeCommandCenter /></RoleRoute>
+                } />
+
+                <Route path="/calibrator-health" element={
+                  <RoleRoute allowedRoles={viewRoles}><CalibratorHealthCenter /></RoleRoute>
+                } />
+
+                <Route path="/executive-intelligence" element={
+                  <RoleRoute allowedRoles={rptsRoles}><ExecutiveIntelligenceDashboard /></RoleRoute>
+                } />
+
+                <Route path="/audit-package" element={
+                  <RoleRoute allowedRoles={viewRoles}><OneClickAuditPackage /></RoleRoute>
+                } />
+
+                <Route path="/verify/:id" element={<PublicQRVerification />} />
+                <Route path="/verify" element={<PublicQRVerification />} />
+
+                <Route path="/field-mode" element={
+                  <RoleRoute allowedRoles={techRoles}><FieldTechnicianMode /></RoleRoute>
+                } />
+
+                <Route path="/smart-work-orders" element={
+                  <RoleRoute allowedRoles={allRoles}><SmartWorkOrderEngine /></RoleRoute>
+                } />
+
+                <Route path="/traceability-graph" element={
+                  <RoleRoute allowedRoles={viewRoles}><DigitalTraceabilityGraph /></RoleRoute>
+                } />
+
+                <Route path="/quality-command-center" element={
+                  <RoleRoute allowedRoles={viewRoles}><QualityCommandCenter /></RoleRoute>
+                } />
+
+                <Route path="/method-builder" element={
+                  <RoleRoute allowedRoles={techRoles}><MethodBuilderVisual /></RoleRoute>
+                } />
+
+                <Route path="/incident-rca" element={
+                  <RoleRoute allowedRoles={viewRoles}><IncidentManagementCenter /></RoleRoute>
+                } />
+
+
+
 
                 <Route path="/ipm" element={
                   <RoleRoute allowedRoles={techRoles}><IpmDashboard /></RoleRoute>

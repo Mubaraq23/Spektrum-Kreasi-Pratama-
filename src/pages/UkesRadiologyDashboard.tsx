@@ -203,6 +203,32 @@ export function UkesRadiologyDashboard() {
         ))}
       </div>
 
+      {/* 1-Click Quick Preset UKES Launchers */}
+      <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-3xl space-y-2">
+        <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-widest block">
+          ⚡ Mulai Pengujian UKES 1-Klik Per Modalitas Pesawat Sinar-X:
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { id: 'rad_general', label: 'Radiografi General Stasioner' },
+            { id: 'mobile_xray', label: 'Mobile X-Ray Ruang Perawatan' },
+            { id: 'ct_scan', label: 'CT Scan Multi-Slice (128 Slice)' },
+            { id: 'c_arm', label: 'Fluoroskopi / C-Arm Bedah' },
+            { id: 'mammo', label: 'Mamografi Digital' },
+            { id: 'dental', label: 'Dental Intraoral / Panoramik' }
+          ].map((preset) => (
+            <button
+              key={preset.id}
+              onClick={() => navigate(`/ukes-radiology/wizard?modality=${preset.id}`)}
+              className="px-3.5 py-2 bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-cyan-500/40 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+            >
+              + {preset.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+
       {/* Search & Main Table */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

@@ -14,6 +14,7 @@ import {
   BarChart3, Atom, TrendingUp, Search, Layers, MessageCircle, Phone, Mail,
   Activity, AwardIcon, Compass, Server, Download
 } from 'lucide-react';
+import { AppDownloadModal } from '../components/AppDownloadModal';
 
 const STATS = [
   { value: '2,400+', label: 'Alat Terkalibrasi',     sub: 'Tersebar di 150+ Fasyankes' },
@@ -29,6 +30,8 @@ export function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq]       = useState<number | null>(null);
   const [scrolled, setScrolled]     = useState(false);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [downloadModalTab, setDownloadModalTab] = useState<'android' | 'pc' | 'ios'>('android');
   const heroRef                     = useRef<HTMLDivElement>(null);
 
   const [settings, setSettings] = useState({
@@ -230,9 +233,12 @@ export function Landing() {
               </Link>
             )}
 
-            <a href="/spektrum-kalibrasi.apk" download className="hidden sm:flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 hover:bg-slate-100 dark:hover:bg-rose-500/10 hover:border-indigo-600 dark:hover:border-rose-400 transition-all shadow-[0_0_15px_rgba(99,102,241,0.03)] dark:shadow-[0_0_25px_rgba(244,63,94,0.2)] hover:-translate-y-0.5 active:translate-y-0">
-              <Download className="w-3.5 h-3.5 text-indigo-650 dark:text-rose-400" /> Unduh APK
-            </a>
+            <button
+              onClick={() => { setDownloadModalTab('android'); setDownloadModalOpen(true); }}
+              className="hidden sm:flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 hover:bg-slate-100 dark:hover:bg-rose-500/10 hover:border-indigo-600 dark:hover:border-rose-400 transition-all shadow-[0_0_15px_rgba(99,102,241,0.03)] dark:shadow-[0_0_25px_rgba(244,63,94,0.2)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-indigo-600 dark:text-rose-400" /> Unduh Aplikasi
+            </button>
 
             {/* Mobile menu toggle */}
             <button
@@ -261,9 +267,12 @@ export function Landing() {
                   ? <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-950 bg-gradient-to-r from-rose-400 to-indigo-500 w-full"><BarChart3 className="w-4 h-4" /> Dashboard</Link>
                   : <Link to="/login"     onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border border-rose-500/20 bg-slate-950/40 w-full"><Lock className="w-4 h-4 text-rose-400" /> Akses Portal</Link>
                 }
-                <a href="/spektrum-kalibrasi.apk" download onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 w-full">
-                  <Download className="w-4.5 h-4.5 text-rose-400" /> Unduh Aplikasi (APK)
-                </a>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); setDownloadModalOpen(true); }}
+                  className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white border border-rose-500/20 bg-white/40 dark:bg-slate-950/40 w-full cursor-pointer"
+                >
+                  <Download className="w-4.5 h-4.5 text-rose-400" /> Unduh Aplikasi (APK / PC / iOS)
+                </button>
               </div>
             </nav>
           </div>
@@ -312,11 +321,12 @@ export function Landing() {
                 {user ? 'Buka Dashboard Utama' : 'Masuk Terminal Operasi'}
                 <ArrowRight className="w-4 h-4 text-white dark:text-slate-950 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href="/spektrum-kalibrasi.apk" download
-                className="flex items-center justify-center gap-2 px-7 py-4.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800/85 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm"
+              <button
+                onClick={() => { setDownloadModalTab('android'); setDownloadModalOpen(true); }}
+                className="flex items-center justify-center gap-2 px-7 py-4.5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800/85 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm cursor-pointer"
               >
-                <Download className="w-4.5 h-4.5 text-indigo-600 dark:text-rose-400" /> Unduh Aplikasi Android (APK)
-              </a>
+                <Download className="w-4.5 h-4.5 text-indigo-600 dark:text-rose-400" /> Unduh Aplikasi (Android / PC / iOS)
+              </button>
             </div>
 
             {/* Quality Seals */}
@@ -758,6 +768,13 @@ export function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Multiplatform App Download Modal */}
+      <AppDownloadModal
+        isOpen={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
+        defaultTab={downloadModalTab}
+      />
 
     </div>
   );

@@ -410,6 +410,152 @@ export function IpmWizard() {
           </div>
         )}
 
+        {/* STEP 2: Master Instrument */}
+        {currentStep === 1 && (
+          <div className="space-y-6">
+            <h3 className="text-base font-black uppercase text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+              Tahap 2: Alat Ukur Master / Kalibrator Acuan
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-2">Nama Alat Ukur Master *</label>
+                <input
+                  type="text"
+                  value={instrumentName}
+                  onChange={(e) => setInstrumentName(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-xs font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-2">Nomor Seri Master (SN) *</label>
+                <input
+                  type="text"
+                  value={instrumentSN}
+                  onChange={(e) => setInstrumentSN(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-xs font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 7: Maintenance Actions */}
+        {currentStep === 6 && (
+          <div className="space-y-6">
+            <h3 className="text-base font-black uppercase text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+              Tahap 7: Tindakan Pemeliharaan Preventif (Maintenance Actions)
+            </h3>
+
+            <div className="space-y-3">
+              {template.maintenanceActions.map((action, idx) => (
+                <label key={idx} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl cursor-pointer">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{action}</span>
+                  <input
+                    type="checkbox"
+                    checked={maintenanceDone[action] ?? true}
+                    onChange={(e) => setMaintenanceDone({ ...maintenanceDone, [action]: e.target.checked })}
+                    className="w-5 h-5 accent-cyan-500 rounded"
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 8: Spare Parts Used */}
+        {currentStep === 7 && (
+          <div className="space-y-6">
+            <h3 className="text-base font-black uppercase text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+              Tahap 8: Penggunaan Suku Cadang (Spare Parts)
+            </h3>
+
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  id="part-input"
+                  placeholder="Nama / Kode Spare Part Baru"
+                  className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3.5 text-xs font-bold text-slate-900 dark:text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById('part-input') as HTMLInputElement;
+                    if (el && el.value) {
+                      setSelectedParts([...selectedParts, { name: el.value, qty: 1, code: `PART-${Date.now().toString().slice(-4)}` }]);
+                      el.value = '';
+                    }
+                  }}
+                  className="px-4 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl text-xs uppercase"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {selectedParts.map((p, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl text-xs font-bold">
+                    <span>{p.name} (Qty: {p.qty})</span>
+                    <button
+                      onClick={() => setSelectedParts(selectedParts.filter((_, i) => i !== idx))}
+                      className="text-rose-400 hover:text-rose-300"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 9: Photo Upload */}
+        {currentStep === 8 && (
+          <div className="space-y-6">
+            <h3 className="text-base font-black uppercase text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+              Tahap 9: Dokumentasi Foto Fisik & Pengujian
+            </h3>
+
+            <div className="space-y-4">
+              <label className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl cursor-pointer hover:border-cyan-500 transition-colors">
+                <Camera className="w-8 h-8 text-cyan-400 mb-2" />
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Unggah Foto Fisik Alat / Label Stiker</span>
+                <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+              </label>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {photos.map((p, idx) => (
+                  <div key={idx} className="relative rounded-2xl overflow-hidden border border-slate-700">
+                    <img src={p.dataUrl} alt={p.title} className="w-full h-24 object-cover" />
+                    <span className="absolute bottom-0 inset-x-0 p-1 bg-slate-950/80 text-[10px] truncate text-slate-200 text-center">{p.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 10: Findings */}
+        {currentStep === 9 && (
+          <div className="space-y-6">
+            <h3 className="text-base font-black uppercase text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+              Tahap 10: Catatan Temuan & Rekomendasi Teknisi
+            </h3>
+
+            <div>
+              <textarea
+                rows={5}
+                value={findings}
+                onChange={(e) => setFindings(e.target.value)}
+                placeholder="Tuliskan temuan fisik, tindakan perbaikan, atau catatan rekomendasi pemeliharaan..."
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-xs font-bold text-slate-900 dark:text-white outline-none focus:border-cyan-500"
+              />
+            </div>
+          </div>
+        )}
+
         {/* STEP 11 & 12: Finalization */}
         {(currentStep === 10 || currentStep === 11) && (
           <div className="space-y-6">
@@ -440,6 +586,7 @@ export function IpmWizard() {
             </div>
           </div>
         )}
+
       </div>
 
       {/* Navigation */}

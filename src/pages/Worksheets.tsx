@@ -22,7 +22,8 @@ import {
   QrCode,
   Calculator,
   ShieldCheck,
-  Wrench
+  Wrench,
+  Sparkles
 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy, where, addDoc, serverTimestamp, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -621,6 +622,41 @@ export function Worksheets() {
                     </div>
                   </div>
 
+                  {/* 1-Click Quick Preset Shortcut Badges */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-cyan-500 uppercase tracking-widest ml-1 font-mono flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> Preset 1-Klik Alat Medis Populer
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 p-2 bg-slate-950/60 rounded-2xl border border-slate-800">
+                      {[
+                        { name: 'Defibrillator TEC-5631 (Biphasic)', category: 'Resusitasi' },
+                        { name: 'Infusion Pump IP-7700', category: 'Pompa Infus' },
+                        { name: 'Patient Monitor Vista 120 (5-Para)', category: 'Vital Sign' },
+                        { name: 'Pesawat Sinar-X Radiografi Stasioner', category: 'Radiologi' },
+                        { name: 'ECG 12-Channel Cardiovit AT-102', category: 'Kardiologi' },
+                        { name: 'Suction Pump Vacu-Aide High Flow', category: 'Penyedot' },
+                        { name: 'Sphygmomanometer Tensimeter Digital', category: 'Tekanan Darah' },
+                        { name: 'Autoclave Steam Sterilizer 50L', category: 'Sterilisasi' },
+                        { name: 'Centrifuge Hettich EBA 200', category: 'Laboratorium' },
+                        { name: 'Baby Incubator Isolette 8000', category: 'Neonatus' },
+                      ].map((preset) => (
+                        <button
+                          key={preset.name}
+                          type="button"
+                          onClick={() => setDeviceName(preset.name)}
+                          className={cn(
+                            "text-[9px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer border",
+                            deviceName === preset.name
+                              ? "bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-md shadow-cyan-500/20"
+                              : "bg-slate-900 border-slate-800 text-slate-300 hover:border-cyan-500/40 hover:text-white"
+                          )}
+                        >
+                          + {preset.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="space-y-3">
                     <label className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest ml-1 font-mono">Nama Alat Kesehatan</label>
                     <div className="relative group">
@@ -639,6 +675,7 @@ export function Worksheets() {
                         ))}
                       </datalist>
                     </div>
+
 
                     {/* Quick suggestion badges based on inventory */}
                     {inventoryNames.length > 0 && (

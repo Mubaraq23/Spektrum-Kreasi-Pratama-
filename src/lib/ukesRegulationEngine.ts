@@ -114,8 +114,9 @@ export function evaluateModalityParameter(
   // 4. Lapisan Paruh Aluminium (HVL)
   if (parameterCode === 'HVL_AL') {
     const hvlVal = extraParams?.hvl || Number(measuredValues[0]) || 0;
-    let minHvl = 2.3;
+    let minHvl: number;
     if (modality === 'Mammografi') minHvl = 0.3;
+
     else if (setValue <= 50) minHvl = 1.5;
     else if (setValue <= 70) minHvl = 2.3;
     else if (setValue <= 90) minHvl = 2.5;

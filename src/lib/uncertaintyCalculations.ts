@@ -520,3 +520,91 @@ export function convertCalibrationUnit(val: number, category: string, fromUnit: 
   return baseValue / catMap[toUnit];
 }
 
+/**
+ * Student-t Inverse CDF Lookup for Coverage Factor k (95% Confidence Level)
+ * Based on Effective Degrees of Freedom (veff)
+ */
+export function getStudentTCoverageFactor(veff: number): number {
+  if (!isFinite(veff) || veff >= 100) return 2.00;
+  if (veff <= 1) return 12.71;
+  if (veff <= 2) return 4.30;
+  if (veff <= 3) return 3.18;
+  if (veff <= 4) return 2.78;
+  if (veff <= 5) return 2.57;
+  if (veff <= 10) return 2.23;
+  if (veff <= 20) return 2.09;
+  if (veff <= 50) return 2.05;
+  return 2.00;
+}
+
+/**
+ * Welch-Satterthwaite Equation for Effective Degrees of Freedom (veff)
+ */
+export function calculateWelchSatterthwaiteVeff(
+  uc: number,
+  components: Array<{ u: number; v: number; c?: number }>
+): number {
+  if (uc <= 0) return 100;
+  let denominatorSum = 0;
+
+  for (const comp of components) {
+    const ci = comp.c ?? 1.0;
+    const ui = comp.u;
+    const vi = comp.v > 0 ? comp.v : 100; // default infinity/large for Type B
+
+    if (vi > 0 && ui > 0) {
+      denominatorSum += Math.pow(ci * ui, 4) / vi;
+    }
+  }
+
+  if (denominatorSum <= 0) return 100;
+  const veff = Math.pow(uc, 4) / denominatorSum;
+  return Math.max(1, Math.floor(veff));
+}
+
+/**
+ * Format Metrological Result according to ISO GUM Rounding Rules:
+ * Uncertainty is reported to 2 significant figures.
+ * Measurement value is rounded to match the decimal places of reported uncertainty.
+ */
+export function formatMetrologicalResult(value: number, expandedUncertainty: number): { formattedValue: string; formattedUncertainty: string; decimalPlaces: number } {
+  if (expandedUncertainty <= 0 || !isFinite(expandedUncertainty)) {
+    return { formattedValue: value.toFixed(2), formattedUncertainty: '0.00', decimalPlaces: 2 };
+  }
+
+  // Determine decimal places for 2 significant figures of uncertainty
+  const expStr = expandedUncertainty.toExponential();
+  const expMatch = expStr.match(/e([+-]?\d+)/);
+  const exponent = expMatch ? parseInt(expMatch[1], 10) : 0;
+  const decimalPlaces = Math.max(0, 1 - exponent);
+
+  const roundedUnc = Number(expandedUncertainty.toFixed(decimalPlaces));
+  const roundedVal = Number(value.toFixed(decimalPlaces));
+
+  return {
+    formattedValue: roundedVal.toFixed(decimalPlaces),
+    formattedUncertainty: roundedUnc.toFixed(decimalPlaces),
+    decimalPlaces
+  };
+}
+
+/**
+ * Automated Unit Consistency Checker
+ * Detects mismatched measurement units before saving calculation
+ */
+export function validateUnitConsistency(unitA: string, unitB: string, category: string): { consistent: boolean; warning?: string } {
+  if (unitA === unitB) return { consistent: true };
+
+  const catMap = UNIT_CONVERSIONS[category];
+  if (!catMap) {
+    return { consistent: false, warning: `Kategori unit '${category}' tidak dikenal pada sistem konversi.` };
+  }
+
+  if (!catMap[unitA] || !catMap[unitB]) {
+    return { consistent: false, warning: `Inkonsistensi satuan: '${unitA}' dan '${unitB}' tidak kompatibel untuk kategori '${category}'.` };
+  }
+
+  return { consistent: true };
+}
+
+

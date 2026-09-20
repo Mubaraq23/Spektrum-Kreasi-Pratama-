@@ -253,11 +253,42 @@ export function IKAssistant() {
           <div className="bg-white dark:bg-[#090e1d] border border-slate-100 dark:border-slate-800 rounded-[3rem] p-10 shadow-2xl shadow-slate-200/50 dark:shadow-none relative overflow-hidden transition-all hover:border-blue-400">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-[80px] rounded-full -mr-10 -mt-10" />
             
-            <h2 className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-8 italic flex items-center gap-3">
+            <h2 className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-4 italic flex items-center gap-3">
                <Stethoscope className="w-4 h-4" />
                Spesifikasi Alat Medis
             </h2>
-                    <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+
+            {/* 1-Click Preset Shortcuts */}
+            <div className="mb-6 space-y-2">
+              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Pilih Preset 1-Klik Alat Medis:</span>
+              <div className="flex flex-wrap gap-1.5 p-2 bg-slate-900/60 rounded-2xl border border-slate-800">
+                {[
+                  { name: 'Infusion Pump', brand: 'Terumo', model: 'TE-171' },
+                  { name: 'Defibrillator', brand: 'Nihon Kohden', model: 'TEC-5631' },
+                  { name: 'Patient Monitor', brand: 'Mindray', model: 'BeneView T8' },
+                  { name: 'Pesawat Sinar-X', brand: 'Siemens', model: 'Multix Select' },
+                  { name: 'Autoclave Sterilizer', brand: 'Hirayama', model: 'HVE-50' },
+                  { name: 'Centrifuge', brand: 'Hettich', model: 'EBA 200' },
+                  { name: 'ECG 12-Channel', brand: 'Schiller', model: 'AT-102' }
+                ].map((item) => (
+                  <button
+                    key={item.name}
+                    type="button"
+                    onClick={() => setFormData({ name: item.name, brand: item.brand, model: item.model })}
+                    className={cn(
+                      "text-[9px] font-black px-2.5 py-1.5 rounded-xl uppercase tracking-wider transition-all border cursor-pointer",
+                      formData.name === item.name
+                        ? "bg-blue-600 text-white border-blue-400 font-black shadow-md shadow-blue-500/20"
+                        : "bg-slate-950 border-slate-800 text-slate-400 hover:border-blue-500/40 hover:text-white"
+                    )}
+                  >
+                    + {item.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
               <InputGroup label="Nama Instrumen" icon={FileText}>
                 <input 
                   type="text" 

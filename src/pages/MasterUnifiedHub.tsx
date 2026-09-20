@@ -15,7 +15,9 @@ import {
   ShieldCheck,
   Zap,
   Layers,
-  BarChart3
+  BarChart3,
+  Network,
+  Printer
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -41,6 +43,33 @@ export function MasterUnifiedHub() {
       textColor: 'text-cyan-400',
       bgColor: 'bg-cyan-500/10',
       path: '/ukes-radiology/wizard'
+    },
+    {
+      title: 'SatuSehat FHIR R4 Hub',
+      desc: 'Bridging rekam kalibrasi & status kelaikan alat ke Kemenkes SatuSehat',
+      icon: Network,
+      color: 'from-teal-500 to-emerald-600',
+      textColor: 'text-teal-400',
+      bgColor: 'bg-teal-500/10',
+      path: '/satusehat-hub'
+    },
+    {
+      title: 'Dispatcher Si-INTAN BAPETEN',
+      desc: 'Evaluasi DRL dosis radiasi pasien & dispatch data dosis nasional BAPETEN',
+      icon: ShieldCheck,
+      color: 'from-blue-500 to-indigo-600',
+      textColor: 'text-blue-400',
+      bgColor: 'bg-blue-500/10',
+      path: '/siintan-dispatcher'
+    },
+    {
+      title: 'Studio Label Thermal',
+      desc: 'Desain sticker thermal fisik, cetak QR Code, & generator ZPL/ESC-POS',
+      icon: Printer,
+      color: 'from-amber-500 to-yellow-600',
+      textColor: 'text-amber-300',
+      bgColor: 'bg-amber-500/10',
+      path: '/thermal-sticker-studio'
     },
     {
       title: 'Pemeliharaan Preventif (IPM)',
@@ -79,6 +108,7 @@ export function MasterUnifiedHub() {
       path: '/ik-assistant'
     }
   ];
+
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10">

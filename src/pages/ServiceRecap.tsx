@@ -15,7 +15,9 @@ import {
   Award,
   Stethoscope,
   Activity,
-  Loader2
+  Loader2,
+  FileText,
+  X
 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -128,6 +130,7 @@ export function ServiceRecap() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFasyankes, setSelectedFasyankes] = useState<string>('ALL');
   const [loading, setLoading] = useState<boolean>(true);
+  const [showBapModal, setShowBapModal] = useState<boolean>(false);
 
   // Firestore raw state
   const [worksheets, setWorksheets] = useState<RawWorksheet[]>([]);
@@ -337,7 +340,7 @@ export function ServiceRecap() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Rekapan_Layanan_Alat_Spektrum_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `Rekapan_BAP_Layanan_${selectedFasyankes !== 'ALL' ? selectedFasyankes : 'Semua_Instansi'}_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -351,28 +354,28 @@ export function ServiceRecap() {
         
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full text-xs font-bold uppercase tracking-widest font-mono">
-            <Layers className="w-4 h-4 animate-pulse" /> Modul Rekapan & Pemisahan Layanan Terpadu
+            <Layers className="w-4 h-4 animate-pulse" /> Berita Acara Pelaksanaan (BAP) & Rekapan Layanan Per Instansi
           </div>
           <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight font-mono">
-            Rekapan Status Kalibrasi, UKES, IPM & Servis
+            Rekapan Layanan & Berita Acara Pelaksanaan (BAP)
           </h1>
           <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
-            Pemisahan dan monitoring terpadu seluruh instrumen medis rumah sakit: data alat terkalibrasi KAN, lolos uji kesesuaian BAPETEN, pemeliharaan preventif, dan catatan perbaikan teknis.
+            Pencatatan resmi Berita Acara Pelaksanaan (BAP) per instansi rumah sakit: kalibrasi KAN, uji kesesuaian BAPETEN, pemeliharaan preventif (IPM), dan perbaikan teknis.
           </p>
         </div>
 
         <div className="relative z-10 flex flex-wrap items-center gap-3">
           <button
+            onClick={() => setShowBapModal(true)}
+            className="px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 font-mono transition-all"
+          >
+            <FileText className="w-4 h-4" /> Cetak Dokumen BAP Resmi
+          </button>
+          <button
             onClick={handleExportCSV}
             className="px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/20 font-mono transition-all"
           >
-            <Download className="w-4 h-4" /> Ekspor Rekapan (CSV)
-          </button>
-          <button
-            onClick={() => window.print()}
-            className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer border border-slate-700 font-mono transition-all"
-          >
-            <Printer className="w-4 h-4" /> Cetak Laporan
+            <Download className="w-4 h-4" /> Ekspor Rekapan BAP (CSV)
           </button>
         </div>
       </div>
@@ -380,7 +383,7 @@ export function ServiceRecap() {
       {/* Loading state indicator */}
       {loading && (
         <div className="flex items-center justify-center p-6 bg-slate-900 border border-slate-800 rounded-2xl text-cyan-400 gap-2 text-xs font-mono">
-          <Loader2 className="w-4 h-4 animate-spin" /> Memuat data rekapan layanan...
+          <Loader2 className="w-4 h-4 animate-spin" /> Memuat data rekapan BAP layanan...
         </div>
       )}
 
@@ -392,7 +395,7 @@ export function ServiceRecap() {
             <Activity className="w-4 h-4 text-cyan-500" />
           </div>
           <p className="text-2xl font-black text-slate-900 dark:text-white font-mono">{kpiStats.total}</p>
-          <span className="text-[10px] text-slate-400 font-medium">Record Riwayat</span>
+          <span className="text-[10px] text-slate-400 font-medium">Record BAP</span>
         </div>
 
         <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm space-y-1">
@@ -447,7 +450,7 @@ export function ServiceRecap() {
           {/* Service Filter Tabs */}
           <div className="flex flex-wrap items-center gap-2">
             {[
-              { key: 'ALL' as TabKey, label: 'Semua Alat Terdata', icon: Layers, count: allRecapItems.length },
+              { key: 'ALL' as TabKey, label: 'Semua Layanan BAP', icon: Layers, count: allRecapItems.length },
               { key: 'KALIBRASI' as TabKey, label: 'Sudah Dikalibrasi', icon: Award, count: allRecapItems.filter(i => i.sourceType === 'KALIBRASI').length },
               { key: 'UKES' as TabKey, label: 'Sudah UKES (Radiologi)', icon: Radio, count: allRecapItems.filter(i => i.sourceType === 'UKES').length },
               { key: 'IPM' as TabKey, label: 'Sudah Pemeliharaan (IPM)', icon: Wrench, count: allRecapItems.filter(i => i.sourceType === 'IPM').length },
@@ -478,13 +481,14 @@ export function ServiceRecap() {
 
           {/* Fasyankes Selector */}
           <div className="flex items-center gap-2 font-mono text-xs">
-            <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
+            <Building2 className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span className="text-slate-400 font-bold">Filter Instansi:</span>
             <select
               value={selectedFasyankes}
               onChange={(e) => setSelectedFasyankes(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none"
+              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
             >
-              <option value="ALL">Semua Fasyankes / Rumah Sakit</option>
+              <option value="ALL">Semua Instansi / Rumah Sakit</option>
               {fasyankesOptions.map((f, idx) => (
                 <option key={idx} value={f}>{f}</option>
               ))}
@@ -499,7 +503,7 @@ export function ServiceRecap() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Cari berdasarkan nama alat, nomor seri (S/N), merek, no sertifikat / LHU, atau ruangan..."
+            placeholder="Cari berdasarkan nama instansi fasyankes, nama alat, nomor seri (S/N), merek, no sertifikat / LHU..."
             className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
           />
         </div>
@@ -513,7 +517,7 @@ export function ServiceRecap() {
               <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px] font-black tracking-widest font-mono">
                 <th className="py-4 px-5">Tipe Layanan</th>
                 <th className="py-4 px-5">Identitas Alat Medis</th>
-                <th className="py-4 px-5">Fasyankes / Lokasi</th>
+                <th className="py-4 px-5">Instansi / Lokasi</th>
                 <th className="py-4 px-5">Tanggal & Masa Berlaku</th>
                 <th className="py-4 px-5">No. Sertifikat / LHU</th>
                 <th className="py-4 px-5 text-center">Status Kelaikan</th>
@@ -524,7 +528,7 @@ export function ServiceRecap() {
               {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-16 text-center text-slate-400 font-mono text-xs">
-                    Tidak ada data rekapan yang sesuai dengan filter pencarian.
+                    Tidak ada data BAP layanan yang sesuai dengan instansi dan filter yang dipilih.
                   </td>
                 </tr>
               ) : (
@@ -556,7 +560,7 @@ export function ServiceRecap() {
                     <td className="py-4 px-5">
                       <div>
                         <p className="font-bold text-slate-900 dark:text-white flex items-center gap-1">
-                          <Building2 className="w-3 h-3 text-slate-400" /> {item.fasyankes}
+                          <Building2 className="w-3 h-3 text-cyan-400" /> {item.fasyankes}
                         </p>
                         <p className="text-[11px] text-slate-400 font-mono">Ruang: {item.room}</p>
                       </div>
@@ -603,6 +607,101 @@ export function ServiceRecap() {
           </table>
         </div>
       </div>
+
+      {/* Official BAP Printable Document Modal */}
+      {showBapModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+          <div className="bg-white text-slate-900 w-full max-w-4xl p-8 md:p-12 rounded-3xl shadow-2xl space-y-6 print:p-0 print:shadow-none print:w-full font-serif">
+            {/* Modal Actions */}
+            <div className="flex justify-between items-center border-b pb-4 print:hidden font-sans">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-emerald-600" />
+                <h3 className="font-bold text-slate-900">Dokumen Berita Acara Pelaksanaan (BAP)</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => window.print()}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5"
+                >
+                  <Printer className="w-4 h-4" /> Cetak BAP
+                </button>
+                <button
+                  onClick={() => setShowBapModal(false)}
+                  className="p-2 text-slate-400 hover:text-slate-600 rounded-xl"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* BAP Header */}
+            <div className="text-center space-y-2 border-b-2 border-slate-900 pb-6">
+              <h2 className="text-xl font-black uppercase tracking-wider">PT. SPEKTRUM KREASI PRATAMA</h2>
+              <p className="text-xs font-sans text-slate-600">Laboratorium Kalibrasi & Pengujian Metrologi Medis Terakreditasi KAN (LK-210-IDN)</p>
+              <div className="text-sm font-bold uppercase tracking-widest pt-2">
+                BERITA ACARA PELAKSANAAN (BAP) KALIBRASI & MAINTENANCE
+              </div>
+              <p className="text-xs font-mono text-slate-500">Nomor: BAP/SPK/{selectedFasyankes !== 'ALL' ? selectedFasyankes.replace(/\s+/g, '-').toUpperCase() : 'INSTANSI'}/{new Date().getFullYear()}</p>
+            </div>
+
+            {/* BAP Narrative Statement */}
+            <div className="text-xs leading-relaxed space-y-2 font-sans">
+              <p>
+                Pada hari ini, tanggal <strong>{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong>, telah dilaksanakan pekerjaan Kalibrasi, Uji Kesesuaian Radiologi, dan Pemeliharaan Preventif (IPM) Peralatan Kesehatan untuk:
+              </p>
+              <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border text-xs">
+                <div><strong>Nama Fasyankes / RS:</strong> {selectedFasyankes !== 'ALL' ? selectedFasyankes : 'Seluruh Fasyankes Terdata'}</div>
+                <div><strong>Jumlah Alat Ditindak:</strong> {filteredItems.length} Unit</div>
+              </div>
+            </div>
+
+            {/* Equipment Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-[11px] border-collapse border border-slate-900 text-left font-sans">
+                <thead>
+                  <tr className="bg-slate-100 border-b border-slate-900 text-slate-900 font-bold uppercase">
+                    <th className="p-2 border border-slate-900 text-center">No</th>
+                    <th className="p-2 border border-slate-900">Nama Alat Kesehatan</th>
+                    <th className="p-2 border border-slate-900">Merek / Type</th>
+                    <th className="p-2 border border-slate-900">Nomor Seri (S/N)</th>
+                    <th className="p-2 border border-slate-900">Jenis Layanan</th>
+                    <th className="p-2 border border-slate-900 text-center">Status Kelaikan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredItems.map((it, i) => (
+                    <tr key={it.id} className="border-b border-slate-900">
+                      <td className="p-2 border border-slate-900 text-center">{i + 1}</td>
+                      <td className="p-2 border border-slate-900 font-bold">{it.deviceName}</td>
+                      <td className="p-2 border border-slate-900">{it.brand} / {it.model}</td>
+                      <td className="p-2 border border-slate-900 font-mono">{it.serialNumber}</td>
+                      <td className="p-2 border border-slate-900">{it.sourceType}</td>
+                      <td className="p-2 border border-slate-900 text-center font-bold">
+                        {it.status === 'LAIK' || it.status === 'SELESAI' ? 'LAIK PAKAI' : 'TIDAK LAIK'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Signature Block */}
+            <div className="grid grid-cols-2 gap-8 pt-8 font-sans text-xs text-center">
+              <div className="space-y-12">
+                <p>PIHAK PERTAMA<br /><strong>PT. SPEKTRUM KREASI PRATAMA</strong></p>
+                <div className="pt-8 border-b border-slate-900 w-48 mx-auto" />
+                <p className="font-bold">Manajer Teknis Metrologi</p>
+              </div>
+
+              <div className="space-y-12">
+                <p>PIHAK KEDUA<br /><strong>{selectedFasyankes !== 'ALL' ? selectedFasyankes : 'FASYANKES RUMAH SAKIT'}</strong></p>
+                <div className="pt-8 border-b border-slate-900 w-48 mx-auto" />
+                <p className="font-bold">Kepala IPSRS / Penanggung Jawab Alat</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
