@@ -546,23 +546,23 @@ Evaluasi: ${ilacResult.explanation}
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8">
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-2 sm:p-4 md:p-8">
       {/* HEADER SECTION */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="max-w-7xl mx-auto mb-6 sm:mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5 sm:pb-6">
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl text-cyan-400">
-                <Cpu className="w-8 h-8 animate-pulse" />
+              <div className="p-2.5 sm:p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl text-cyan-400">
+                <Cpu className="w-6 h-6 sm:w-8 sm:h-8 animate-pulse" />
               </div>
               <div>
-                <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-3">
+                <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white flex flex-wrap items-center gap-2 sm:gap-3">
                   Mesin Perhitungan Metrologi
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono">
+                  <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono">
                     ISO GUM & KAN Standard
                   </span>
                 </h1>
-                <p className="text-slate-400 text-sm mt-1">
+                <p className="text-slate-400 text-xs sm:text-sm mt-1">
                   Engine evaluasi ketidakpastian pengukur, Welch-Satterthwaite, Student-t coverage factor, dan ILAC G8 conformity rules.
                 </p>
               </div>
@@ -572,7 +572,7 @@ Evaluasi: ${ilacResult.explanation}
           <div className="flex items-center gap-3">
             <button
               onClick={handleCopySummary}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 text-sm font-semibold transition-all shadow-lg"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 text-xs sm:text-sm font-semibold transition-all shadow-lg cursor-pointer"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
               {copied ? 'Tersalin!' : 'Salin Laporan'}
@@ -581,10 +581,10 @@ Evaluasi: ${ilacResult.explanation}
         </div>
 
         {/* TABS NAVIGATION */}
-        <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-2 border-b border-slate-800/80">
+        <div className="flex items-center gap-2 mt-4 sm:mt-6 overflow-x-auto pb-2 border-b border-slate-800/80 touch-pan-x no-scrollbar">
           <button
             onClick={() => setActiveTab('isogum')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all shrink-0 ${
+            className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all shrink-0 cursor-pointer ${
               activeTab === 'isogum'
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-lg shadow-cyan-500/20'
                 : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
@@ -596,7 +596,7 @@ Evaluasi: ${ilacResult.explanation}
 
           <button
             onClick={() => setActiveTab('formula')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all shrink-0 ${
+            className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all shrink-0 cursor-pointer ${
               activeTab === 'formula'
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-lg shadow-cyan-500/20'
                 : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
@@ -1043,8 +1043,8 @@ Evaluasi: ${ilacResult.explanation}
                 </span>
               </h3>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs font-mono border-collapse">
+              <div className="overflow-x-auto touch-pan-x no-scrollbar">
+                <table className="w-full min-w-[640px] text-left text-xs font-mono border-collapse">
                   <thead>
                     <tr className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px]">
                       <th className="p-3">Sumber Ketidakpastian</th>

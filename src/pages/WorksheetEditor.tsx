@@ -961,11 +961,11 @@ export function WorksheetEditor() {
       doc.text("STATUS AKHIR & KESIMPULAN KALIBRASI:", marginX + 5, yPos + 5.5);
       
       doc.setFont("Helvetica", "bold");
-      doc.setFontSize(9.5);
+      doc.setFontSize(9);
       doc.text(
         totalPassed 
-          ? "ALAT KESEHATAN MEMENUHI BATAS TOLERANSI MPE (LAIK OPERASI)" 
-          : "ALAT KESEHATAN MELEBIHI BATAS TOLERANSI MPE (MEMBUTUHKAN PERBAIKAN / ADJUSTMENT)", 
+          ? "ALAT KESEHATAN MEMENUHI PERSYARATAN REGULASI & BATAS MPE (LAIK PAKAI)" 
+          : "ALAT KESEHATAN MELEBIHI BATAS TOLERANSI MPE (TIDAK LAIK PAKAI)", 
         marginX + 5, 
         yPos + 10.5
       );
@@ -976,7 +976,7 @@ export function WorksheetEditor() {
       doc.setFont("Helvetica", "normal");
       doc.setFontSize(8.5);
       doc.setTextColor(71, 85, 105);
-      doc.text("Medan, " + new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' }), 135, yPos);
+      doc.text("Depok, " + new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' }), 135, yPos);
       yPos += 4.5;
       doc.text("Teknisi Penguji / Kalibrator,", 135, yPos);
       yPos += 18;
@@ -3084,7 +3084,7 @@ export function WorksheetEditor() {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
           {(isAdmin ||
             (user?.uid === lk?.technicianId &&
               (lk?.status === "draft" || lk?.status === "revision"))) && (
@@ -3100,26 +3100,26 @@ export function WorksheetEditor() {
                   >
                     <button
                       onClick={handleDelete}
-                      className="px-5 py-2.5 bg-red-600 text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-500/20"
+                      className="px-4 sm:px-5 py-2 sm:py-2.5 bg-red-600 text-white text-[9px] sm:text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-500/20 cursor-pointer"
                     >
                       Hapus Permanen
                     </button>
                     <button
                       onClick={() => setConfirmDelete(false)}
-                      className="p-2 text-slate-400 hover:text-slate-600"
+                      className="p-2 text-slate-400 hover:text-slate-600 cursor-pointer"
                       title="Batal Hapus"
                       aria-label="Batal Hapus"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </motion.div>
                 ) : (
                   <button
                     onClick={() => setConfirmDelete(true)}
-                    className="p-3.5 bg-white border border-slate-200 rounded-2xl text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all shadow-sm"
+                    className="p-2.5 sm:p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all shadow-sm cursor-pointer"
                     title="Hapus Lembar Kerja"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 )}
               </AnimatePresence>
@@ -3128,7 +3128,7 @@ export function WorksheetEditor() {
           <button
             onClick={() => handleSave(false)}
             disabled={saving}
-            className="px-5 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all shadow-sm flex items-center gap-2"
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-400 font-black text-[8px] sm:text-[9px] rounded-xl uppercase tracking-widest hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all shadow-sm flex items-center gap-1.5 sm:gap-2 cursor-pointer"
           >
             {saving ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -3139,35 +3139,35 @@ export function WorksheetEditor() {
           </button>
           <button
             onClick={() => setShowPreview(true)}
-            className="px-5 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:text-blue-700 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500/40 transition-all shadow-sm flex items-center gap-2"
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-400 font-black text-[8px] sm:text-[9px] rounded-xl uppercase tracking-widest hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:text-blue-700 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500/40 transition-all shadow-sm flex items-center gap-1.5 sm:gap-2 cursor-pointer"
           >
             <Eye className="w-3.5 h-3.5" />
             Preview
           </button>
           <button
             onClick={exportWorksheetToPDF}
-            className="px-5 py-2.5 bg-indigo-50/80 dark:bg-indigo-950/25 backdrop-blur border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-950/40 hover:shadow-md hover:shadow-indigo-500/10 transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-indigo-50/80 dark:bg-indigo-950/25 backdrop-blur border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-400 font-black text-[8px] sm:text-[9px] rounded-xl uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-950/40 hover:shadow-md hover:shadow-indigo-500/10 transition-all shadow-sm flex items-center gap-1.5 sm:gap-2 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             Cetak PDF
           </button>
           <button
             onClick={() => setShowLabelModal(true)}
-            className="px-5 py-2.5 bg-emerald-50/80 dark:bg-emerald-950/25 backdrop-blur border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:shadow-md hover:shadow-emerald-500/10 transition-all shadow-sm flex items-center gap-2"
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-emerald-50/80 dark:bg-emerald-950/25 backdrop-blur border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-black text-[8px] sm:text-[9px] rounded-xl uppercase tracking-widest hover:bg-emerald-100 dark:hover:bg-emerald-950/40 hover:shadow-md hover:shadow-emerald-500/10 transition-all shadow-sm flex items-center gap-1.5 sm:gap-2 cursor-pointer"
           >
             <QrCode className="w-3.5 h-3.5" />
             Label & QR
           </button>
           <button
             onClick={() => setIsKanAuditorOpen(true)}
-            className="px-5 py-2.5 bg-amber-50/80 dark:bg-amber-950/25 backdrop-blur border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 font-black text-[9px] rounded-xl uppercase tracking-widest hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:shadow-md hover:shadow-amber-500/10 transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-amber-50/80 dark:bg-amber-950/25 backdrop-blur border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 font-black text-[8px] sm:text-[9px] rounded-xl uppercase tracking-widest hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:shadow-md hover:shadow-amber-500/10 transition-all shadow-sm flex items-center gap-1.5 sm:gap-2 cursor-pointer"
           >
             <ShieldCheck className="w-3.5 h-3.5" />
-            Audit KAN ISO 17025
+            Audit KAN
           </button>
           <button
             onClick={() => handleSave(true)}
-            className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 text-white font-black text-[9px] rounded-xl uppercase tracking-[0.15em] hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/25 dark:shadow-blue-500/20 italic active:scale-[0.98] flex items-center gap-2"
+            className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 text-white font-black text-[8px] sm:text-[9px] rounded-xl uppercase tracking-[0.15em] hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/25 dark:shadow-blue-500/20 italic active:scale-[0.98] flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-white/90" />
             Finalize & Kunci

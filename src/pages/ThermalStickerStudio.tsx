@@ -45,7 +45,7 @@ export function ThermalStickerStudio() {
   const generateZplCode = () => {
     return `^XA
 ^FO20,20^GB560,300,3^FS
-^FO30,30^A0N,25,25^FDSPEKTRUM KREASI PRATAMA (KAN LK-210-IDN)^FS
+^FO30,30^A0N,25,25^FDSPEKTRUM KREASI PRATAMA (KAN LK-291-IDN)^FS
 ^FO30,60^A0N,20,20^FD${stickerData.hospitalName}^FS
 ^FO30,90^GB540,2,2^FS
 ^FO30,105^A0N,22,22^FDID: ${stickerData.equipmentId}^FS
@@ -62,7 +62,7 @@ export function ThermalStickerStudio() {
     return `ESC @
 ESC a 1
 GS ! 17
-SPEKTRUM KREASI PRATAMA - KAN LK-210-IDN
+SPEKTRUM KREASI PRATAMA - KAN LK-291-IDN
 ----------------------------------------
 ID ALAT    : ${stickerData.equipmentId}
 ALAT       : ${stickerData.equipmentName}
@@ -234,7 +234,7 @@ GS V 66 0`;
                 {/* Kop LPAK & Accreditation */}
                 <div className="border-b-2 border-black pb-2 text-center">
                   <div className="font-black text-xs tracking-tight uppercase">SPEKTRUM KREASI PRATAMA</div>
-                  <div className="text-[10px] font-bold text-slate-700">LABORATORIUM KALIBRASI TERAKREDITASI KAN (LK-210-IDN)</div>
+                  <div className="text-[10px] font-bold text-slate-700">LABORATORIUM KALIBRASI TERAKREDITASI KAN (LK-291-IDN)</div>
                 </div>
 
                 {/* Status Badge */}

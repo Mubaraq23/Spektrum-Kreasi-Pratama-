@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Stethoscope, 
   Search, 
-  CheckCircle2, 
-  AlertCircle, 
-  Download, 
   QrCode, 
   ShieldCheck, 
-  Calendar, 
-  FileText, 
-  ExternalLink,
-  Award,
-  ChevronRight
+  Award
 } from 'lucide-react';
 import { Tilt3D } from '../components/Tilt3D';
 
@@ -29,6 +23,7 @@ interface CustomerEquipmentRecord {
 }
 
 export function CustomerPortal() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [records] = useState<CustomerEquipmentRecord[]>([
     {
@@ -136,12 +131,24 @@ export function CustomerPortal() {
                   <div className="flex justify-between"><span>Due Date:</span> <span className="text-amber-400 font-bold">{rec.nextDueDate}</span></div>
                 </div>
 
-                <div className="pt-2 flex items-center gap-2">
+                <div className="pt-3 border-t border-slate-800/80 grid grid-cols-2 gap-2">
                   <button 
-                    onClick={() => alert(`Mengunduh Sertifikat ${rec.certificateNo}...`)}
-                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border border-slate-700"
+                    onClick={() => navigate(`/asset-passport/${rec.id}`)}
+                    className="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all border border-slate-700"
                   >
-                    <Download className="w-3.5 h-3.5" /> Certificate PDF
+                    <Stethoscope className="w-3.5 h-3.5 text-teal-400" /> Paspor Aset
+                  </button>
+                  <button 
+                    onClick={() => navigate(`/verify/${rec.id}`)}
+                    className="py-2 px-3 bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all border border-teal-500/30"
+                  >
+                    <QrCode className="w-3.5 h-3.5 text-teal-400" /> Verifikasi QR
+                  </button>
+                  <button 
+                    onClick={() => navigate('/certificates')}
+                    className="col-span-2 py-2 px-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all shadow-md shadow-teal-500/10"
+                  >
+                    <Award className="w-3.5 h-3.5" /> Akses Arsip Sertifikat Sah
                   </button>
                 </div>
               </div>

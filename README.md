@@ -1,4 +1,4 @@
-# Spektrum Kreasi Pratama 3.0 (LK-210-IDN)
+# Spektrum Kreasi Pratama 3.0 (KAN LK-291-IDN)
 
 Aplikasi Web Manajemen Metrologi & Kalibrasi Digital Terpadu KAN ISO/IEC 17025 & BAPETEN.
 

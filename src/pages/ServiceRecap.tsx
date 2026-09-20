@@ -637,7 +637,7 @@ export function ServiceRecap() {
             {/* BAP Header */}
             <div className="text-center space-y-2 border-b-2 border-slate-900 pb-6">
               <h2 className="text-xl font-black uppercase tracking-wider">PT. SPEKTRUM KREASI PRATAMA</h2>
-              <p className="text-xs font-sans text-slate-600">Laboratorium Kalibrasi & Pengujian Metrologi Medis Terakreditasi KAN (LK-210-IDN)</p>
+              <p className="text-xs font-sans text-slate-600">Laboratorium Kalibrasi & Pengujian Metrologi Medis Terakreditasi KAN (LK-291-IDN)</p>
               <div className="text-sm font-bold uppercase tracking-widest pt-2">
                 BERITA ACARA PELAKSANAAN (BAP) KALIBRASI & MAINTENANCE
               </div>

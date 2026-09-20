@@ -166,20 +166,20 @@ export function CustomProtocolBuilder() {
   };
 
   return (
-    <div className="space-y-10 pb-20 max-w-7xl mx-auto font-sans">
+    <div className="p-2 sm:p-4 md:p-8 space-y-6 sm:space-y-10 pb-20 max-w-7xl mx-auto font-sans">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 mb-2">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 sm:gap-8">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex items-center gap-3 mb-1 sm:mb-2">
             <div className="w-8 h-1 bg-cyan-500 rounded-full" />
             <p className="text-[10px] text-cyan-400 font-black uppercase tracking-[0.4em] font-mono">Custom Schema Builder</p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-[1.5rem] flex items-center justify-center text-slate-950 shadow-xl shadow-cyan-500/20">
-              <Wrench className="w-8 h-8" />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl sm:rounded-[1.5rem] flex items-center justify-center text-slate-950 shadow-xl shadow-cyan-500/20 shrink-0">
+              <Wrench className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
             <div>
-              <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none italic">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none italic">
                 Builder <span className="text-cyan-500">Protokol</span> &amp; Metode Kerja
               </h1>
             </div>
@@ -192,7 +192,7 @@ export function CustomProtocolBuilder() {
         <button
           onClick={handleSaveProtocol}
           disabled={saving}
-          className="flex items-center gap-3 px-8 py-5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-[2rem] shadow-xl shadow-cyan-500/20 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+          className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-2xl sm:rounded-[2rem] shadow-xl shadow-cyan-500/20 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
         >
           <Save className="w-5 h-5" />
           {saving ? 'Menyimpan Template...' : 'Simpan Protokol Baru'}
@@ -211,10 +211,10 @@ export function CustomProtocolBuilder() {
       )}
 
       {/* Main Settings Form */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
         {/* Basic Info Panel */}
-        <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 shadow-xl space-y-6">
-          <h2 className="text-sm font-black uppercase tracking-widest text-cyan-500 font-mono flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 shadow-xl space-y-4 sm:space-y-6">
+          <h2 className="text-xs sm:text-sm font-black uppercase tracking-widest text-cyan-500 font-mono flex items-center gap-2">
             <FileCode className="w-4 h-4" /> 1. Metadata Protokol
           </h2>
 
@@ -225,7 +225,7 @@ export function CustomProtocolBuilder() {
               placeholder="Contoh: Kalibrasi Patient Monitor Pulse Ox"
               value={protocolTitle}
               onChange={(e) => setProtocolTitle(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl px-3.5 sm:px-4 py-3 sm:py-3.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
             />
           </div>
 
@@ -234,7 +234,7 @@ export function CustomProtocolBuilder() {
             <select
               value={deviceCategory}
               onChange={(e) => setDeviceCategory(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl px-3.5 sm:px-4 py-3 sm:py-3.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
             >
               <option value="Patient Monitor">Patient Monitor</option>
               <option value="Syringe / Infusion Pump">Syringe / Infusion Pump</option>
@@ -252,39 +252,39 @@ export function CustomProtocolBuilder() {
               type="text"
               value={codeReference}
               onChange={(e) => setCodeReference(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-xs font-bold text-slate-900 dark:text-white font-mono focus:outline-none focus:border-cyan-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl px-3.5 sm:px-4 py-3 sm:py-3.5 text-xs font-bold text-slate-900 dark:text-white font-mono focus:outline-none focus:border-cyan-500"
             />
           </div>
         </div>
 
         {/* Inspections Checkpoint Builder */}
-        <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 shadow-xl space-y-6 md:col-span-2">
+        <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 shadow-xl space-y-4 sm:space-y-6 md:col-span-2">
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-black uppercase tracking-widest text-cyan-500 font-mono flex items-center gap-2">
+            <h2 className="text-xs sm:text-sm font-black uppercase tracking-widest text-cyan-500 font-mono flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4" /> 2. Checklist Inspeksi Fisik &amp; Fungsi
             </h2>
             <div className="flex gap-2">
               <button
                 onClick={() => addInspection('physical')}
-                className="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-cyan-500/20 cursor-pointer"
+                className="px-2.5 sm:px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-cyan-500/20 cursor-pointer"
               >
                 + Fisik
               </button>
               <button
                 onClick={() => addInspection('functional')}
-                className="px-3 py-1.5 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-blue-500/20 cursor-pointer"
+                className="px-2.5 sm:px-3 py-1.5 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-blue-500/20 cursor-pointer"
               >
                 + Fungsi
               </button>
             </div>
           </div>
 
-          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+          <div className="space-y-2.5 sm:space-y-3 max-h-[300px] overflow-y-auto pr-1 sm:pr-2">
             {inspections.map((item, index) => (
-              <div key={item.id} className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
-                <span className="text-xs font-mono font-bold text-slate-400 w-6">{index + 1}.</span>
+              <div key={item.id} className="flex items-center gap-2 sm:gap-3 bg-slate-50 dark:bg-slate-950 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-100 dark:border-slate-800">
+                <span className="text-xs font-mono font-bold text-slate-400 w-5 sm:w-6">{index + 1}.</span>
                 <span className={cn(
-                  "px-2.5 py-1 rounded-lg text-[8px] font-black uppercase font-mono tracking-widest",
+                  "px-2 py-0.5 sm:py-1 rounded-lg text-[8px] font-black uppercase font-mono tracking-widest shrink-0",
                   item.category === 'physical' ? "bg-cyan-500/15 text-cyan-400" : "bg-blue-500/15 text-blue-400"
                 )}>
                   {item.category}
@@ -293,11 +293,11 @@ export function CustomProtocolBuilder() {
                   type="text"
                   value={item.name}
                   onChange={(e) => updateInspectionName(item.id, e.target.value)}
-                  className="flex-1 bg-transparent text-xs font-bold text-slate-900 dark:text-white focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent text-xs font-bold text-slate-900 dark:text-white focus:outline-none"
                 />
                 <button
                   onClick={() => removeInspection(item.id)}
-                  className="p-2 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
+                  className="p-1.5 sm:p-2 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -308,20 +308,20 @@ export function CustomProtocolBuilder() {
       </div>
 
       {/* Measurement Points Builder */}
-      <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 shadow-xl space-y-6">
-        <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
-          <h2 className="text-sm font-black uppercase tracking-widest text-cyan-500 font-mono flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 shadow-xl space-y-4 sm:space-y-6">
+        <div className="flex flex-wrap justify-between items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <h2 className="text-xs sm:text-sm font-black uppercase tracking-widest text-cyan-500 font-mono flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4" /> 3. Titik Ukur Pengukuran &amp; Batas Toleransi
           </h2>
           <button
             onClick={addTestPoint}
-            className="flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-cyan-500/20 cursor-pointer"
+            className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-cyan-500/20 cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Tambah Titik Ukur
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto touch-pan-x no-scrollbar">
           <table className="w-full text-left min-w-[700px]">
             <thead className="bg-slate-50 dark:bg-slate-950 text-slate-400 uppercase text-[10px] font-black tracking-widest font-mono">
               <tr>

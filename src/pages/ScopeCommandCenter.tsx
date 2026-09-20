@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Award, ShieldCheck, AlertTriangle, CheckCircle2, Layers,
-  Search, TrendingUp, Compass, BarChart3, Filter, Globe,
-  FileText, ArrowUpRight, Cpu, Zap, Target
+  Award, 
+  AlertTriangle, 
+  CheckCircle2, 
+  Search, 
+  BarChart3
 } from 'lucide-react';
 import { Tilt3D } from '../components/Tilt3D';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -70,7 +72,6 @@ export function ScopeCommandCenter() {
 
   const inScopeCount = SCOPE_DATA.filter(s => s.status === 'IN_SCOPE').length;
   const conditionalCount = SCOPE_DATA.filter(s => s.status === 'CONDITIONAL').length;
-  const outOfScopeCount = SCOPE_DATA.filter(s => s.status === 'OUT_OF_SCOPE').length;
   const totalUsage = SCOPE_DATA.reduce((a, b) => a + b.usageCount, 0);
 
   return (
@@ -91,7 +92,7 @@ export function ScopeCommandCenter() {
               </span>
             </h1>
             <p className="text-slate-400 max-w-3xl text-sm leading-relaxed">
-              Matriks pemantauan lingkup terakreditasi KAN (LK-210-IDN), validasi Kemampuan Ukur Terkecil (CMC), referensi standar internasional, dan heatmap intensitas penggunaan lingkup kalibrasi.
+              Matriks pemantauan lingkup terakreditasi KAN (LK-291-IDN), validasi Kemampuan Ukur Terkecil (CMC), referensi standar internasional, dan heatmap intensitas penggunaan lingkup kalibrasi.
             </p>
           </div>
         </div>
@@ -156,7 +157,7 @@ export function ScopeCommandCenter() {
           <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white">
             {categories.map(c => <option key={c} value={c}>{c === 'ALL' ? 'Semua Kategori' : c}</option>)}
           </select>
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as any)} className="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white">
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as ScopeStatus | 'ALL')} className="px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white">
             <option value="ALL">Semua Status</option>
             {(Object.keys(STATUS_CONFIG) as ScopeStatus[]).map(s => <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>)}
           </select>

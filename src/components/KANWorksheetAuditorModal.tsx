@@ -259,27 +259,27 @@ export function KANWorksheetAuditorModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+          className="relative w-full max-w-4xl max-h-[92vh] sm:max-h-[90vh] bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col"
         >
           {/* MODAL HEADER */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-950/50">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-800 bg-slate-950/50">
             <div className="flex items-center gap-3">
-              <div className={`p-3 rounded-2xl border ${
+              <div className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border ${
                 auditResults.isKanReady
                   ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                   : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
               }`}>
-                <ShieldCheck className="w-7 h-7" />
+                <ShieldCheck className="w-5 h-5 sm:w-7 sm:h-7" />
               </div>
               <div>
-                <h2 className="text-xl font-black text-white flex items-center gap-2">
+                <h2 className="text-base sm:text-xl font-black text-white flex flex-wrap items-center gap-2">
                   Audit Kepatuhan KAN ISO/IEC 17025
-                  <span className={`text-xs px-3 py-0.5 rounded-full font-mono font-bold ${
+                  <span className={`text-[10px] sm:text-xs px-2.5 sm:px-3 py-0.5 rounded-full font-mono font-bold ${
                     auditResults.isKanReady
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                       : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
@@ -287,7 +287,7 @@ export function KANWorksheetAuditorModal({
                     {auditResults.scorePercentage}% COMPLIANT
                   </span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
                   Pemeriksaan kelayakan Lembar Kerja (LK) terhadap standar akreditasi KAN & Kemenkes RI.
                 </p>
               </div>
@@ -295,16 +295,16 @@ export function KANWorksheetAuditorModal({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* MODAL BODY CONTENT */}
-          <div className="p-6 overflow-y-auto space-y-6 flex-1">
+          <div className="p-3.5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1">
             {/* SCORE GAUGE & OVERVIEW SUMMARY */}
-            <div className={`p-6 rounded-3xl border flex flex-col md:flex-row items-center justify-between gap-6 ${
+            <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl border flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 ${
               auditResults.isKanReady
                 ? 'bg-emerald-950/20 border-emerald-500/30'
                 : 'bg-amber-950/20 border-amber-500/30'
@@ -389,13 +389,13 @@ export function KANWorksheetAuditorModal({
           </div>
 
           {/* MODAL FOOTER */}
-          <div className="p-6 border-t border-slate-800 bg-slate-950/50 flex items-center justify-between">
-            <span className="text-xs text-slate-500 font-mono">
+          <div className="p-4 sm:p-6 border-t border-slate-800 bg-slate-950/50 flex flex-wrap items-center justify-between gap-3">
+            <span className="text-[11px] sm:text-xs text-slate-500 font-mono">
               Spektrum KAN ISO/IEC 17025 Metrology Inspector Engine
             </span>
             <button
               onClick={onClose}
-              className="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm transition-all"
+              className="w-full sm:w-auto px-5 sm:px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs sm:text-sm transition-all cursor-pointer text-center"
             >
               Tutup Auditor
             </button>

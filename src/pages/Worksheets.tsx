@@ -349,10 +349,10 @@ export function Worksheets() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto touch-pan-x no-scrollbar">
           <button
             onClick={() => setActiveTab('worksheets')}
-            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'worksheets'
                 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 shadow-md shadow-amber-500/20'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
@@ -363,18 +363,18 @@ export function Worksheets() {
 
           <button
             onClick={() => setActiveTab('calculator')}
-            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'calculator'
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md shadow-cyan-500/20'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Calculator className="w-4 h-4" /> Mesin Perhitungan u95
+            <Calculator className="w-4 h-4" /> Kalkulator Metrologi
           </button>
 
           <button
             onClick={() => setActiveTab('scope')}
-            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'scope'
                 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/20'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
@@ -385,7 +385,7 @@ export function Worksheets() {
 
           <button
             onClick={() => setActiveTab('protocol')}
-            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+            className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'protocol'
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
@@ -430,24 +430,24 @@ export function Worksheets() {
           </h1>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-[0.3em]">Manajemen Siklus Hidup Kalibrasi Aset Kemenkes RI</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <button 
             onClick={() => setShowScanner(true)}
-            className="px-6 py-4 bg-slate-50 hover:bg-slate-100 dark:bg-[#141b2c] dark:hover:bg-[#1f283d] text-slate-800 dark:text-white border border-slate-200 dark:border-cyan-500/20 font-black rounded-2xl text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer shadow-sm"
+            className="px-4 sm:px-6 py-3 sm:py-4 bg-slate-50 hover:bg-slate-100 dark:bg-[#141b2c] dark:hover:bg-[#1f283d] text-slate-800 dark:text-white border border-slate-200 dark:border-cyan-500/20 font-black rounded-xl sm:rounded-2xl text-[9.5px] sm:text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer shadow-sm"
           >
             <Camera className="w-4 h-4 text-cyan-500" />
             Pindai QR Aset
           </button>
           <button 
             onClick={() => setIsExcelModalOpen(true)}
-            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 dark:border-emerald-500/30 font-black px-6 py-4 rounded-2xl flex items-center justify-center gap-2.5 transition-all uppercase tracking-widest text-[10px] cursor-pointer"
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 dark:border-emerald-500/30 font-black px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 transition-all uppercase tracking-widest text-[9.5px] sm:text-[10px] cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
             Import Excel AI
           </button>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 dark:text-[#070d19] font-black px-8 py-4 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-cyan-500/10 uppercase tracking-widest text-[10px] active:scale-95 cursor-pointer shrink-0"
+            className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 dark:text-[#070d19] font-black px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-xl shadow-cyan-500/10 uppercase tracking-widest text-[9.5px] sm:text-[10px] active:scale-95 cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4" />
             Mulai LK Baru
@@ -456,43 +456,43 @@ export function Worksheets() {
       </div>
 
       {/* Futuristic Glassmorphic HUD Stats Ribbon */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-2 bg-slate-50/50 dark:bg-[#10192d]/50 backdrop-blur-xl border border-slate-200/50 dark:border-cyan-500/10 rounded-[2rem] shadow-sm">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 p-2 bg-slate-50/50 dark:bg-[#10192d]/50 backdrop-blur-xl border border-slate-200/50 dark:border-cyan-500/10 rounded-2xl sm:rounded-[2rem] shadow-sm">
         {[
           { label: "TOTAL LEMBAR KERJA", value: worksheets.length, color: "text-[#06B6D4]", bg: "bg-[#06B6D4]/5", border: "border-[#06B6D4]/10", icon: "📊" },
           { label: "SISTEM DRAF", value: worksheets.filter(w => w.status === 'draft').length, color: "text-slate-500", bg: "bg-slate-500/5", border: "border-slate-500/10", icon: "📁" },
           { label: "MENUNGGU PERSETUJUAN", value: worksheets.filter(w => w.status === 'pending').length, color: "text-amber-500", bg: "bg-amber-500/5", border: "border-amber-500/10", icon: "⏳" },
           { label: "SELESAI / TERVERIFIKASI", value: worksheets.filter(w => w.status === 'approved' || w.status === 'completed').length, color: "text-emerald-500", bg: "bg-emerald-500/5", border: "border-emerald-500/10", icon: "✅" },
         ].map((stat, i) => (
-          <div key={i} className={cn("p-4 rounded-2xl border flex items-center justify-between transition-all hover:scale-[1.02]", stat.bg, stat.border)}>
-            <div className="space-y-1">
-              <span className="text-[8px] font-black tracking-widest uppercase block font-mono text-slate-400 dark:text-slate-500">{stat.label}</span>
-              <span className={cn("text-xl font-black font-mono block", stat.color)}>{stat.value}</span>
+          <div key={i} className={cn("p-3 sm:p-4 rounded-xl sm:rounded-2xl border flex items-center justify-between transition-all hover:scale-[1.02]", stat.bg, stat.border)}>
+            <div className="space-y-0.5 sm:space-y-1">
+              <span className="text-[7.5px] sm:text-[8px] font-black tracking-widest uppercase block font-mono text-slate-400 dark:text-slate-500">{stat.label}</span>
+              <span className={cn("text-base sm:text-xl font-black font-mono block", stat.color)}>{stat.value}</span>
             </div>
-            <span className="text-base p-2 bg-white dark:bg-[#070d19] rounded-xl shadow-sm border border-slate-200/20">{stat.icon}</span>
+            <span className="text-sm sm:text-base p-1.5 sm:p-2 bg-white dark:bg-[#070d19] rounded-xl shadow-sm border border-slate-200/20">{stat.icon}</span>
           </div>
         ))}
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white/80 dark:bg-[#10192d]/80 backdrop-blur-xl border border-sky-500/10 dark:border-cyan-500/20 rounded-3xl p-3 flex flex-wrap items-center gap-3 shadow-xl dark:shadow-none sticky top-4 z-20">
-        <div className="flex-1 relative flex items-center min-w-[200px]">
-          <Search className="absolute left-6 w-5 h-5 text-slate-400 dark:text-cyan-400/50" />
+      <div className="bg-white/80 dark:bg-[#10192d]/80 backdrop-blur-xl border border-sky-500/10 dark:border-cyan-500/20 rounded-2xl sm:rounded-3xl p-2 sm:p-3 flex flex-wrap items-center gap-2 sm:gap-3 shadow-xl dark:shadow-none sticky top-2 sm:top-4 z-20">
+        <div className="flex-1 relative flex items-center min-w-[180px]">
+          <Search className="absolute left-4 sm:left-6 w-4 sm:w-5 h-4 sm:h-5 text-slate-400 dark:text-cyan-400/50" />
           <input 
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari aset, instansi, atau ID lembar kerja..."
-            className="w-full bg-slate-50 dark:bg-[#070d19]/80 border border-slate-200 dark:border-cyan-500/15 rounded-2xl py-4 pl-14 pr-6 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#06B6D4] focus:border-[#06B6D4] transition-all placeholder:text-slate-400 shadow-inner"
+            className="w-full bg-slate-50 dark:bg-[#070d19]/80 border border-slate-200 dark:border-cyan-500/15 rounded-xl sm:rounded-2xl py-3 sm:py-4 pl-11 sm:pl-14 pr-4 sm:pr-6 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#06B6D4] focus:border-[#06B6D4] transition-all placeholder:text-slate-400 shadow-inner"
           />
         </div>
-        <div className="flex items-center gap-2">
-           <button className="h-14 px-6 flex items-center gap-3 bg-white dark:bg-[#070d19]/60 border border-slate-200 dark:border-cyan-500/10 rounded-2xl text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest hover:border-cyan-500/40 transition-all shadow-sm">
-             <Filter className="w-4 h-4 text-blue-600 dark:text-cyan-400" />
-             Filter
+        <div className="flex items-center gap-1.5 sm:gap-2">
+           <button className="h-11 sm:h-14 px-3 sm:px-6 flex items-center gap-2 sm:gap-3 bg-white dark:bg-[#070d19]/60 border border-slate-200 dark:border-cyan-500/10 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest hover:border-cyan-500/40 transition-all shadow-sm">
+             <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-cyan-400" />
+             <span className="hidden xs:inline">Filter</span>
            </button>
-           <button className="h-14 px-6 flex items-center gap-3 bg-white dark:bg-[#070d19]/60 border border-slate-200 dark:border-cyan-500/10 rounded-2xl text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest hover:border-cyan-500/40 transition-all shadow-sm">
-             <Clock className="w-4 h-4 text-blue-600 dark:text-cyan-400" />
-             Urutkan
+           <button className="h-11 sm:h-14 px-3 sm:px-6 flex items-center gap-2 sm:gap-3 bg-white dark:bg-[#070d19]/60 border border-slate-200 dark:border-cyan-500/10 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest hover:border-cyan-500/40 transition-all shadow-sm">
+             <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-cyan-400" />
+             <span className="hidden xs:inline">Urutkan</span>
            </button>
         </div>
       </div>
@@ -1014,71 +1014,71 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
   return (
     <Tilt3D intensity={5} className="h-full">
       <div 
-        className="bg-white dark:bg-[#10192d] p-8 rounded-[2.5rem] transition-all group relative overflow-hidden border border-slate-200 dark:border-cyan-500/15 shadow-xl dark:shadow-none flex flex-col justify-between min-h-[300px] h-full"
+        className="bg-white dark:bg-[#10192d] p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] transition-all group relative overflow-hidden border border-slate-200 dark:border-cyan-500/15 shadow-xl dark:shadow-none flex flex-col justify-between min-h-[280px] sm:min-h-[300px] h-full"
       >
       <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:scale-110 group-hover:opacity-[0.05] transition-all duration-1000">
          <FileText className="w-48 h-48 text-[#06B6D4] dark:text-cyan-400" />
       </div>
 
       <div>
-        <div className="flex items-start justify-between mb-8 relative z-10">
-          <div className="flex items-center gap-4">
-             <div className="w-12 h-12 rounded-[1.2rem] bg-slate-50 dark:bg-[#070d19] border border-slate-200/60 dark:border-cyan-500/15 flex items-center justify-center text-slate-400 dark:text-cyan-400/60 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 group-hover:bg-cyan-500/10 dark:group-hover:bg-cyan-950/20 group-hover:border-cyan-500/25 group-hover:rotate-6 transition-all shadow-inner">
-                <ClipboardCheck className="w-6 h-6" />
+        <div className="flex items-start justify-between mb-6 sm:mb-8 relative z-10 gap-2">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1.2rem] bg-slate-50 dark:bg-[#070d19] border border-slate-200/60 dark:border-cyan-500/15 flex items-center justify-center text-slate-400 dark:text-cyan-400/60 group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 group-hover:bg-cyan-500/10 dark:group-hover:bg-cyan-950/20 group-hover:border-cyan-500/25 group-hover:rotate-6 transition-all shadow-inner shrink-0">
+                <ClipboardCheck className="w-5 h-5 sm:w-6 sm:h-6" />
              </div>
-             <div>
+             <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                   <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-pulse" />
-                   <p className="text-[9px] text-blue-600 dark:text-cyan-400 font-black uppercase tracking-widest font-mono italic leading-none">CORE-SPEC-{lk.id.slice(0,4).toUpperCase()}</p>
+                   <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-pulse shrink-0" />
+                   <p className="text-[8.5px] sm:text-[9px] text-blue-600 dark:text-cyan-400 font-black uppercase tracking-widest font-mono italic leading-none truncate">CORE-SPEC-{lk.id.slice(0,4).toUpperCase()}</p>
                 </div>
-                <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 transition-colors italic">LK-{lk.id.slice(0,8).toUpperCase()}</h3>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none group-hover:text-[#06B6D4] dark:group-hover:text-cyan-400 transition-colors italic truncate">LK-{lk.id.slice(0,8).toUpperCase()}</h3>
              </div>
           </div>
-          <div className={cn("flex items-center gap-2.5 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.1em] border transition-all shadow-sm italic", statusColors[lk.status])}>
+          <div className={cn("flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[8px] sm:text-[9px] font-black uppercase tracking-[0.1em] border transition-all shadow-sm italic shrink-0", statusColors[lk.status])}>
              {statusIcons[lk.status]}
-             {statusLabels[lk.status] || lk.status}
+             <span className="truncate">{statusLabels[lk.status] || lk.status}</span>
           </div>
         </div>
 
         <div className="space-y-4 relative z-10">
-           <div className="bg-slate-50/50 dark:bg-[#070d19]/80 p-5 rounded-2xl border border-slate-200/50 dark:border-cyan-500/10 group-hover:bg-[#06B6D4]/5 group-hover:border-cyan-500/20 dark:group-hover:border-cyan-500/15 transition-all shadow-inner">
-                 <div className="flex items-center gap-2 mb-3">
-                    <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-bounce" />
-                    <p className="text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest leading-none font-mono">Arsitektur Perangkat</p>
+           <div className="bg-slate-50/50 dark:bg-[#070d19]/80 p-4 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200/50 dark:border-cyan-500/10 group-hover:bg-[#06B6D4]/5 group-hover:border-cyan-500/20 dark:group-hover:border-cyan-500/15 transition-all shadow-inner">
+                 <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                    <div className="w-1.5 h-1.5 bg-[#06B6D4] rounded-full animate-bounce shrink-0" />
+                    <p className="text-[8.5px] sm:text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest leading-none font-mono">Arsitektur Perangkat</p>
                  </div>
-                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tighter line-clamp-1 truncate uppercase italic">{lk.deviceName || 'Unit Tidak Teridentifikasi'}</p>
-              <div className="flex items-center gap-2.5 mt-3">
-                 <div className="px-2.5 py-1 bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/15 rounded-lg text-[8px] font-black text-[#06B6D4] uppercase tracking-widest shadow-sm font-mono truncate max-w-[120px]">
+                 <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tighter line-clamp-1 truncate uppercase italic">{lk.deviceName || 'Unit Tidak Teridentifikasi'}</p>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mt-2.5 sm:mt-3">
+                 <div className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-white dark:bg-[#10192d] border border-slate-200 dark:border-cyan-500/15 rounded-lg text-[7.5px] sm:text-[8px] font-black text-[#06B6D4] uppercase tracking-widest shadow-sm font-mono truncate max-w-[120px]">
                     ID: {lk.deviceId?.slice(-8).toUpperCase() || 'SYS-ERR'}
                  </div>
-                 <div className="h-3 w-px bg-slate-200 dark:bg-cyan-500/20 mx-1" />
-                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-black italic truncate tracking-tight uppercase">{lk.fasyankesName || 'INSTALASI NASIONAL'}</p>
+                 <div className="h-3 w-px bg-slate-200 dark:bg-cyan-500/20 mx-0.5" />
+                 <p className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-black italic truncate tracking-tight uppercase max-w-[200px]">{lk.fasyankesName || 'INSTALASI NASIONAL'}</p>
               </div>
            </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-cyan-500/5 mt-6 relative z-10">
-         <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-4 sm:pt-6 border-t border-slate-100 dark:border-cyan-500/5 mt-4 sm:mt-6 relative z-10">
+         <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="flex -space-x-2">
                {[1,2].map(i => (
-                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-[#10192d] bg-slate-100 dark:bg-[#070d19] flex items-center justify-center text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase shadow-sm italic group-hover:border-cyan-500/10 transition-colors">
+                 <div key={i} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white dark:border-[#10192d] bg-slate-100 dark:bg-[#070d19] flex items-center justify-center text-[8.5px] sm:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase shadow-sm italic group-hover:border-cyan-500/10 transition-colors">
                     {String.fromCharCode(64 + i)}
                  </div>
                ))}
             </div>
-            <div className="flex flex-col">
-               <p className="text-[9px] font-black text-slate-900 dark:text-white uppercase tracking-widest leading-none">{lk.technicianName || 'Analyst'}</p>
-               <p className="text-[8px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Lead Technician</p>
+            <div className="flex flex-col min-w-0">
+               <p className="text-[8.5px] sm:text-[9px] font-black text-slate-900 dark:text-white uppercase tracking-widest leading-none truncate max-w-[110px] sm:max-w-[150px]">{lk.technicianName || 'Analyst'}</p>
+               <p className="text-[7.5px] sm:text-[8px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-0.5 sm:mt-1">Lead Technician</p>
             </div>
          </div>
-         <div className="flex items-center gap-2">
+         <div className="flex items-center gap-1.5 sm:gap-2 ml-auto">
             <button
               onClick={() => setShowLabelModal(true)}
-              className="p-2.5 bg-emerald-50 dark:bg-[#071d18] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-all rounded-xl border border-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer flex items-center justify-center"
+              className="p-2 sm:p-2.5 bg-emerald-50 dark:bg-[#071d18] text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-all rounded-xl border border-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer flex items-center justify-center"
               title="Cetak Label & QR Code"
             >
-              <QrCode className="w-4.5 h-4.5" />
+              <QrCode className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
             </button>
             {canDelete && (
                <motion.button 
@@ -1088,12 +1088,12 @@ function WorksheetCard({ lk, onDelete }: WorksheetCardProps) {
                    e.preventDefault();
                    setConfirmDelete(!confirmDelete);
                  }}
-                 className="p-2.5 bg-white dark:bg-[#070d19] text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all rounded-xl border border-slate-200 dark:border-cyan-500/15 hover:border-red-100 hover:shadow-lg hover:shadow-red-500/10 cursor-pointer"
+                 className="p-2 sm:p-2.5 bg-white dark:bg-[#070d19] text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all rounded-xl border border-slate-200 dark:border-cyan-500/15 hover:border-red-100 hover:shadow-lg hover:shadow-red-500/10 cursor-pointer"
                >
-                 <Trash2 className="w-4.5 h-4.5" />
+                 <Trash2 className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                </motion.button>
             )}
-            <Link to={`/worksheets/${lk.id}/edit`} className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 font-black h-11 px-5 rounded-xl flex items-center gap-2 transition-all shadow-xl shadow-cyan-500/10 group/btn text-[9px] font-black uppercase tracking-widest">
+            <Link to={`/worksheets/${lk.id}/edit`} className="bg-[#06B6D4] hover:bg-[#06B6D4]/90 text-slate-950 font-black h-9 sm:h-11 px-3.5 sm:px-5 rounded-xl flex items-center gap-1.5 sm:gap-2 transition-all shadow-xl shadow-cyan-500/10 group/btn text-[8.5px] sm:text-[9px] font-black uppercase tracking-widest shrink-0">
                Buka LK
                <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1.5 transition-transform text-slate-950" />
             </Link>

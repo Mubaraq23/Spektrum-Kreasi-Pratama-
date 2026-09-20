@@ -6,22 +6,13 @@ import {
   Award, 
   Wrench, 
   Search, 
-  ChevronRight, 
-  Calendar, 
-  CheckCircle2, 
-  Clock, 
   AlertTriangle, 
   FileText, 
   ExternalLink,
   ShieldAlert,
-  Sliders,
-  Filter,
   User,
-  Heart,
   Loader2,
-  Building,
   Save,
-  Trash2,
   X,
   Activity
 } from 'lucide-react';
@@ -30,9 +21,6 @@ import {
   query, 
   getDocs, 
   where, 
-  orderBy, 
-  getDoc,
-  doc,
   addDoc,
   serverTimestamp
 } from 'firebase/firestore';
@@ -43,6 +31,78 @@ import { cn } from '../lib/utils';
 import { Link } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import { logAction, pushNotification } from '../lib/auditLogger';
+
+interface DeviceRecord {
+  id?: string;
+  serialNumber: string;
+  name: string;
+  brand?: string;
+  model?: string;
+  maintenanceSchedule?: string;
+  hospitalName?: string;
+  department?: string;
+}
+
+interface FirestoreTimestamp {
+  toDate?: () => Date;
+  seconds?: number;
+  nanoseconds?: number;
+}
+type FirestoreDateValue = FirestoreTimestamp | string | number | Date | null | undefined;
+
+const formatDocDate = (val?: FirestoreDateValue): string => {
+  if (!val) return '-';
+  if (typeof val === 'object' && val !== null) {
+    if ('toDate' in val && typeof val.toDate === 'function') {
+      return val.toDate().toLocaleDateString('id-ID');
+    }
+    if (val instanceof Date) {
+      return val.toLocaleDateString('id-ID');
+    }
+  }
+  if (typeof val === 'string' || typeof val === 'number') {
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('id-ID');
+  }
+  return '-';
+};
+
+interface HospitalDocRecord {
+  id: string;
+  serialNumber?: string;
+  deviceName?: string;
+  brand?: string;
+  model?: string;
+  status?: string;
+  category?: string;
+  description?: string;
+  completionNotes?: string;
+  lastMaintenanceDate?: string;
+  nextMaintenanceDate?: string;
+  technicianName?: string;
+  createdAt?: FirestoreDateValue;
+  lkId?: string;
+  certificateNumber?: string;
+  issuedAt?: FirestoreDateValue;
+  nextCalibrationDate?: string;
+  maintenanceSchedule?: string;
+  [key: string]: unknown;
+}
+
+
+interface TimelineEvent {
+  id: string;
+  type: 'work_order' | 'certificate' | 'ipm';
+  title: string;
+  date: Date;
+  status?: string;
+  notes?: string;
+  techName: string;
+  certificateNumber?: string;
+  nextCalibration?: string;
+  original?: Record<string, unknown>;
+  ws?: Record<string, unknown>;
+}
 
 const timelineContainer = {
   hidden: { opacity: 0 },
@@ -69,21 +129,21 @@ const timelineItem = {
 };
 
 export function ServiceHistory() {
-  const { profile, user, isAdmin, isSupervisor } = useAuth();
+  const { profile, user } = useAuth();
   const isClient = profile?.role === 'client';
 
   // State
-  const [deviceList, setDeviceList] = useState<any[]>([]);
+  const [deviceList, setDeviceList] = useState<DeviceRecord[]>([]);
   const [selectedSerialNumber, setSelectedSerialNumber] = useState('');
-  const [selectedDevice, setSelectedDevice] = useState<any | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<DeviceRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   
   // Aggregated data
-  const [workOrders, setWorkOrders] = useState<any[]>([]);
-  const [certificates, setCertificates] = useState<any[]>([]);
-  const [ipmTasks, setIpmTasks] = useState<any[]>([]);
-  const [timelineEvents, setTimelineEvents] = useState<any[]>([]);
+  const [workOrders, setWorkOrders] = useState<TimelineEvent[]>([]);
+  const [certificates, setCertificates] = useState<TimelineEvent[]>([]);
+  const [ipmTasks, setIpmTasks] = useState<TimelineEvent[]>([]);
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
   
   // Filter settings
   const [activeTab, setActiveTab] = useState<'all' | 'work_orders' | 'certificates' | 'ipm'>('all');
@@ -120,9 +180,9 @@ export function ServiceHistory() {
       brand: selectedDevice.brand || '',
       model: selectedDevice.model || '',
       serialNumber: selectedDevice.serialNumber || '',
-      location: profile?.hospitalName || latestRecord?.original?.hospitalName || '',
-      department: latestRecord?.original?.department || 'Instalasi Alkes',
-      technicianName: profile?.displayName || user?.email || 'Teknisi Utama KPS',
+      location: (profile?.hospitalName as string) || (latestRecord?.original?.hospitalName as string) || '',
+      department: (latestRecord?.original?.department as string) || 'Instalasi Alkes',
+      technicianName: profile?.displayName || user?.email || 'Teknisi Utama Spektrum',
       lastMaintenanceDate: today,
       nextMaintenanceDate: oneYearLater,
       template: 'General Medical Equipment',
@@ -188,9 +248,9 @@ export function ServiceHistory() {
       );
 
       // Local update
-      const newLocalTask = {
+      const newLocalTask: TimelineEvent = {
         id: 'temp-id-' + Math.random(),
-        type: 'ipm',
+        type: 'ipm' as const,
         title: 'Sertifikasi Inspeksi IPM',
         date: new Date(),
         status: ipmForm.status,
@@ -202,9 +262,9 @@ export function ServiceHistory() {
       setIpmTasks(prev => [newLocalTask, ...prev]);
       setTimelineEvents(prev => [newLocalTask, ...prev]);
       setIsIPMModalOpen(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setIpmError(err.message || "Gagal menyimpan IPM.");
+      setIpmError(err instanceof Error ? err.message : "Gagal menyimpan IPM.");
     } finally {
       setSavingIPM(false);
     }
@@ -229,13 +289,13 @@ export function ServiceHistory() {
       
       doc.setTextColor(255, 255, 255);
       doc.setFont('Helvetica', 'bold');
-      doc.setFontSize(20);
-      doc.text("QUANTUM PRECISION COMPLIANCE REPORT", 14, 16);
+      doc.setFontSize(18);
+      doc.text("SPEKTRUM KREASI PRATAMA AUDIT REPORT", 14, 16);
       
       doc.setFont('Helvetica', 'normal');
       doc.setFontSize(8.5);
       doc.setTextColor(156, 163, 175);
-      doc.text(`Generated on: ${new Date().toLocaleString('id-ID')} | Quantum Metrology Audit Engine`, 14, 23);
+      doc.text(`Generated on: ${new Date().toLocaleString('id-ID')} | KAN LK-291-IDN Audit Engine`, 14, 23);
       doc.text(`Authorized Report for: ${profile?.hospitalName || 'Health Center Customer'}`, 14, 27);
       
       // Title Section I
@@ -328,7 +388,7 @@ export function ServiceHistory() {
             doc.setTextColor(255, 255, 255);
             doc.setFont('Helvetica', 'bold');
             doc.setFontSize(8);
-            doc.text(`QUANTUM PREVENTIVE METROLOGY REPORT - S/N: ${selectedDevice.serialNumber}`, 14, 9);
+            doc.text(`SPEKTRUM PREVENTIVE METROLOGY REPORT - S/N: ${selectedDevice.serialNumber}`, 14, 9);
             y = 26;
           }
           
@@ -338,10 +398,11 @@ export function ServiceHistory() {
           doc.text(dateStr, 16, y);
           
           doc.setTextColor(15, 23, 42);
-          let catText = "";
-          if (ev.type === 'work_order') catText = "[WORK ORDER] ";
-          else if (ev.type === 'certificate') catText = "[CALIBRATION CERT] ";
-          else catText = "[IPM REPORT] ";
+          const catText = ev.type === 'work_order' 
+            ? "[WORK ORDER] " 
+            : ev.type === 'certificate' 
+            ? "[CALIBRATION CERT] " 
+            : "[IPM REPORT] ";
           
           doc.text(catText + ev.title, 46, y);
           
@@ -390,12 +451,12 @@ export function ServiceHistory() {
       doc.setTextColor(79, 70, 229);
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(9);
-      doc.text("QUANTUM CALIBRATION COMPLIANCE SEAL", 20, y + 7);
+      doc.text("SPEKTRUM KREASI PRATAMA (KAN LK-291-IDN) SEAL", 20, y + 7);
       
       doc.setFont('Helvetica', 'normal');
       doc.setTextColor(100, 116, 139);
       doc.setFontSize(7.5);
-      doc.text("Laporan ini diterbitkan secara elektronik oleh Quantum Precision Systems Metrology Engine.", 20, y + 12);
+      doc.text("Laporan ini diterbitkan secara elektronik oleh PT Spektrum Kreasi Pratama Metrology Engine.", 20, y + 12);
       doc.text("Seluruh data pengujian, kalibrasi, dan pengerjaan rekapitulasi dijamin keabsahan dan ketertelusurannya.", 20, y + 16);
       
       doc.save(`Compliance_Report_${selectedDevice.serialNumber || 'Unit'}.pdf`);
@@ -418,30 +479,30 @@ export function ServiceHistory() {
         collection(db, 'work_orders'),
         where('hospitalName', '==', hospitalToReport)
       ));
-      const wos = woSnap.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+      const wos: HospitalDocRecord[] = woSnap.docs.map(doc => ({ id: doc.id, ...doc.data() as HospitalDocRecord }));
 
       // 2. Fetch Worksheets (LK) for this Hospital
       const wsSnap = await getDocs(query(
         collection(db, 'worksheets'),
         where('fasyankesName', '==', hospitalToReport)
       ));
-      const worksheetsList = wsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+      const worksheetsList: HospitalDocRecord[] = wsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() as HospitalDocRecord }));
 
       // 3. Fetch IPM Tasks for this Hospital
       const ipmSnap = await getDocs(query(
         collection(db, 'ipm_tasks'),
         where('location', '==', hospitalToReport)
       ));
-      const ipms = ipmSnap.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+      const ipms: HospitalDocRecord[] = ipmSnap.docs.map(doc => ({ id: doc.id, ...doc.data() as HospitalDocRecord }));
 
       // 4. Fetch Certificates that belong to this Hospital's worksheets
       const worksheetIds = worksheetsList.map(w => w.id);
-      let certs: any[] = [];
+      let certs: HospitalDocRecord[] = [];
       if (worksheetIds.length > 0) {
         const certsSnap = await getDocs(collection(db, 'certificates'));
         certs = certsSnap.docs
-          .map(doc => ({ id: doc.id, ...doc.data() as any }))
-          .filter(c => worksheetIds.includes(c.lkId));
+          .map(doc => ({ id: doc.id, ...doc.data() as HospitalDocRecord }))
+          .filter(c => typeof c.lkId === 'string' && worksheetIds.includes(c.lkId));
       }
 
       // Compile unique assets list based on these records
@@ -505,7 +566,7 @@ export function ServiceHistory() {
       doc.setTextColor(255, 255, 255);
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(24);
-      doc.text("QUANTUM METROLOGY COMPLIANCE", 20, 115);
+      doc.text("SPEKTRUM METROLOGY COMPLIANCE", 20, 115);
       doc.text("HOLISTIC HOSPITAL REPORT", 20, 126);
 
       doc.setFontSize(10);
@@ -574,13 +635,13 @@ export function ServiceHistory() {
       doc.setTextColor(156, 163, 175);
       doc.text("Sistem Pengesahan (Authority):", 26, 226);
       doc.setTextColor(34, 197, 94); // Green 500
-      doc.text("QUANTUM PRECISION COMPLIANCE DECK", 84, 226);
+      doc.text("PT SPEKTRUM KREASI PRATAMA (KAN LK-291-IDN)", 84, 226);
 
       // Footnote of Cover
       doc.setFontSize(8);
       doc.setTextColor(107, 114, 128);
-      doc.text("Laporan audit kepatuhan ini dihasilkan secara resmi dan sah oleh sistem metrologi digital PT. KPS.", 20, 275);
-      doc.text("Semua rekam jejak pengujian bersifat rahasia dan bersertifikasi sah sesuai standar nasional.", 20, 279);
+      doc.text("Laporan audit kepatuhan ini dihasilkan secara resmi dan sah oleh sistem metrologi digital PT. Spektrum Kreasi Pratama.", 20, 275);
+      doc.text("Semua rekam jejak pengujian bersifat rahasia dan bersertifikasi sah sesuai standar nasional Permenkes No. 54/2015.", 20, 279);
 
       // Header helper function for subpages
       const drawSubPageHeader = (pageTitle: string, sectionNum: string) => {
@@ -592,7 +653,7 @@ export function ServiceHistory() {
         doc.setTextColor(255, 255, 255);
         doc.setFont('Helvetica', 'bold');
         doc.setFontSize(10);
-        doc.text("QUANTUM PRECISION COMPLIANCE SYSTEMS", 14, 10);
+        doc.text("PT SPEKTRUM KREASI PRATAMA — KAN LK-291-IDN", 14, 10);
         doc.setFontSize(8);
         doc.setFont('Helvetica', 'normal');
         doc.setTextColor(156, 163, 175);
@@ -609,7 +670,7 @@ export function ServiceHistory() {
         doc.setFont('Helvetica', 'normal');
         doc.setFontSize(7.5);
         doc.setTextColor(148, 163, 184);
-        doc.text(`Dokumen ini sah tanpa tanda tangan basah, dihasilkan otomatis oleh Quantum Engine.`, 14, 287);
+        doc.text(`Dokumen ini sah tanpa tanda tangan basah, dihasilkan otomatis oleh Spektrum Metrology Engine.`, 14, 287);
         doc.text(`Halaman ${curPage} dari ${maxPage}`, 196 - doc.getTextWidth(`Halaman ${curPage} dari ${maxPage}`), 287);
       };
 
@@ -730,7 +791,7 @@ export function ServiceHistory() {
       doc.setFont('Helvetica', 'normal');
       doc.setFontSize(8.5);
       doc.setTextColor(71, 85, 105);
-      doc.text("Sertifikat di bawah ini diterbitkan resmi oleh Quantum Precision untuk alat medis milik fasyankes Anda:", 14, y);
+      doc.text("Sertifikat di bawah ini diterbitkan resmi oleh PT. Spektrum Kreasi Pratama untuk alat medis milik fasyankes Anda:", 14, y);
       y += 8;
 
       doc.setFillColor(241, 245, 249);
@@ -786,7 +847,7 @@ export function ServiceHistory() {
           const truncDevDetail = devDetail.length > 34 ? devDetail.slice(0, 32) + '..' : devDetail;
           doc.text(truncDevDetail, 65, y + 5);
 
-          const issuedDateStr = c.issuedAt ? (c.issuedAt.toDate ? c.issuedAt.toDate() : new Date(c.issuedAt)).toLocaleDateString('id-ID') : '-';
+          const issuedDateStr = formatDocDate(c.issuedAt);
           doc.text(issuedDateStr, 125, y + 5);
           doc.text(c.nextCalibrationDate || '-', 155, y + 5);
 
@@ -867,7 +928,7 @@ export function ServiceHistory() {
             y += 7;
           }
 
-          const woDateStr = wo.createdAt ? (wo.createdAt.toDate ? wo.createdAt.toDate() : new Date(wo.createdAt)).toLocaleDateString('id-ID') : '-';
+          const woDateStr = formatDocDate(wo.createdAt);
           doc.setFont('Helvetica', 'normal');
           doc.setFontSize(7.5);
           doc.setTextColor(15, 23, 42);
@@ -1015,14 +1076,14 @@ export function ServiceHistory() {
       doc.setTextColor(79, 70, 229);
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(9.5);
-      doc.text("QUANTUM PRECISION COMPLIANCE SEAL • PT. KPS METROLOGY", 20, y + 9);
+      doc.text("SPEKTRUM KREASI PRATAMA SEAL • KAN LK-291-IDN", 20, y + 9);
 
       doc.setTextColor(71, 85, 105);
       doc.setFont('Helvetica', 'normal');
       doc.setFontSize(7.5);
-      doc.text(`Integrated Audit Code: QUA-${Math.floor(Math.random() * 90000) + 10000}-${hospitalToReport.toUpperCase().slice(0, 4)}`, 20, y + 16);
-      doc.text("Seluruh data laporan ini bersifat valid, berintegritas tinggi, dan terhubung langsung ke basis data Quantum KPS.", 20, y + 21);
-      doc.text("PT. Quantum Precision Systems berkomitmen menjaga kelaikan alat medis demi keselamatan pelayanan pasien nasional.", 20, y + 25);
+      doc.text(`Integrated Audit Code: SPK-${Math.floor(Math.random() * 90000) + 10000}-${hospitalToReport.toUpperCase().slice(0, 4)}`, 20, y + 16);
+      doc.text("Seluruh data laporan ini bersifat valid, berintegritas tinggi, dan terhubung langsung ke basis data Spektrum CalibraPro.", 20, y + 21);
+      doc.text("PT. Spektrum Kreasi Pratama berkomitmen menjaga kelaikan alat medis demi keselamatan pelayanan pasien nasional.", 20, y + 25);
 
       drawSubPageFooter(5, 5);
 
@@ -1036,9 +1097,9 @@ export function ServiceHistory() {
         'info'
       );
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert("Terjadi kesalahan saat mengkompilasi file PDF: " + err.message);
+      alert("Terjadi kesalahan saat mengkompilasi file PDF: " + (err instanceof Error ? err.message : String(err)));
     } finally {
       setDownloadingHospitalReport(false);
     }
@@ -1108,11 +1169,6 @@ export function ServiceHistory() {
   // Handle serial selection
   useEffect(() => {
     if (!selectedSerialNumber) {
-      setSelectedDevice(null);
-      setWorkOrders([]);
-      setCertificates([]);
-      setIpmTasks([]);
-      setTimelineEvents([]);
       return;
     }
 
@@ -1154,11 +1210,11 @@ export function ServiceHistory() {
         ]);
 
         // Map Work Orders
-        const mappedWOs = woSnap.docs.map(dSnap => {
+        const mappedWOs: TimelineEvent[] = woSnap.docs.map(dSnap => {
           const d = dSnap.data();
           return {
             id: dSnap.id,
-            type: 'work_order',
+            type: 'work_order' as const,
             title: 'Work Order (Maintenance/Perbaikan)',
             date: d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate() : new Date(d.createdAt)) : new Date(),
             status: d.status,
@@ -1167,26 +1223,26 @@ export function ServiceHistory() {
             techName: d.technicianName || 'Belum ditentukan',
             original: d
           };
-        }).sort((a: any, b: any) => b.date - a.date);
+        }).sort((a, b) => b.date.getTime() - a.date.getTime());
 
         // Map IPM
-        const mappedIPM = ipmSnap.docs.map(dSnap => {
+        const mappedIPM: TimelineEvent[] = ipmSnap.docs.map(dSnap => {
           const d = dSnap.data();
           return {
             id: dSnap.id,
-            type: 'ipm',
+            type: 'ipm' as const,
             title: 'Sertifikasi Inspeksi IPM',
             date: d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate() : new Date(d.createdAt)) : new Date(),
             status: d.status,
             notes: d.executionNotes || 'Preventive Maintenance selesai.',
-            techName: d.technicianName || 'Teknisi KPS',
+            techName: d.technicianName || 'Teknisi Spektrum',
             original: d
           };
-        }).sort((a: any, b: any) => b.date - a.date);
+        }).sort((a, b) => b.date.getTime() - a.date.getTime());
 
         // Map Worksheets and grab linked certificates
         const sheetIds = wsSnap.docs.map(dSnap => dSnap.id);
-        let mappedCerts: any[] = [];
+        let mappedCerts: TimelineEvent[] = [];
 
         if (sheetIds.length > 0) {
           // Batch fetch certificates that match wsIds
@@ -1201,18 +1257,18 @@ export function ServiceHistory() {
             const ws = wsSnap.docs.find(s => s.id === data.lkId)?.data();
             return {
               id: cSnap.id,
-              type: 'certificate',
-              title: `Sertifikat Kalibrasi KPS`,
+              type: 'certificate' as const,
+              title: `Sertifikat Kalibrasi Spektrum`,
               certificateNumber: data.certificateNumber,
               date: data.issuedAt ? (data.issuedAt.toDate ? data.issuedAt.toDate() : new Date(data.issuedAt)) : new Date(),
               status: data.status,
               notes: `Masa Berlaku hingga ${data.nextCalibrationDate || '-'}`,
-              techName: data.issuedByName || 'Quantum Precision Certifier',
+              techName: data.issuedByName || 'Spektrum Certified Metrologist',
               nextCalibration: data.nextCalibrationDate,
               original: data,
               ws: ws
             };
-          });
+          }).sort((a, b) => b.date.getTime() - a.date.getTime());
         }
 
         setWorkOrders(mappedWOs);
@@ -1220,7 +1276,7 @@ export function ServiceHistory() {
         setCertificates(mappedCerts);
 
         // Compile and sort timeline events hierarchically
-        const unified = [...mappedWOs, ...mappedIPM, ...mappedCerts].sort((a, b) => b.date - a.date);
+        const unified = [...mappedWOs, ...mappedIPM, ...mappedCerts].sort((a, b) => b.date.getTime() - a.date.getTime());
         setTimelineEvents(unified);
 
       } catch (err) {
@@ -1250,7 +1306,7 @@ export function ServiceHistory() {
       return {
         label: "BELUM DIKALIBRASI",
         color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
-        message: "Perangkat belum tercatat memiliki sertifikat kalibrasi resmi dari Quantum Precision Systems."
+        message: "Perangkat belum tercatat memiliki sertifikat kalibrasi resmi dari PT. Spektrum Kreasi Pratama."
       };
     }
     const activeCert = certificates.find(c => c.status === 'active');
@@ -1304,7 +1360,7 @@ export function ServiceHistory() {
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 bg-indigo-500 dark:bg-[#56b3e6] rounded-full animate-ping" />
             <span className="text-[10px] font-mono tracking-[0.3em] text-indigo-600 dark:text-cyan-400 font-extrabold uppercase">
-              Quantum Compliance Engine
+              Spektrum Metrology Compliance Engine
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -1351,7 +1407,17 @@ export function ServiceHistory() {
               <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block font-mono">PILIH NOMOR SERI / ALAT MEDIS</span>
               <select
                 value={selectedSerialNumber}
-                onChange={(e) => setSelectedSerialNumber(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedSerialNumber(val);
+                  if (!val) {
+                    setSelectedDevice(null);
+                    setWorkOrders([]);
+                    setCertificates([]);
+                    setIpmTasks([]);
+                    setTimelineEvents([]);
+                  }
+                }}
                 className="w-full bg-transparent border-none text-xs font-black uppercase text-slate-800 dark:text-white tracking-wider outline-none mt-1 p-0.5 cursor-pointer"
               >
                 <option value="" disabled className="text-slate-400 bg-white dark:bg-[#10192d]">-- Pilih Seri Alat --</option>
@@ -1388,11 +1454,11 @@ export function ServiceHistory() {
               <div className="space-y-4 font-mono text-[10px]">
                 <div>
                   <span className="text-slate-400 uppercase font-black tracking-widest block">BRAND / MERK</span>
-                  <p className="text-slate-800 dark:text-slate-200 font-extrabold text-xs mt-1 uppercase">{selectedDevice.brand || 'Quantum Standard'}</p>
+                  <p className="text-slate-800 dark:text-slate-200 font-extrabold text-xs mt-1 uppercase">{selectedDevice.brand || 'Standar Pabrikan'}</p>
                 </div>
                 <div>
                   <span className="text-slate-400 uppercase font-black tracking-widest block">MODEL / UNIT TYPE</span>
-                  <p className="text-slate-800 dark:text-slate-200 font-extrabold text-xs mt-1 uppercase">{selectedDevice.model || 'QT-SERIES'}</p>
+                  <p className="text-slate-800 dark:text-slate-200 font-extrabold text-xs mt-1 uppercase">{selectedDevice.model || 'Standar Unit'}</p>
                 </div>
                 <div>
                   <span className="text-slate-400 uppercase font-black tracking-widest block">INTERVAL KALIBRASI</span>
@@ -1473,7 +1539,7 @@ export function ServiceHistory() {
                 ].map((t) => (
                   <button
                     key={t.value}
-                    onClick={() => setActiveTab(t.value as any)}
+                    onClick={() => setActiveTab(t.value as 'all' | 'work_orders' | 'certificates' | 'ipm')}
                     className={cn(
                       "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer border",
                       activeTab === t.value 

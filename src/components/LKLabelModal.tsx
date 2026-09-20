@@ -78,7 +78,7 @@ export function LKLabelModal({ lk, onClose }: LKLabelProps) {
         const querySnapshot = await getDocs(q);
         
         if (!querySnapshot.empty) {
-          const targetStatus = isLaik ? 'LAIK PAKAI' : 'TIDAK LAIK';
+          const targetStatus = isLaik ? 'LAIK PAKAI' : 'TIDAK LAIK PAKAI';
           const promises = querySnapshot.docs.map(docSnapshot => {
             return updateDoc(doc(db, 'medicalEquipment', docSnapshot.id), {
               status: targetStatus,
@@ -145,8 +145,8 @@ export function LKLabelModal({ lk, onClose }: LKLabelProps) {
     if (!printWindow) return;
 
     const mainColor = isLaik ? '#16a34a' : '#dc2626';
-    const mainBadgeText = isLaik ? 'LAIK PAKAI' : 'TIDAK LAIK';
-    const subBadgeText = isLaik ? 'PASSED CALIBRATION' : 'FAILED / REJECTED';
+    const mainBadgeText = isLaik ? 'LAIK PAKAI' : 'TIDAK LAIK PAKAI';
+    const subBadgeText = isLaik ? 'PASSED CALIBRATION' : 'TIDAK MEMENUHI SYARAT';
 
     printWindow.document.write(`
       <html>
@@ -293,7 +293,7 @@ export function LKLabelModal({ lk, onClose }: LKLabelProps) {
             </div>
 
             <div class="tagline-row">
-              <div class="kps-logo">PT. QUANTUM PRECISION SYSTEMS</div>
+              <div class="kps-logo">PT. SPEKTRUM KREASI PRATAMA (KAN LK-291-IDN)</div>
               <div class="cert-no">LK-${lk.id.slice(0, 8).toUpperCase()}</div>
             </div>
           </div>
@@ -321,33 +321,33 @@ export function LKLabelModal({ lk, onClose }: LKLabelProps) {
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        className="bg-white dark:bg-[#10192d] w-full max-w-2xl rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden"
+        className="bg-white dark:bg-[#10192d] w-full max-w-2xl rounded-3xl sm:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600" />
         
         {/* Header */}
-        <div className="flex items-center justify-between px-8 pt-8 pb-4">
-          <div className="flex items-center gap-3">
-            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-md ${isLaik ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/35 dark:text-emerald-400' : 'bg-red-50 text-red-600 dark:bg-red-950/35 dark:text-red-400'}`}>
-              <QrCode className="w-5 h-5" />
+        <div className="flex items-center justify-between px-4 sm:px-8 pt-5 sm:pt-8 pb-3 sm:pb-4">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md ${isLaik ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/35 dark:text-emerald-400' : 'bg-red-50 text-red-600 dark:bg-red-950/35 dark:text-red-400'}`}>
+              <QrCode className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight italic">Cetak Label Fisik LK</h2>
-              <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest font-mono mt-0.5">Generator Label Kalibrasi Standard & QR</p>
+              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight italic">Cetak Label Fisik LK</h2>
+              <p className="text-[8.5px] sm:text-[9px] text-slate-400 font-extrabold uppercase tracking-widest font-mono mt-0.5">Generator Label Kalibrasi Standard & QR</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-3 bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-900 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-2xl transition-colors cursor-pointer"
+            className="p-2 sm:p-3 bg-slate-50 hover:bg-slate-100 dark:bg-slate-950 dark:hover:bg-slate-900 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl sm:rounded-2xl transition-colors cursor-pointer"
             title="Tutup"
             aria-label="Tutup"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="px-8 pb-8 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+        <div className="px-4 sm:px-8 pb-6 sm:pb-8 space-y-4 sm:space-y-6 max-h-[78vh] overflow-y-auto custom-scrollbar">
           {/* Real-time database sync notification */}
           <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-950/80 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-inner">
             <div className="flex items-center gap-3">
@@ -472,7 +472,7 @@ export function LKLabelModal({ lk, onClose }: LKLabelProps) {
 
               {/* Tagline footer details */}
               <div className={`mt-3 pt-2.5 border-t-2 ${isLaik ? 'border-emerald-600' : 'border-red-600'} flex items-center justify-between text-[7.5px] font-black tracking-wider uppercase`}>
-                <span className="text-[#1E3A8A] italic">PT. QUANTUM PRECISION SYSTEMS</span>
+                <span className="text-[#1E3A8A] italic">PT. SPEKTRUM KREASI PRATAMA (KAN LK-291-IDN)</span>
                 <span className="font-mono text-slate-500">LK-{lk.id.slice(0, 8).toUpperCase()}</span>
               </div>
             </div>

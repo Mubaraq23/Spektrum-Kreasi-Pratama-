@@ -244,43 +244,43 @@ Keputusan ILAC G8: ${budget.ilac.decision}
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-3xl max-h-[90vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+          className="relative w-full max-w-3xl max-h-[92vh] sm:max-h-[90vh] bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col"
         >
           {/* HEADER */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-950/50">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
-                <Calculator className="w-6 h-6" />
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-800 bg-slate-950/50">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+                <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-white flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-black text-white flex flex-wrap items-center gap-1.5 sm:gap-2">
                   Budget Ketidakpastian KAN (ISO GUM)
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
+                  <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">
                     Point: {pointData.pointName || pointData.point} {pointData.unit || ''}
                   </span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
                   Rincian komponen evaluasi ketidakpastian baku gabungan u_c dan diperluas U_95.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={handleCopyBudget}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-all"
+                className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                {copied ? 'Tersalin' : 'Salin'}
+                <span className="hidden sm:inline">{copied ? 'Tersalin' : 'Salin'}</span>
               </button>
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+                className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -288,30 +288,30 @@ Keputusan ILAC G8: ${budget.ilac.decision}
           </div>
 
           {/* BODY */}
-          <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+          <div className="p-3.5 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 text-xs">
             {/* KEY METRICS SUMMARY */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
-              <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 font-mono">
+              <div className="bg-slate-950 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-800">
                 <span className="text-slate-500 block text-[9px]">u_c (COMBINED)</span>
-                <span className="text-sm font-bold text-cyan-400">{budget.uCombined.toFixed(5)}</span>
+                <span className="text-xs sm:text-sm font-bold text-cyan-400">{budget.uCombined.toFixed(5)}</span>
               </div>
-              <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+              <div className="bg-slate-950 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-800">
                 <span className="text-slate-500 block text-[9px]">ν_eff (WELCH-SATT)</span>
-                <span className="text-sm font-bold text-emerald-400">{budget.nuEff}</span>
+                <span className="text-xs sm:text-sm font-bold text-emerald-400">{budget.nuEff}</span>
               </div>
-              <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+              <div className="bg-slate-950 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-800">
                 <span className="text-slate-500 block text-[9px]">U_95 (EXPANDED k=2)</span>
-                <span className="text-sm font-bold text-amber-400">{budget.uExpanded.toFixed(5)}</span>
+                <span className="text-xs sm:text-sm font-bold text-amber-400">{budget.uExpanded.toFixed(5)}</span>
               </div>
-              <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+              <div className="bg-slate-950 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-slate-800">
                 <span className="text-slate-500 block text-[9px]">REPORTED (KAN)</span>
-                <span className="text-sm font-bold text-indigo-400">{budget.reported.toFixed(5)}</span>
+                <span className="text-xs sm:text-sm font-bold text-indigo-400">{budget.reported.toFixed(5)}</span>
               </div>
             </div>
 
             {/* BUDGET TABLE */}
-            <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 overflow-x-auto">
-              <table className="w-full text-left font-mono">
+            <div className="bg-slate-950 border border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 overflow-x-auto touch-pan-x no-scrollbar">
+              <table className="w-full min-w-[500px] text-left font-mono">
                 <thead>
                   <tr className="text-slate-500 border-b border-slate-800 text-[10px] uppercase">
                     <th className="pb-2">Komponen</th>
@@ -336,28 +336,28 @@ Keputusan ILAC G8: ${budget.ilac.decision}
             </div>
 
             {/* ILAC DECISION RULE STATUS */}
-            <div className={`p-4 rounded-2xl border ${
+            <div className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border ${
               budget.ilac.decision === 'PASS'
                 ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300'
                 : 'bg-rose-950/30 border-rose-500/40 text-rose-300'
             }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5" />
-                  <span className="font-bold uppercase tracking-wider">ILAC G8 Guard Banding Decision:</span>
+                  <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="font-bold uppercase tracking-wider text-[11px] sm:text-xs">ILAC G8 Guard Banding Decision:</span>
                 </div>
-                <span className="font-black font-mono text-sm px-3 py-0.5 rounded-full bg-slate-950 border border-slate-800">
+                <span className="font-black font-mono text-xs sm:text-sm px-2.5 sm:px-3 py-0.5 rounded-full bg-slate-950 border border-slate-800">
                   {budget.ilac.decision}
                 </span>
               </div>
-              <p className="text-[11px] mt-2 opacity-80">{budget.ilac.explanation}</p>
+              <p className="text-[10px] sm:text-[11px] mt-2 opacity-80">{budget.ilac.explanation}</p>
             </div>
           </div>
 
-          <div className="p-4 border-t border-slate-800 bg-slate-950/50 flex justify-end">
+          <div className="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/50 flex justify-end">
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all text-xs"
+              className="w-full sm:w-auto px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all text-xs cursor-pointer"
             >
               Tutup
             </button>

@@ -19,9 +19,7 @@ import {
   Database, 
   CheckCircle2, 
   Printer,
-  Sliders,
-  ArrowUpRight,
-  RefreshCw
+  Sliders
 } from 'lucide-react';
 import { collection, query, onSnapshot, orderBy, addDoc, serverTimestamp, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -1087,7 +1085,7 @@ export function WorkMethods() {
                     </div>
                      <div>
                         <h2 className="text-3xl font-black text-slate-900 italic uppercase tracking-tight">Generator Metode AI</h2>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1.5 font-mono">Protokol Kecerdasan Quantum v.4.0</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1.5 font-mono">Protokol Kecerdasan Spektrum v.4.0</p>
                      </div>
                  </div>
                  <button 

@@ -132,13 +132,21 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
 
                   <div className="relative z-10 flex flex-col h-full px-6 py-4 justify-between">
                     <div>
-                      <div className="flex items-center gap-4 justify-start pb-3 border-b-2 border-blue-800">
-                        <div className="w-12 h-12 flex items-center justify-center bg-blue-50 rounded-xl border border-blue-100 shrink-0">
-                          <Award className="w-8 h-8 text-blue-700" />
+                      <div className="flex items-center justify-between pb-3 border-b-2 border-blue-800">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 flex items-center justify-center bg-blue-50 rounded-xl border border-blue-100 shrink-0">
+                            <Award className="w-8 h-8 text-blue-700" />
+                          </div>
+                          <div>
+                            <h1 className="text-xl font-black text-blue-800 uppercase tracking-tight font-sans leading-none">PT. SPEKTRUM KREASI PRATAMA</h1>
+                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Laboratorium Pengujian &amp; Kalibrasi Alat Kesehatan (LPAK)</p>
+                            <p className="text-[8.5px] text-slate-400 font-mono">Izin Operasional Kemenkes RI • Permenkes No. 54 Tahun 2015</p>
+                          </div>
                         </div>
-                        <div>
-                          <h1 className="text-xl font-black text-blue-800 uppercase tracking-tight font-sans leading-none">PT. SPEKTRUM KREASI PRATAMA</h1>
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Laboratorium Kalibrasi &amp; Pengujian Metrologi Alat Kesehatan</p>
+                        <div className="border-2 border-blue-900 px-3 py-1.5 rounded-lg bg-blue-50/60 text-right">
+                          <div className="text-[10px] font-black text-blue-900 tracking-wider">KAN LK-291-IDN</div>
+                          <div className="text-[8px] font-bold text-slate-600">ISO/IEC 17025:2017</div>
+                          <div className="text-[7.5px] font-mono text-blue-700">LP-1849-IDN</div>
                         </div>
                       </div>
 
@@ -176,20 +184,26 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
 
                     <div>
                       <div className="flex justify-between items-end pb-4 border-t border-slate-200 pt-4">
-                        <div className="flex items-center gap-2 text-slate-500">
-                          <FileCheck2 className="w-6 h-6 text-blue-600" />
-                          <span className="text-[9px] font-mono font-bold uppercase">Terakreditasi ISO/IEC 17025</span>
+                        <div className="space-y-1 text-slate-500">
+                          <div className="flex items-center gap-2">
+                            <FileCheck2 className="w-6 h-6 text-blue-600" />
+                            <span className="text-[9px] font-mono font-bold uppercase">Terakreditasi KAN LK-291-IDN</span>
+                          </div>
+                          <p className="text-[7.5px] font-sans text-slate-400 max-w-xs">
+                            Kepatuhan Standar Regulasi BPFK &amp; Permenkes RI No. 54 Tahun 2015 tentang Pengujian dan Kalibrasi Alat Kesehatan.
+                          </p>
                         </div>
 
                         <div className="text-center min-w-[220px]">
                           <p className="font-bold text-[11px] uppercase tracking-wide text-slate-900 font-sans mb-1">PT. SPEKTRUM KREASI PRATAMA</p>
                           <div className="h-14 flex items-center justify-center relative my-1">
-                            <div className="w-24 h-10 border border-blue-600 rounded-full flex items-center justify-center opacity-85 rotate-[-6deg] text-blue-700 font-bold text-[8px] uppercase tracking-tighter">
-                              ★ RESMI ★
+                            <div className="w-28 h-11 border border-blue-600 rounded-full flex flex-col items-center justify-center opacity-85 rotate-[-4deg] text-blue-700 font-bold text-[7.5px] uppercase tracking-tighter leading-tight bg-blue-50/30">
+                              <span>★ TERAKREDITASI ★</span>
+                              <span className="font-mono text-[6.5px]">KAN LK-291-IDN</span>
                             </div>
                           </div>
                           <p className="font-bold text-xs text-slate-900 border-b border-slate-800 pb-0.5 inline-block px-4">Faustina Dao S.Tr.Tem</p>
-                          <p className="font-bold text-[9px] text-slate-500 uppercase tracking-wider mt-0.5">Manager Teknis</p>
+                          <p className="font-bold text-[9px] text-slate-500 uppercase tracking-wider mt-0.5">Manager Teknis (PJ Mutu Kalibrasi)</p>
                         </div>
                       </div>
 
@@ -215,10 +229,13 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
 
                   <div className="relative z-10 flex flex-col h-full px-6 py-4 justify-between">
                     <div>
-                      <div className="flex justify-between items-center border-b-2 border-blue-900 pb-3 mb-4 w-full">
+                      <div className="flex justify-between items-center border-b-2 border-blue-900 pb-3 mb-3 w-full">
                         <div className="flex items-center gap-3">
                           <Award className="w-7 h-7 text-blue-700" />
-                          <h1 className="text-sm font-black text-blue-800 tracking-tight uppercase font-sans">PT. SPEKTRUM KREASI PRATAMA</h1>
+                          <div>
+                            <h1 className="text-sm font-black text-blue-800 tracking-tight uppercase font-sans">PT. SPEKTRUM KREASI PRATAMA</h1>
+                            <p className="text-[8px] text-slate-500 font-bold uppercase">Laboratorium Kalibrasi Terakreditasi KAN (LK-291-IDN)</p>
+                          </div>
                         </div>
                         <div className="border border-slate-800 text-center px-3 py-1 bg-slate-50 rounded-md">
                           <p className="text-[7.5px] font-bold uppercase text-slate-600">No. Sertifikat</p>
@@ -226,45 +243,53 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
                         </div>
                       </div>
 
-                      <h2 className="text-center text-sm font-bold underline decoration-slate-900 underline-offset-4 uppercase tracking-tight mb-4">
+                      <h2 className="text-center text-xs font-bold underline decoration-slate-900 underline-offset-4 uppercase tracking-tight mb-3">
                         LAPORAN HASIL KALIBRASI — {deviceName.toUpperCase()}
                       </h2>
 
-                      <div className="grid grid-cols-2 gap-4 px-2 text-[10px] mb-4 bg-slate-50/70 p-3 rounded-lg border border-slate-200">
-                        <div className="space-y-1">
-                          <p><strong className="text-slate-600">Instansi:</strong> {data.fasyankesName || '-'}</p>
-                          <p><strong className="text-slate-600">Merek / Model:</strong> {data.brand || '-'} / {data.model || '-'}</p>
+                      <div className="grid grid-cols-2 gap-4 px-2 text-[9.5px] mb-3 bg-slate-50/70 p-2.5 rounded-lg border border-slate-200">
+                        <div className="space-y-0.5">
+                          <p><strong className="text-slate-600">Instansi / RS:</strong> {data.fasyankesName || '-'}</p>
+                          <p><strong className="text-slate-600">Merek / Tipe:</strong> {data.brand || '-'} / {data.model || '-'}</p>
                           <p><strong className="text-slate-600">Nomor Seri:</strong> {data.serialNumber || '-'}</p>
                         </div>
-                        <div className="space-y-1">
-                          <p><strong className="text-slate-600">Metode:</strong> {data.methodName || 'Protokol Standar Kalibrasi'}</p>
+                        <div className="space-y-0.5">
+                          <p><strong className="text-slate-600">Metode Acuan:</strong> {data.methodName || 'MK-SPK / Permenkes 54/2015'}</p>
                           <p><strong className="text-slate-600">Lokasi:</strong> {data.location || 'Laboratorium / In-Situ'}</p>
-                          <p><strong className="text-slate-600">Tanggal:</strong> {formattedDate(data.createdAt || data.issuedAt)}</p>
+                          <p><strong className="text-slate-600">Tanggal Uji:</strong> {formattedDate(data.createdAt || data.issuedAt)}</p>
                         </div>
                       </div>
 
-                      <div className="space-y-3 px-1">
+                      <div className="space-y-2.5 px-1">
                         <div>
-                          <h3 className="font-bold text-[10px] text-blue-900 uppercase">I. Kondisi Lingkungan</h3>
-                          <div className="text-[9.5px] text-slate-800 flex gap-8 pl-3 mt-0.5 font-medium">
+                          <h3 className="font-bold text-[9.5px] text-blue-900 uppercase">I. Kondisi Lingkungan Pengujian</h3>
+                          <div className="text-[9px] text-slate-800 flex gap-8 pl-3 mt-0.5 font-medium">
                             <span>1. Suhu Ruang : ( {temperature} ± {tempUnc} ) °C</span>
                             <span>2. Kelembaban : ( {humidity} ± {humUnc} ) %RH</span>
                           </div>
                         </div>
 
                         <div>
-                          <h3 className="font-bold text-[10px] text-blue-900 uppercase mb-1">II. Hasil Pengukuran Metrologis</h3>
+                          <h3 className="font-bold text-[9.5px] text-blue-900 uppercase">II. Standar Kalibrator yang Digunakan</h3>
+                          <div className="text-[8.5px] text-slate-700 pl-3 mt-0.5 space-y-0.5">
+                            <p>1. Master Calibrator Multi-Parameter Medis (Tertelusur ke SNSU-BSN / Puslit KIM-LIPI)</p>
+                            <p>2. Electrical Safety Analyzer (Tertelusur ke SI KAN LK-001-IDN)</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h3 className="font-bold text-[9.5px] text-blue-900 uppercase mb-1">III. Hasil Pengukuran Metrologis (ISO GUM / KAN K-01)</h3>
                           
-                          <table className="w-full border-collapse border border-slate-900 text-[9px] text-center">
+                          <table className="w-full border-collapse border border-slate-900 text-[8.5px] text-center">
                             <thead className="bg-slate-100 font-bold text-slate-900">
                               <tr>
-                                <th className="border border-slate-900 px-2 py-1.5">Parameter Uji</th>
-                                <th className="border border-slate-900 px-2 py-1.5">Nilai Setting</th>
-                                <th className="border border-slate-900 px-2 py-1.5">Nilai Terukur</th>
-                                <th className="border border-slate-900 px-2 py-1.5">Deviasi</th>
-                                <th className="border border-slate-900 px-2 py-1.5">U95 (k=2)</th>
-                                <th className="border border-slate-900 px-2 py-1.5">Batas MPE</th>
-                                <th className="border border-slate-900 px-2 py-1.5">Status</th>
+                                <th className="border border-slate-900 px-2 py-1">Parameter Uji</th>
+                                <th className="border border-slate-900 px-2 py-1">Nilai Setting</th>
+                                <th className="border border-slate-900 px-2 py-1">Nilai Terukur</th>
+                                <th className="border border-slate-900 px-2 py-1">Deviasi</th>
+                                <th className="border border-slate-900 px-2 py-1">U95 (k=2)</th>
+                                <th className="border border-slate-900 px-2 py-1">Batas MPE</th>
+                                <th className="border border-slate-900 px-2 py-1">Evaluasi K-01</th>
                               </tr>
                             </thead>
                             <tbody className="text-slate-900">
@@ -272,14 +297,14 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
                                 const isPass = m.status === 'Lolos';
                                 return (
                                   <tr key={idx} className="hover:bg-slate-50">
-                                    <td className="border border-slate-900 py-1 px-2 text-left font-medium">{m.parameterName}</td>
-                                    <td className="border border-slate-900 py-1 font-mono">{m.point} {m.unit || ''}</td>
-                                    <td className="border border-slate-900 py-1 font-mono">{m.actual}</td>
-                                    <td className="border border-slate-900 py-1 font-mono">{m.deviation}</td>
-                                    <td className="border border-slate-900 py-1 font-mono text-blue-700 font-bold">±{m.uncertainty}</td>
-                                    <td className="border border-slate-900 py-1 font-mono">±{m.tolerance}</td>
-                                    <td className={cn("border border-slate-900 py-1 font-bold", isPass ? "text-emerald-700" : "text-red-600")}>
-                                      {isPass ? "LOLOS" : "FAIL"}
+                                    <td className="border border-slate-900 py-0.5 px-2 text-left font-medium">{m.parameterName}</td>
+                                    <td className="border border-slate-900 py-0.5 font-mono">{m.point} {m.unit || ''}</td>
+                                    <td className="border border-slate-900 py-0.5 font-mono">{m.actual}</td>
+                                    <td className="border border-slate-900 py-0.5 font-mono">{m.deviation}</td>
+                                    <td className="border border-slate-900 py-0.5 font-mono text-blue-700 font-bold">±{m.uncertainty}</td>
+                                    <td className="border border-slate-900 py-0.5 font-mono">±{m.tolerance}</td>
+                                    <td className={cn("border border-slate-900 py-0.5 font-bold", isPass ? "text-emerald-700" : "text-red-600")}>
+                                      {isPass ? "LOLOS" : "GAGAL"}
                                     </td>
                                   </tr>
                                 );
@@ -288,19 +313,21 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
                           </table>
                         </div>
 
-                        <div className="pt-2">
-                          <h3 className="font-bold text-[9.5px] text-slate-900 uppercase">Catatan :</h3>
-                          <ul className="list-disc pl-5 text-[8.5px] text-slate-700 space-y-0.5 leading-relaxed">
-                            <li>Kalibrasi yang dilaporkan tertelusur ke satuan pengukuran SI melalui SNSU-BSN / Puslit KIM-LIPI.</li>
-                            <li>Ketidakpastian pengukuran bentangan U95 dilaporkan pada tingkat kepercayaan sekitar 95% dengan faktor cakupan k = 2.</li>
+                        <div className="pt-1">
+                          <h3 className="font-bold text-[9px] text-slate-900 uppercase">Catatan Kepatuhan &amp; Aturan Keputusan (Decision Rule) :</h3>
+                          <ul className="list-disc pl-5 text-[8px] text-slate-700 space-y-0.5 leading-tight">
+                            <li>Pengujian dan kalibrasi mengacu pada <strong>Permenkes RI No. 54 Tahun 2015</strong> dan standar ISO/IEC 17025:2017.</li>
+                            <li>Keterlusuran (traceability) dijamin tertelusur ke Satuan Pengukuran Internasional (SI) melalui SNSU-BSN / LK-001-IDN.</li>
+                            <li>Ketidakpastian pengukuran bentangan U95 dihitung dengan faktor cakupan k = 2 pada tingkat kepercayaan 95%.</li>
+                            <li>Aturan Keputusan (Decision Rule KAN K-01): Status Laik Pakai diberikan bila (|Deviasi| + U95) berada dalam batas toleransi MPE yang diizinkan.</li>
                             <li className="list-none pt-1">
                               <div className={cn(
-                                "p-1.5 rounded border font-bold text-[9px] text-center",
+                                "p-1.5 rounded border font-black text-[9px] text-center tracking-wide",
                                 data.isPass !== false
                                   ? "bg-emerald-50 border-emerald-600 text-emerald-800"
                                   : "bg-red-50 border-red-600 text-red-800"
                               )}>
-                                KESIMPULAN: ALAT DINYATAKAN {data.isPass !== false ? "MEMENUHI PERSYARATAN MPE (LAIK OPERASIONAL)" : "TIDAK LAIK OPERASIONAL"}
+                                KESIMPULAN: ALAT DINYATAKAN {data.isPass !== false ? "LAIK PAKAI (MEMENUHI PERSYARATAN PERMENKES NO. 54/2015 & KAN K-01)" : "TIDAK LAIK PAKAI"}
                               </div>
                             </li>
                           </ul>
@@ -308,10 +335,11 @@ export function CertificatePreview({ isOpen, onClose, data }: CertificatePreview
                       </div>
                     </div>
 
-                    <footer className="pt-3 border-t border-slate-200">
-                      <p className="text-right text-[8.5px] font-bold text-slate-400 mb-1 italic">Halaman 2 dari 2</p>
-                      <div className="border border-slate-300 p-2 text-center text-[8px] text-slate-600 space-y-0.5 bg-slate-50/50">
+                    <footer className="pt-2 border-t border-slate-200">
+                      <p className="text-right text-[8px] font-bold text-slate-400 mb-1 italic">Halaman 2 dari 2</p>
+                      <div className="border border-slate-300 p-1.5 text-center text-[7.5px] text-slate-600 space-y-0.5 bg-slate-50/50">
                         <p className="font-bold text-slate-800 uppercase">Jl. K.H.M. Yusuf Raya No.14, Mekar Jaya, Sukmajaya, Kota Depok, Jawa Barat 16411, Indonesia</p>
+                        <p className="italic">Hasil hanya berhubungan dengan instrumen yang dikalibrasi. Sertifikat ini tidak boleh digandakan sebagian tanpa izin tertulis PT. Spektrum Kreasi Pratama.</p>
                       </div>
                     </footer>
                   </div>

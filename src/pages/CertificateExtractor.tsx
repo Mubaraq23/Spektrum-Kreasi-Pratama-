@@ -2,11 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Upload, 
-  Sparkles, 
   BrainCircuit, 
   CheckCircle, 
-  AlertTriangle, 
-  ChevronRight, 
   Save, 
   ArrowLeft,
   FileText,
@@ -14,13 +11,10 @@ import {
   Edit3,
   Trash2,
   Plus,
-  Compass,
   Check,
-  Building,
-  Calendar,
-  Layers
+  Building
 } from 'lucide-react';
-import { collection, addDoc, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { extractCertificateData } from '../services/geminiService';
 import { motion, AnimatePresence } from 'motion/react';
@@ -141,21 +135,21 @@ export function CertificateExtractor() {
           calibrationDate: res.calibrationDate || { value: new Date().toISOString().split('T')[0], sourcePage: 1 },
           expiryDate: res.expiryDate || { value: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], sourcePage: 1 },
           traceability: res.traceability || { value: 'Tertelusur ke SI', sourcePage: 2 },
-          parameters: (res.parameters || []).map((p: any) => ({
-            parameterName: p.parameterName || 'Faktor Koreksi',
-            measurementPoint: typeof p.measurementPoint === 'number' ? p.measurementPoint : (p.point || 0),
-            unit: p.unit || 'unit',
+          parameters: (res.parameters || []).map((p: Record<string, unknown>) => ({
+            parameterName: (p.parameterName as string) || 'Faktor Koreksi',
+            measurementPoint: typeof p.measurementPoint === 'number' ? p.measurementPoint : (typeof p.point === 'number' ? p.point : 0),
+            unit: (p.unit as string) || 'unit',
             correction: typeof p.correction === 'number' ? p.correction : 0,
-            u95: typeof p.u95 === 'number' ? p.u95 : (p.uncertainty || 0),
+            u95: typeof p.u95 === 'number' ? p.u95 : (typeof p.uncertainty === 'number' ? p.uncertainty : 0),
             uncertainty: typeof p.uncertainty === 'number' ? p.uncertainty : 0,
             sourcePage: typeof p.sourcePage === 'number' ? p.sourcePage : 2
           }))
         };
         
         setFormData(mappedData);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("AI Certificate Extraction error:", error);
-        setErrorInput(error.message || "Gagal melakukan ekstraksi sertifikat kalibrasi.");
+        setErrorInput(error instanceof Error ? error.message : "Gagal melakukan ekstraksi sertifikat kalibrasi.");
       } finally {
         clearInterval(stepInterval);
         setIsExtracting(false);
@@ -164,7 +158,7 @@ export function CertificateExtractor() {
     reader.readAsDataURL(pdfFile);
   };
 
-  const handleFieldChange = (field: keyof Omit<ExtractionResult, 'parameters'>, key: 'value' | 'sourcePage', val: any) => {
+  const handleFieldChange = (field: keyof Omit<ExtractionResult, 'parameters'>, key: 'value' | 'sourcePage', val: string | number) => {
     if (!formData) return;
     setFormData({
       ...formData,
@@ -175,7 +169,7 @@ export function CertificateExtractor() {
     });
   };
 
-  const handleParameterChange = (index: number, field: keyof ParameterInput, val: any) => {
+  const handleParameterChange = (index: number, field: keyof ParameterInput, val: string | number) => {
     if (!formData) return;
     const updatedParameters = [...formData.parameters];
     updatedParameters[index] = {
@@ -280,7 +274,7 @@ export function CertificateExtractor() {
         <div className="space-y-4">
           <div className="flex items-center gap-3 mb-2">
              <div className="w-8 h-1 bg-blue-600 rounded-full" />
-             <p className="text-[10px] text-blue-600 font-black uppercase tracking-[0.4em] font-mono">Quantum AI Engine</p>
+             <p className="text-[10px] text-blue-600 font-black uppercase tracking-[0.4em] font-mono">Spektrum AI Engine</p>
           </div>
           <div className="flex items-center gap-4">
              <div className="w-16 h-16 bg-blue-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl shadow-blue-500/30">
@@ -356,8 +350,9 @@ export function CertificateExtractor() {
                       </div>
                     </div>
                     
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tighter lowercase mb-3">AI menganalisis dokumen kalibrasi...</h3>
-                    <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest font-mono mb-8">Quantum OCR & Metadata Mapping</p>
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tighter lowercase mb-1">AI menganalisis dokumen kalibrasi...</h3>
+                    <p className="text-blue-600 font-mono text-xs font-bold mb-3">{file?.name || 'Dokumen PDF'}</p>
+                    <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest font-mono mb-8">Spektrum OCR & Metadata Mapping</p>
                     
                     {/* Stepper logs */}
                     <div className="space-y-3 max-w-sm w-full bg-slate-50/50 border border-slate-100 rounded-2xl p-5">
@@ -409,7 +404,7 @@ export function CertificateExtractor() {
                     
                     <h3 className="text-2xl font-black text-slate-900 tracking-tighter lowercase mb-2">Unggah sertifikat fisik (.pdf)</h3>
                     <p className="text-slate-400 text-xs font-bold font-sans max-w-sm leading-relaxed mb-4">Seret dokumen PDF sertifikat kalibrasi ke sini atau klik untuk menelusuri folder dari sistem komputer.</p>
-                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest font-mono">Standarisasi ISO/IEC 17025 • Quantum Certified</p>
+                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest font-mono">Standarisasi ISO/IEC 17025 • Spektrum Certified</p>
 
                     {errorInput && (
                       <div className="mt-8 flex items-center gap-3 bg-red-50 text-red-600 border border-red-100 rounded-xl px-5 py-3 text-xs font-bold">

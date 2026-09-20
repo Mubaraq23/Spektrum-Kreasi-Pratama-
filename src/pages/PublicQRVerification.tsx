@@ -19,7 +19,7 @@ export function PublicQRVerification() {
     equipmentName: 'Defibrillator TEC-5631 (Nihon Kohden)',
     serialNumber: 'NK-884129',
     hospitalName: 'RSUD Semesta Sehat',
-    issuingLaboratory: 'LPAK Spektrum Kreasi Pratama (KAN LK-210-IDN)',
+    issuingLaboratory: 'LPAK Spektrum Kreasi Pratama (KAN LK-291-IDN)',
     testDate: '24-08-2026',
     expiryDate: '24-08-2027',
     status: 'LAIK_PAKAI',

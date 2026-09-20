@@ -482,16 +482,17 @@ export function CertificateDetail() {
     doc.setFontSize(7);
     const listNotes = [
       "1. Kalibrasi yang dilaporkan tertelusur ke satuan pengukuran Sistem Internasional (SI) melalui SNSU-BSN / Puslit KIM-LIPI.",
-      "2. Ketidakpastian pengukuran bentangan U95 dilaporkan pada tingkat kepercayaan sekitar 95% dengan faktor cakupan k = 2.",
-      "3. Batas toleransi (MPE) mengacu pada standar Kepmenkes RI No. HK.01.07/MENKES/2023 / IEC 60601 / IEC 62353."
+      "2. Ketidakpastian pengukuran bentangan U95 dilaporkan pada tingkat kepercayaan sekitar 95% dengan faktor cakupan k = 2 (ISO GUM).",
+      "3. Aturan Keputusan (Decision Rule KAN K-01): Status Laik Pakai dievaluasi bila (|Deviasi| + U95) berada dalam batas MPE.",
+      "4. Kepatuhan regulasi berpedoman pada Permenkes RI No. 54 Tahun 2015 tentang Pengujian dan Kalibrasi Alat Kesehatan."
     ];
 
     listNotes.forEach((nText, idxNotes) => {
-      doc.text(nText, 25, rowY + 4 + idxNotes * 4.5);
+      doc.text(nText, 25, rowY + 4 + idxNotes * 4.2);
     });
 
     // Pass Status Banner Box
-    rowY += 19;
+    rowY += 21;
     const passes = lk?.isPass !== false && cert?.isPass !== false;
     doc.setLineWidth(0.6);
     if (passes) {
@@ -503,10 +504,10 @@ export function CertificateDetail() {
     }
     doc.rect(20, rowY, 170, 9, 'FD');
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
+    doc.setFontSize(8);
     doc.setTextColor(passes ? 4 : 185, passes ? 120 : 28, passes ? 87 : 28);
     doc.text(
-      `KESIMPULAN : ALAT DINYATAKAN ${passes ? "MEMENUHI PERSYARATAN MPE (LAIK OPERASIONAL)" : "MELEBIHI BATAS PENYIMPANGAN (TIDAK LAIK)"}`, 
+      `KESIMPULAN : ALAT DINYATAKAN ${passes ? "LAIK PAKAI (MEMENUHI PERSYARATAN PERMENKES NO. 54/2015 & KAN K-01)" : "TIDAK LAIK PAKAI (MELEBIHI BATAS TOLERANSI MPE)"}`, 
       105, 
       rowY + 5.8, 
       { align: "center" }
@@ -995,7 +996,7 @@ function CertificatePage2({ cert, lk, calibratorList, measurements }: any) {
                       ? "bg-emerald-50 border-emerald-600 text-emerald-800"
                       : "bg-red-50 border-red-600 text-red-800"
                   )}>
-                    KESIMPULAN: ALAT DINYATAKAN {(lk?.isPass !== false && cert?.isPass !== false) ? "MEMENUHI PERSYARATAN MPE (LAIK OPERASI)" : "TIDAK LAIK OPERASI"}
+                    KESIMPULAN: ALAT DINYATAKAN {(lk?.isPass !== false && cert?.isPass !== false) ? "LAIK PAKAI (MEMENUHI PERSYARATAN PERMENKES NO. 54/2015 & KAN K-01)" : "TIDAK LAIK PAKAI"}
                   </div>
                 </li>
               </ul>

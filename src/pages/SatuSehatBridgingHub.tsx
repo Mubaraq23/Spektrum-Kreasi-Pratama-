@@ -94,7 +94,7 @@ export function SatuSehatBridgingHub() {
     subject: { reference: 'Device/99a1284b-77c1-4b10-a22f-d890e1f' },
     effectiveDateTime: '2026-08-24T10:30:00+07:00',
     performer: [
-      { display: 'LPAK Spektrum Kreasi Pratama (KAN LK-210-IDN)' }
+      { display: 'LPAK Spektrum Kreasi Pratama (KAN LK-291-IDN)' }
     ],
     valueCodeableConcept: {
       coding: [

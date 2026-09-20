@@ -89,7 +89,7 @@ export function Chat() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4 pointer-events-none">
+    <div className="fixed bottom-[136px] md:bottom-24 right-4 md:right-6 z-40 flex flex-col items-end gap-3 pointer-events-none">
       <AnimatePresence>
         {isOpen && (
             <motion.div
@@ -98,11 +98,11 @@ export function Chat() {
               opacity: 1, 
               y: 0, 
               scale: 1,
-              height: isMinimized ? '60px' : '500px'
+              height: isMinimized ? '60px' : '480px'
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className={cn(
-              "w-80 sm:w-96 glass border border-slate-200/30 dark:border-white/5 rounded-3xl shadow-2xl overflow-hidden pointer-events-auto transition-all duration-300 dark:bg-slate-900/50 dark:backdrop-blur-3xl",
+              "w-[calc(100vw-2rem)] max-w-sm glass border border-slate-200/30 dark:border-white/5 rounded-3xl shadow-2xl overflow-hidden pointer-events-auto transition-all duration-300 dark:bg-slate-900/90 dark:backdrop-blur-3xl max-h-[72vh]",
               isMinimized && "h-[60px]"
             )}
           >

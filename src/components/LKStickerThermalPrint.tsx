@@ -257,7 +257,7 @@ export function LKStickerThermalPrint({ lk, qrCodeUrl, isLaik, onPrintSuccess }:
         <body>
           <div class="sticker-wrapper">
             <div class="sticker-header">
-              <div class="laik-sticker-badge">${isLaik ? 'LAIK PAKAI (CALIBRATED)' : 'TIDAK LAIK (REJECTED)'}</div>
+              <div class="laik-sticker-badge">${isLaik ? 'LAIK PAKAI (PASSED)' : 'TIDAK LAIK PAKAI'}</div>
               <div class="header-serial-id">LK-${lk.id.slice(0, 8).toUpperCase()}</div>
             </div>
             
@@ -293,7 +293,7 @@ export function LKStickerThermalPrint({ lk, qrCodeUrl, isLaik, onPrintSuccess }:
             </div>
 
             <div class="sticker-footer">
-              <div class="footer-brand">${logoOption !== 'none' ? 'PT SPEKTRUM KREASI PRATAMA' : 'SPEKTRUM CALIBRAPRO'}</div>
+              <div class="footer-brand">${logoOption !== 'none' ? 'PT SPEKTRUM KREASI PRATAMA (KAN LK-291-IDN)' : 'SPEKTRUM (KAN LK-291-IDN)'}</div>
               <div class="footer-signature">PIC: ${lk.technicianName?.split(' ')[0] || 'METROLOGIST'}</div>
             </div>
           </div>

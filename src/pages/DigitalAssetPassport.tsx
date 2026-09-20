@@ -166,7 +166,7 @@ export function DigitalAssetPassport() {
 
           {activeTab === 'CALIBRATION' && (
             <div className="space-y-4 font-mono text-xs">
-              <h3 className="text-sm font-bold text-cyan-400 uppercase">Riwayat Kalibrasi Terdaftar (KAN LK-210-IDN)</h3>
+              <h3 className="text-sm font-bold text-cyan-400 uppercase">Riwayat Kalibrasi Terdaftar (KAN LK-291-IDN)</h3>
               <div className="space-y-3">
                 <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex justify-between items-center">
                   <div>

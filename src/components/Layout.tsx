@@ -38,6 +38,7 @@ const navItems = [
   { path: '/dashboard',          label: 'Dashboard Utama',        icon: LayoutDashboard, roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA 3.0' },
   { path: '/field-mode',         label: 'Mode Mobile Lapangan',   icon: Zap,             roles: ['admin','supervisor','technician'], category: 'UTAMA 3.0' },
   { path: '/master-hub',         label: 'Pusat Operasi Terpadu',  icon: Compass,         roles: ['admin','supervisor','technician'], category: 'UTAMA 3.0' },
+  { path: '/asset-passport',     label: 'Paspor Aset Digital (360°)', icon: Stethoscope, roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA 3.0' },
   { path: '/customer-portal',    label: 'Portal Mandiri RS',      icon: Stethoscope,     roles: ['admin','supervisor','technician','management','client'], category: 'UTAMA 3.0' },
 
   // KALIBRASI, UKES & PEMELIHARAAN
@@ -45,6 +46,7 @@ const navItems = [
   { path: '/methods',            label: 'Metode Kerja (MK) & Standar',   icon: BookOpen, roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/method-builder',     label: 'Penyusun MK Visual',            icon: BookOpen, roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/work-orders',        label: 'Order Kerja (Work Orders)',     icon: Calendar, roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
+  { path: '/smart-work-orders',  label: 'Smart Work Order Engine',       icon: Calendar, roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/ukes-radiology',     label: 'Uji Kesesuaian Radiologi (UKES)', icon: Atom,   roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/ipm',                label: 'Pemeliharaan Preventif (IPM)',  icon: Wrench,   roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/repair',             label: 'Perbaikan Alat (Repair)',       icon: Wrench,   roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
@@ -52,9 +54,11 @@ const navItems = [
   { path: '/inventory',          label: 'Inventaris Alat Kesehatan',     icon: Stethoscope, roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/certificates',       label: 'Arsip Sertifikat Kalibrasi',    icon: Award,    roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/service-history',    label: 'Riwayat Layanan & Servis',      icon: History,  roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
+  { path: '/service-recap',      label: 'Rekapitulasi Layanan Terpadu',  icon: FileText, roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
   { path: '/daily-recap',        label: 'Rekap Harian & Servis',         icon: BarChart3,roles: ['admin','supervisor','technician','management','client'], category: 'KALIBRASI, UKES & PEMELIHARAAN' },
 
   // KECERDASAN METROLOGI
+  { path: '/calculation-engine', label: 'Workbench Rumus Metrologi',     icon: Sliders,  roles: ['admin','supervisor','technician','management','client'], category: 'KECERDASAN METROLOGI' },
   { path: '/protocol-builder',   label: 'Builder Protokol Khusus',       icon: Sliders,  roles: ['admin','supervisor','technician','management','client'], category: 'KECERDASAN METROLOGI' },
   { path: '/live-console',       label: 'Konsol Pengukuran Real-Time',   icon: Activity, roles: ['admin','supervisor','technician','management','client'], category: 'KECERDASAN METROLOGI' },
   { path: '/uncertainty-lab',    label: 'Lab Ketidakpastian & Tornado',  icon: BarChart3,roles: ['admin','supervisor','technician','management','client'], category: 'KECERDASAN METROLOGI' },
@@ -98,7 +102,12 @@ const categoryColors: Record<string, string> = {
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen]         = useState(true);
+  const [sidebarOpen, setSidebarOpen]         = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1200;
+    }
+    return false;
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [sidebarFilter, setSidebarFilter]     = useState('');
@@ -110,6 +119,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { theme, toggleTheme }                = useTheme();
   const darkMode                              = theme === 'dark';
   const { profile, logout }                   = useAuth();
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1200 && window.innerWidth >= 768) {
+        setSidebarOpen(false);
+      } else if (window.innerWidth >= 1200) {
+        setSidebarOpen(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -558,7 +579,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.96 }}
                       transition={{ duration: 0.15, ease: [0.16,1,0.3,1] }}
-                      className="absolute right-0 top-11 w-80 bg-white/90 dark:bg-[#0d1426]/90 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[420px]"
+                      className="absolute right-0 top-11 w-[calc(100vw-2.5rem)] max-w-xs sm:w-80 bg-white/95 dark:bg-[#0d1426]/95 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[420px]"
                     >
                       <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/30">
                         <div className="flex items-center gap-2">
@@ -678,7 +699,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-                className="fixed top-0 left-0 h-full w-80 glass-sidebar z-[60] md:hidden flex flex-col shadow-2xl overflow-hidden bg-white/95 dark:bg-[#080d1e]/95 backdrop-blur-2xl"
+                className="fixed top-0 left-0 h-full w-[85vw] max-w-[320px] glass-sidebar z-[60] md:hidden flex flex-col shadow-2xl overflow-hidden bg-white/95 dark:bg-[#080d1e]/95 backdrop-blur-2xl"
               >
                 {/* Drawer header */}
                 <div className="flex items-center justify-between h-[60px] px-4 border-b border-slate-200/60 dark:border-slate-800/40 shrink-0">
@@ -690,6 +711,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   >
                     <X className="w-4 h-4" />
                   </button>
+                </div>
+
+                {/* Mobile Drawer search */}
+                <div className="p-3 border-b border-slate-200/50 dark:border-slate-800/40">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="text"
+                      value={sidebarFilter}
+                      onChange={(e) => setSidebarFilter(e.target.value)}
+                      placeholder="Cari navigasi sistem..."
+                      className="w-full bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/50 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
                 </div>
 
                 {/* Drawer nav */}
@@ -754,13 +789,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </AnimatePresence>
 
         {/* ===================== BOTTOM NAV (MOBILE) ===================== */}
-        <nav className="md:hidden fixed bottom-0 left-0 w-full glass-bottom-nav z-50 print:hidden border-t border-slate-200/60 dark:border-slate-800/50">
+        <nav className="md:hidden fixed bottom-0 left-0 w-full glass-bottom-nav z-40 print:hidden border-t border-slate-200/60 dark:border-slate-800/50">
           <div className="flex items-center justify-around px-2 pt-2 pb-safe">
             {[
-              { to: '/dashboard',    icon: LayoutDashboard, label: 'Home' },
-              { to: '/worksheets',   icon: FileText,        label: 'LK' },
-              { to: '/methods',      icon: BookOpen,        label: 'MK' },
-              { to: '/ik-assistant', icon: Wand2,           label: 'AI' },
+              { to: '/dashboard',           icon: LayoutDashboard, label: 'Home' },
+              { to: '/universal-workspace', icon: Compass,         label: 'Workspace' },
+              { to: '/worksheets',          icon: FileText,        label: 'LK' },
+              { to: '/asset-passport',      icon: Stethoscope,     label: 'Aset 360°' },
             ].map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
@@ -768,7 +803,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 className={({ isActive }) => cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-1.5 px-1 rounded-xl transition-all duration-200 min-h-[52px]",
                   isActive
-                    ? "text-indigo-600 dark:text-rose-400"
+                    ? "text-indigo-600 dark:text-rose-400 font-bold"
                     : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 )}
               >
@@ -776,7 +811,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <>
                     <div className={cn(
                       "w-9 h-8 flex items-center justify-center rounded-xl transition-all duration-200",
-                      isActive ? "bg-indigo-600/10 dark:bg-rose-400/10" : ""
+                      isActive ? "bg-indigo-600/10 dark:bg-rose-400/10 scale-105" : ""
                     )}>
                       <Icon className="w-5 h-5" />
                     </div>

@@ -1,4 +1,4 @@
-u# Security Specification - Spektrum Kalibrasi Digital
+# Security Specification - Spektrum Kalibrasi Digital
 
 ## Data Invariants
 
