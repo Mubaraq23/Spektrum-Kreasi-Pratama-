@@ -19,8 +19,13 @@ import {
   ChevronLeft,
   ChevronRight,
   CalendarDays,
-  Loader2
+  Loader2,
+  Filter,
+  RotateCcw,
+  X,
+  FileText
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { collection, query, onSnapshot, orderBy, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { cn } from '../lib/utils';
@@ -118,9 +123,19 @@ export interface DailyRecapItem {
 }
 
 export function DailyRecap() {
-  const getTodayStr = () => new Date().toISOString().split('T')[0];
+  type DateFilterMode = 'SINGLE' | 'RANGE' | 'ALL';
 
+  const getTodayStr = () => new Date().toISOString().split('T')[0];
+  const getDaysAgoStr = (days: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.toISOString().split('T')[0];
+  };
+
+  const [dateFilterMode, setDateFilterMode] = useState<DateFilterMode>('SINGLE');
   const [selectedDate, setSelectedDate] = useState<string>(getTodayStr());
+  const [startDate, setStartDate] = useState<string>(getDaysAgoStr(6));
+  const [endDate, setEndDate] = useState<string>(getTodayStr());
   const [selectedInstitution, setSelectedInstitution] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [selectedService, setSelectedService] = useState<string>('ALL');
@@ -252,33 +267,45 @@ export function DailyRecap() {
     return items;
   }, [worksheets, ukesReports, ipmReports, repairReports]);
 
-  // Unique Institution list
+  // Unique Institution list with item counts
   const institutionOptions = useMemo(() => {
-    const set = new Set<string>();
+    const counts: Record<string, number> = {};
     allDailyItems.forEach(item => {
-      if (item.institution && item.institution !== '-') set.add(item.institution);
+      if (item.institution && item.institution !== '-') {
+        counts[item.institution] = (counts[item.institution] || 0) + 1;
+      }
     });
-    return Array.from(set).sort();
+    return Object.entries(counts)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([name, count]) => ({ name, count }));
   }, [allDailyItems]);
 
-  // Filtered by Selected Date, Institution, Status, Service, Search
+  // Filtered by Selected Date / Range / All, Institution, Status, Service, Search
   const filteredDailyItems = useMemo(() => {
     return allDailyItems.filter(item => {
-      // Date filter
-      if (selectedDate && item.executionDate !== selectedDate) return false;
+      // 1. Date filter mode
+      if (dateFilterMode === 'SINGLE') {
+        if (selectedDate && item.executionDate !== selectedDate) return false;
+      } else if (dateFilterMode === 'RANGE') {
+        if (startDate && item.executionDate < startDate) return false;
+        if (endDate && item.executionDate > endDate) return false;
+      }
+      // If dateFilterMode === 'ALL', do not restrict by date
 
-      // Institution filter
-      if (selectedInstitution !== 'ALL' && item.institution !== selectedInstitution) return false;
+      // 2. Institution / Rumah Sakit filter
+      if (selectedInstitution !== 'ALL' && item.institution.trim().toLowerCase() !== selectedInstitution.trim().toLowerCase()) {
+        return false;
+      }
 
-      // Status filter
+      // 3. Status filter
       if (selectedStatus === 'LAIK' && item.status !== 'LAIK' && item.status !== 'SELESAI') return false;
       if (selectedStatus === 'TIDAK_LAIK' && item.status !== 'TIDAK_LAIK') return false;
       if (selectedStatus === 'DALAM_PROSES' && item.status !== 'DALAM_PROSES') return false;
 
-      // Service filter
+      // 4. Service filter
       if (selectedService !== 'ALL' && item.serviceType !== selectedService) return false;
 
-      // Search term
+      // 5. Search term
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase();
         const matchName = item.deviceName.toLowerCase().includes(q);
@@ -288,12 +315,13 @@ export function DailyRecap() {
         const matchRoom = item.room.toLowerCase().includes(q);
         const matchInst = item.institution.toLowerCase().includes(q);
         const matchCert = item.certificateNumber.toLowerCase().includes(q);
-        return matchName || matchBrand || matchModel || matchSN || matchRoom || matchInst || matchCert;
+        const matchTech = item.technician.toLowerCase().includes(q);
+        return matchName || matchBrand || matchModel || matchSN || matchRoom || matchInst || matchCert || matchTech;
       }
 
       return true;
     });
-  }, [allDailyItems, selectedDate, selectedInstitution, selectedStatus, selectedService, searchTerm]);
+  }, [allDailyItems, dateFilterMode, selectedDate, startDate, endDate, selectedInstitution, selectedStatus, selectedService, searchTerm]);
 
   // Daily KPI Stats
   const dailyStats = useMemo(() => {
@@ -320,50 +348,176 @@ export function DailyRecap() {
     setSelectedDate(current.toISOString().split('T')[0]);
   };
 
-  // Export to CSV
+  // Date Preset Helpers
+  const setPresetToday = () => {
+    setDateFilterMode('SINGLE');
+    setSelectedDate(getTodayStr());
+  };
+
+  const setPresetYesterday = () => {
+    setDateFilterMode('SINGLE');
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    setSelectedDate(d.toISOString().split('T')[0]);
+  };
+
+  const setPresetLast7Days = () => {
+    setDateFilterMode('RANGE');
+    setStartDate(getDaysAgoStr(6));
+    setEndDate(getTodayStr());
+  };
+
+  const setPresetThisMonth = () => {
+    setDateFilterMode('RANGE');
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    setStartDate(firstDay.toISOString().split('T')[0]);
+    setEndDate(now.toISOString().split('T')[0]);
+  };
+
+  const setPresetAllDates = () => {
+    setDateFilterMode('ALL');
+  };
+
+  const handleResetFilters = () => {
+    setDateFilterMode('SINGLE');
+    setSelectedDate(getTodayStr());
+    setSelectedInstitution('ALL');
+    setSelectedStatus('ALL');
+    setSelectedService('ALL');
+    setSearchTerm('');
+  };
+
+  const hasActiveFilters = useMemo(() => {
+    return (
+      dateFilterMode !== 'SINGLE' ||
+      selectedDate !== getTodayStr() ||
+      selectedInstitution !== 'ALL' ||
+      selectedStatus !== 'ALL' ||
+      selectedService !== 'ALL' ||
+      searchTerm.trim() !== ''
+    );
+  }, [dateFilterMode, selectedDate, selectedInstitution, selectedStatus, selectedService, searchTerm]);
+
+  // Dynamic Filename Generator based on selected filters
+  const getExportFilename = (extension: 'xlsx' | 'csv') => {
+    let instPart = 'Semua_RS';
+    if (selectedInstitution !== 'ALL') {
+      instPart = selectedInstitution.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').slice(0, 30);
+    }
+
+    let datePart = 'Semua_Tanggal';
+    if (dateFilterMode === 'SINGLE') {
+      datePart = selectedDate || 'Hari_Ini';
+    } else if (dateFilterMode === 'RANGE') {
+      datePart = `${startDate || 'Awal'}_sd_${endDate || 'Akhir'}`;
+    }
+
+    return `Rekapan_${instPart}_${datePart}.${extension}`;
+  };
+
+  // Export to Excel (.xlsx) using xlsx library
+  const handleExportExcel = () => {
+    if (filteredDailyItems.length === 0) {
+      alert('Tidak ada data pengerjaan yang cocok dengan filter saat ini.');
+      return;
+    }
+
+    const data = filteredDailyItems.map((item, idx) => ({
+      'No': idx + 1,
+      'Nama Alat Medis': item.deviceName,
+      'Merek': item.brand,
+      'Type / Model': item.model,
+      'Nomor Seri (SN)': item.serialNumber,
+      'Ruangan / Lokasi': item.room,
+      'Rumah Sakit / Fasyankes': item.institution,
+      'Tanggal Pengerjaan': item.executionDate,
+      'Status Kelaikan': item.status,
+      'Jenis Layanan': item.serviceType,
+      'No. Sertifikat / LHU': item.certificateNumber,
+      'Teknisi Pelaksana': item.technician,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    // Set nice column widths
+    worksheet['!cols'] = [
+      { wch: 6 },   // No
+      { wch: 32 },  // Nama Alat
+      { wch: 16 },  // Merek
+      { wch: 18 },  // Type/Model
+      { wch: 20 },  // SN
+      { wch: 18 },  // Ruangan
+      { wch: 30 },  // RS
+      { wch: 16 },  // Tanggal
+      { wch: 14 },  // Status
+      { wch: 16 },  // Jenis Layanan
+      { wch: 24 },  // No. Sertifikat
+      { wch: 24 },  // Teknisi
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Rekapitulasi Harian');
+    XLSX.writeFile(workbook, getExportFilename('xlsx'));
+  };
+
+  // Export to CSV with UTF-8 BOM
   const handleExportCSV = () => {
+    if (filteredDailyItems.length === 0) {
+      alert('Tidak ada data pengerjaan yang cocok dengan filter saat ini.');
+      return;
+    }
+
     const headers = [
       'No',
-      'Nama Alat',
+      'Nama Alat Medis',
       'Merek',
       'Type / Model',
       'Nomor Seri (SN)',
-      'Ruangan',
-      'Nama Instansi',
+      'Ruangan / Lokasi',
+      'Rumah Sakit / Fasyankes',
       'Tanggal Pengerjaan',
-      'Status',
+      'Status Kelaikan',
       'Jenis Layanan',
       'No. Sertifikat / LHU',
-      'Pelaksana / Teknisi'
+      'Teknisi Pelaksana'
     ];
 
     const rows = filteredDailyItems.map((item, idx) => [
       idx + 1,
-      `"${item.deviceName}"`,
-      `"${item.brand}"`,
-      `"${item.model}"`,
-      `"${item.serialNumber}"`,
-      `"${item.room}"`,
-      `"${item.institution}"`,
+      `"${(item.deviceName || '').replace(/"/g, '""')}"`,
+      `"${(item.brand || '').replace(/"/g, '""')}"`,
+      `"${(item.model || '').replace(/"/g, '""')}"`,
+      `"${(item.serialNumber || '').replace(/"/g, '""')}"`,
+      `"${(item.room || '').replace(/"/g, '""')}"`,
+      `"${(item.institution || '').replace(/"/g, '""')}"`,
       item.executionDate,
       item.status,
       item.serviceType,
-      `"${item.certificateNumber}"`,
-      `"${item.technician}"`
+      `"${(item.certificateNumber || '').replace(/"/g, '""')}"`,
+      `"${(item.technician || '').replace(/"/g, '""')}"`
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Rekapan_Harian_${selectedDate}_${selectedInstitution.replace(/[^a-zA-Z0-9]/g, '_')}.csv`);
+    link.setAttribute('href', url);
+    link.setAttribute('download', getExportFilename('csv'));
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Format date display for Indonesian locale
-  const formattedSelectedDate = useMemo(() => {
+  const formattedDateDescription = useMemo(() => {
+    if (dateFilterMode === 'ALL') {
+      return 'Semua Riwayat Tanggal';
+    }
+    if (dateFilterMode === 'RANGE') {
+      return `Rentang: ${startDate || '...'} s/d ${endDate || '...'}`;
+    }
     try {
       const d = new Date(selectedDate);
       return d.toLocaleDateString('id-ID', {
@@ -375,124 +529,266 @@ export function DailyRecap() {
     } catch {
       return selectedDate;
     }
-  }, [selectedDate]);
+  }, [dateFilterMode, selectedDate, startDate, endDate]);
 
   return (
-    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto font-sans">
+    <div className="p-2 sm:p-4 md:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto font-sans">
       {/* Printable Header (Visible only during print) */}
       <div className="hidden print:block text-black p-4 border-b-2 border-black mb-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-xl font-bold uppercase">PT SPEKTRUM KREASI PRATAMA</h1>
-            <p className="text-xs">Laboratorium Kalibrasi & Metrologi Kesehatan • KAN LK-291-IDN</p>
+            <p className="text-xs">Laboratorium Kalibrasi & Metrologi Kesehatan • KAN LK-291-IDN & LP-1849-IDN</p>
             <h2 className="text-base font-bold uppercase mt-2">LEMBAR REKAPAN HARIAN PENGERJAAN ALAT MEDIS</h2>
+            {selectedInstitution !== 'ALL' && (
+              <p className="text-sm font-bold mt-1 text-slate-800 uppercase">
+                FASYANKES / RUMAH SAKIT: {selectedInstitution}
+              </p>
+            )}
           </div>
           <div className="text-right text-xs">
-            <p><span className="font-bold">Tanggal:</span> {formattedSelectedDate}</p>
+            <p><span className="font-bold">Periode:</span> {formattedDateDescription}</p>
             <p><span className="font-bold">Instansi:</span> {selectedInstitution === 'ALL' ? 'Semua Instansi' : selectedInstitution}</p>
             <p><span className="font-bold">Total Alat:</span> {filteredDailyItems.length} Unit</p>
           </div>
         </div>
       </div>
 
-      {/* Top Banner & Date Picker Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-900 border border-slate-800 p-8 rounded-3xl text-white shadow-2xl relative overflow-hidden print:hidden">
+      {/* Top Banner & Action Buttons */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-white shadow-2xl relative overflow-hidden print:hidden">
         <div className="absolute right-0 top-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full text-xs font-bold uppercase tracking-widest font-mono">
             <CalendarDays className="w-4 h-4 animate-pulse" /> Modul Rekapan Harian
           </div>
-          <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight font-mono">
+          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight font-mono">
             Rekapan Harian Pelaksanaan Alat Medis
           </h1>
-          <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
-            Monitoring rekapitulasi harian pengerjaan instrumen medis per instansi: nomor alat, merek, tipe, nomor seri, ruangan, dan status kelaikan operasional.
+          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
+            Filter pengerjaan alat medis per Rumah Sakit/Fasyankes maupun per tanggal/rentang waktu, dan unduh rekapan instan dalam format Excel atau CSV.
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="relative z-10 flex flex-wrap items-center gap-3">
+        <div className="relative z-10 flex flex-wrap items-center gap-2.5 sm:gap-3">
+          <button
+            onClick={handleExportExcel}
+            className="flex-1 sm:flex-none px-4 sm:px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black rounded-xl sm:rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 font-mono transition-all active:scale-95"
+            title="Download file Excel .xlsx"
+          >
+            <FileSpreadsheet className="w-4 h-4" /> Download Excel (.xlsx)
+          </button>
           <button
             onClick={handleExportCSV}
-            className="px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/20 font-mono transition-all"
+            className="flex-1 sm:flex-none px-4 sm:px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl sm:rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/20 font-mono transition-all active:scale-95"
+            title="Download file CSV"
           >
-            <Download className="w-4 h-4" /> Ekspor CSV / Excel
+            <Download className="w-4 h-4" /> Download CSV
           </button>
           <button
             onClick={() => window.print()}
-            className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer border border-slate-700 font-mono transition-all"
+            className="w-full sm:w-auto px-4 sm:px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl sm:rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer border border-slate-700 font-mono transition-all"
+            title="Cetak format cetak resmi PDF"
           >
-            <Printer className="w-4 h-4" /> Cetak Rekapan Harian
+            <Printer className="w-4 h-4" /> Cetak Rekapan
           </button>
         </div>
       </div>
 
-      {/* Date Navigation & Institution Filter Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6 print:hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          {/* Daily Date Controller */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 font-mono">
+      {/* FILTER CONTROL PANEL */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-sm space-y-5 print:hidden">
+        {/* ROW 1: DATE FILTER MODES & SELECTOR */}
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="text-[11px] sm:text-xs font-black uppercase text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1.5">
+              <CalendarIcon className="w-4 h-4 text-cyan-500" /> Filter Waktu Pengerjaan:
+            </span>
+
+            {/* Date Mode Pills */}
+            <div className="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono">
               <button
                 type="button"
-                onClick={() => changeDateByDays(-1)}
-                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
-                title="Hari Sebelumnya"
+                onClick={() => setDateFilterMode('SINGLE')}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer",
+                  dateFilterMode === 'SINGLE'
+                    ? "bg-cyan-500 text-slate-950 shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                )}
               >
-                <ChevronLeft className="w-4 h-4" />
+                📅 Per Tanggal
               </button>
-
-              <div className="flex items-center gap-2 px-3">
-                <CalendarIcon className="w-4 h-4 text-cyan-500" />
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="bg-transparent font-bold text-xs text-slate-900 dark:text-white focus:outline-none font-mono"
-                />
-              </div>
-
               <button
                 type="button"
-                onClick={() => changeDateByDays(1)}
-                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
-                title="Hari Berikutnya"
+                onClick={() => setDateFilterMode('RANGE')}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer",
+                  dateFilterMode === 'RANGE'
+                    ? "bg-cyan-500 text-slate-950 shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                )}
               >
-                <ChevronRight className="w-4 h-4" />
+                🗓️ Rentang Tanggal
+              </button>
+              <button
+                type="button"
+                onClick={setPresetAllDates}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer",
+                  dateFilterMode === 'ALL'
+                    ? "bg-cyan-500 text-slate-950 shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                )}
+              >
+                🌐 Semua Tanggal
               </button>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedDate(getTodayStr())}
-              className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500/10 text-slate-700 dark:text-slate-300 hover:text-cyan-400 font-bold text-xs rounded-xl font-mono transition-colors border border-slate-200 dark:border-slate-700"
-            >
-              Hari Ini
-            </button>
-
-            <span className="text-xs font-bold text-cyan-600 dark:text-cyan-400 font-mono pl-1">
-              📅 {formattedSelectedDate}
-            </span>
           </div>
 
-          {/* Institution Selector */}
-          <div className="flex items-center gap-2 font-mono text-xs">
-            <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
-            <select
-              value={selectedInstitution}
-              onChange={(e) => setSelectedInstitution(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none max-w-xs"
-            >
-              <option value="ALL">Semua Instansi / Fasyankes</option>
-              {institutionOptions.map((inst, idx) => (
-                <option key={idx} value={inst}>{inst}</option>
-              ))}
-            </select>
+          {/* Conditional Date Pickers based on Mode */}
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            {dateFilterMode === 'SINGLE' && (
+              <>
+                <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 font-mono">
+                  <button
+                    type="button"
+                    onClick={() => changeDateByDays(-1)}
+                    className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+                    title="Hari Sebelumnya"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 px-3">
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="bg-transparent font-bold text-xs text-slate-900 dark:text-white focus:outline-none font-mono cursor-pointer"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => changeDateByDays(1)}
+                    className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+                    title="Hari Berikutnya"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5 font-mono text-xs">
+                  <button
+                    type="button"
+                    onClick={setPresetToday}
+                    className={cn(
+                      "px-3 py-2 rounded-xl font-bold transition-colors cursor-pointer border",
+                      selectedDate === getTodayStr()
+                        ? "bg-cyan-500/20 text-cyan-400 border-cyan-500/30"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 border-slate-200 dark:border-slate-700"
+                    )}
+                  >
+                    Hari Ini
+                  </button>
+                  <button
+                    type="button"
+                    onClick={setPresetYesterday}
+                    className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+                  >
+                    Kemarin
+                  </button>
+                </div>
+
+                <span className="text-xs font-bold text-cyan-600 dark:text-cyan-400 font-mono">
+                  📅 {formattedDateDescription}
+                </span>
+              </>
+            )}
+
+            {dateFilterMode === 'RANGE' && (
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-2 rounded-2xl border border-slate-200 dark:border-slate-700 font-mono text-xs">
+                  <span className="text-slate-400 text-[10px] uppercase font-bold pl-1">Dari:</span>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="bg-transparent font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                  />
+                  <span className="text-slate-400 text-[10px] uppercase font-bold px-1">Sampai:</span>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="bg-transparent font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                  />
+                </div>
+
+                <div className="flex items-center gap-1.5 font-mono text-xs">
+                  <button
+                    type="button"
+                    onClick={setPresetLast7Days}
+                    className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+                  >
+                    7 Hari Terakhir
+                  </button>
+                  <button
+                    type="button"
+                    onClick={setPresetThisMonth}
+                    className="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-xl transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
+                  >
+                    Bulan Ini
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {dateFilterMode === 'ALL' && (
+              <div className="p-2.5 px-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold flex items-center gap-2">
+                <span>🌐 Menampilkan seluruh tanggal pengerjaan alat medis (Filter per Rumah Sakit dapat diterapkan tanpa batas waktu).</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Secondary Filter Controls */}
+        {/* ROW 2: HOSPITAL / FASYANKES SELECTOR */}
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+          <label className="text-[11px] sm:text-xs font-black uppercase text-slate-500 dark:text-slate-400 font-mono block mb-2 flex items-center gap-1.5">
+            <Building2 className="w-4 h-4 text-cyan-500" /> Filter Rumah Sakit / Fasilitas Pelayanan Kesehatan (Fasyankes):
+          </label>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="relative flex-1">
+              <Building2 className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <select
+                value={selectedInstitution}
+                onChange={(e) => setSelectedInstitution(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl sm:rounded-2xl pl-10 pr-4 py-3 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 font-mono cursor-pointer"
+              >
+                <option value="ALL">🏥 Semua Rumah Sakit / Instansi ({allDailyItems.length} Total Unit Terdaftar)</option>
+                {institutionOptions.map((inst, idx) => (
+                  <option key={idx} value={inst.name}>
+                    🏥 {inst.name} ({inst.count} Unit)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {selectedInstitution !== 'ALL' && (
+              <button
+                type="button"
+                onClick={() => setSelectedInstitution('ALL')}
+                className="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl font-mono transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0 border border-slate-200 dark:border-slate-700"
+              >
+                <X className="w-4 h-4 text-rose-500" /> Tampilkan Semua RS
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ROW 3: SECONDARY FILTERS (STATUS, LAYANAN, PENCARIAN) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 font-mono text-xs">
           {/* Status Filter */}
           <div>
@@ -500,7 +796,7 @@ export function DailyRecap() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               <option value="ALL">Semua Status</option>
               <option value="LAIK">✓ LAIK / SELESAI</option>
@@ -515,7 +811,7 @@ export function DailyRecap() {
             <select
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               <option value="ALL">Semua Layanan</option>
               <option value="KALIBRASI">Kalibrasi Metrologi (KAN)</option>
@@ -527,19 +823,110 @@ export function DailyRecap() {
 
           {/* Search Box */}
           <div className="sm:col-span-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Pencarian Alat / S/N / Ruangan</label>
+            <label className="text-[10px] font-black uppercase text-slate-400 block mb-1">Pencarian Alat / S/N / Ruangan / Teknisi</label>
             <div className="relative">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Cari nama alat, merek, tipe, S/N, atau ruangan..."
-                className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
+                placeholder="Cari nama alat, merek, tipe, S/N, ruangan, atau teknisi..."
+                className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
+
+        {/* ROW 4: ACTIVE FILTERS SUMMARY & RESET BUTTON */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-mono">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-black uppercase text-slate-400 flex items-center gap-1">
+                <Filter className="w-3 h-3 text-cyan-400" /> Filter Aktif:
+              </span>
+
+              {selectedInstitution !== 'ALL' && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold text-[11px]">
+                  🏥 {selectedInstitution}
+                  <button onClick={() => setSelectedInstitution('ALL')} className="hover:text-white cursor-pointer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+
+              {dateFilterMode === 'SINGLE' && selectedDate !== getTodayStr() && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold text-[11px]">
+                  📅 {selectedDate}
+                  <button onClick={setPresetToday} className="hover:text-white cursor-pointer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+
+              {dateFilterMode === 'RANGE' && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold text-[11px]">
+                  🗓️ {startDate} s/d {endDate}
+                  <button onClick={setPresetToday} className="hover:text-white cursor-pointer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+
+              {dateFilterMode === 'ALL' && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-[11px]">
+                  🌐 Semua Tanggal
+                  <button onClick={setPresetToday} className="hover:text-white cursor-pointer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+
+              {selectedStatus !== 'ALL' && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 font-bold text-[11px]">
+                  Status: {selectedStatus}
+                  <button onClick={() => setSelectedStatus('ALL')} className="hover:text-white cursor-pointer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+
+              {selectedService !== 'ALL' && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 font-bold text-[11px]">
+                  Layanan: {selectedService}
+                  <button onClick={() => setSelectedService('ALL')} className="hover:text-white cursor-pointer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+
+              {searchTerm && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 font-bold text-[11px]">
+                  Kata Kunci: "{searchTerm}"
+                  <button onClick={() => setSearchTerm('')} className="hover:text-white cursor-pointer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="text-[11px] text-rose-500 hover:text-rose-400 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" /> Reset Semua Filter
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Daily KPI Metrics Cards */}
@@ -619,7 +1006,7 @@ export function DailyRecap() {
               {filteredDailyItems.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="py-16 text-center text-slate-400 font-mono text-xs">
-                    Tidak ada pengerjaan alat pada tanggal {selectedDate} untuk filter yang dipilih.
+                    Tidak ada data pengerjaan alat untuk filter ({formattedDateDescription}) yang dipilih.
                   </td>
                 </tr>
               ) : (
@@ -728,7 +1115,7 @@ export function DailyRecap() {
           <p className="font-bold">Petugas Pelaksana / Teknisi Lapangan</p>
           <div className="h-20" />
           <p className="font-bold underline">( ............................................................ )</p>
-          <p className="text-[10px]">Tanggal: {formattedSelectedDate}</p>
+          <p className="text-[10px]">Tanggal: {formattedDateDescription}</p>
         </div>
       </div>
     </div>
